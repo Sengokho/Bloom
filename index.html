@@ -689,20 +689,24 @@ const CLICK_COLS=['#f48fb1','#b39ddb','#90caf9','#a5d6a7','#ffcc80','#ce93d8'];
 let clickParticles=[];
 const MAX_CLICK_PARTICLES=60;
 
+let lastSpawn=0;
 function spawnClickParticles(x,y,combo){
-  // Cap total so rapid clicking can't pile up
-  if(clickParticles.length>MAX_CLICK_PARTICLES)return;
-  const count=Math.min(3+Math.floor(combo/8),5);
+  const now=performance.now();
+  // Minimum 80ms between spawns — skip if clicking faster than that
+  if(now-lastSpawn<80)return;
+  if(clickParticles.length>=MAX_CLICK_PARTICLES)return;
+  lastSpawn=now;
+  const count=combo>10?4:2;
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2;
-    const spd=1.5+Math.random()*2.5;
+    const spd=1.5+Math.random()*2;
     clickParticles.push({
       x,y,
       vx:Math.cos(a)*spd,
-      vy:-Math.abs(Math.sin(a)*spd)-1.5,
+      vy:-Math.abs(Math.sin(a)*spd)-1.2,
       life:1,
-      decay:.025+Math.random()*.015,
-      r:Math.random()*4+2,
+      decay:.03+Math.random()*.02,
+      r:Math.random()*3+2,
       col:CLICK_COLS[Math.floor(Math.random()*CLICK_COLS.length)]
     });
   }
@@ -1071,11 +1075,9 @@ function doClick(e){
   S._ct=setTimeout(()=>{S.combo=0;S.cm=1;renderCombo();},1800);
   const val=Math.max(1,pps*.1+1)*S.cm*S.rm;
   S.pts+=val;S.te+=val;S.tc++;S.csq++;S.lootProg++;
-  // Trail emojis
-  const trail=TRAILS.find(t=>t.id===S.equippedTrail)||TRAILS[0];
   spawnClickParticles(e.clientX,e.clientY,S.combo);
   spawnFloat(e.clientX,e.clientY,val);
-  popRing();renderCombo();renderStats();renderUpgs();
+  popRing();renderCombo();
   checkQuiz();checkLoot();checkAchs();scheduleSave();
 }
 function popRing(){
@@ -1083,7 +1085,11 @@ function popRing(){
   r.classList.remove('pop');r2.classList.remove('pop');void r.offsetWidth;
   r.classList.add('pop');r2.classList.add('pop');
 }
+let lastFloat=0;
 function spawnFloat(x,y,v){
+  const now=performance.now();
+  if(now-lastFloat<100)return;
+  lastFloat=now;
   const el=document.createElement('div');el.className='fl';
   el.style.cssText=`left:${x-14}px;top:${y-14}px;color:${S.combo>12?'var(--amber4)':S.combo>6?'var(--rose4)':'var(--lav4)'}`;
   el.textContent=`+${fmt(v)}${S.combo>4?' ×'+S.combo:''}`;
