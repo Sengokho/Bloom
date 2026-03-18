@@ -29,7 +29,7 @@
   --crate-legendary:#fff8e1;--crate-legendary-b:#f9a825;
 }
 html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background 1s}
-canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+#bg-layer{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.18;transition:background 1s,opacity 1s}
 
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .4s,transform .4s}
 .screen.hidden{opacity:0;pointer-events:none;transform:translateY(16px)}
@@ -356,7 +356,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
+<div id="bg-layer"></div>
 
 <div class="screen" id="scr-import">
   <div class="bloom-logo">bloom <em>✿</em></div>
@@ -524,7 +524,7 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
           <button class="ctab on" onclick="swColl(0)">🌸 Skins</button>
           <button class="ctab" onclick="swColl(1)">🎨 Themes</button>
           <button class="ctab" onclick="swColl(2)">✨ Icons</button>
-          <button class="ctab" onclick="swColl(3)">🌊 Trails</button>
+          <button class="ctab" onclick="swColl(3)">🖼️ Backgrounds</button>
         </div>
         <div class="coll-section on" id="colls-skins"><div class="coll-grid" id="coll-skins"></div></div>
         <div class="coll-section" id="colls-themes"><div class="coll-grid" id="coll-themes"></div></div>
@@ -661,58 +661,6 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
 
 <script>
 
-// BACKGROUND PARTICLES
-
-const bgCv=document.getElementById('bg'),bgCx=bgCv.getContext('2d');
-let W,H;
-function rsz(){W=bgCv.width=innerWidth;H=bgCv.height=innerHeight;}
-rsz();window.addEventListener('resize',rsz);
-
-// Falling cosmetic particles — use the player's equipped trail emoji
-// Max 10 on screen, spawned by timer, fall downward slowly
-const fallingParts=[];
-const MAX_FALL=10;
-
-function spawnFallingParticle(){
-  if(fallingParts.length>=MAX_FALL)return;
-  // Use equipped trail/icon emoji as the particle
-  const trailObj=TRAILS&&TRAILS.find(t=>t.id===(typeof S!=='undefined'?S.equippedTrail:'tr0'));
-  const emoji=(trailObj&&trailObj.e)||'🌸';
-  fallingParts.push({
-    x:Math.random()*W,
-    y:-20,
-    vy:0.4+Math.random()*0.5,   // slow fall downward
-    vx:(Math.random()-0.5)*0.3,
-    rot:Math.random()*Math.PI*2,
-    rotSpeed:(Math.random()-0.5)*0.01,
-    size:14+Math.random()*10,
-    alpha:0.6+Math.random()*0.3,
-    emoji
-  });
-}
-
-// Spawn a new particle every 1.5 seconds if under cap
-setInterval(spawnFallingParticle,1500);
-
-(function particleLoop(){
-  bgCx.clearRect(0,0,W,H);
-  bgCx.textAlign='center';
-  bgCx.textBaseline='middle';
-  for(let i=fallingParts.length-1;i>=0;i--){
-    const p=fallingParts[i];
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotSpeed;
-    if(p.y>H+30){fallingParts.splice(i,1);continue;}
-    bgCx.save();
-    bgCx.globalAlpha=p.alpha;
-    bgCx.translate(p.x,p.y);
-    bgCx.rotate(p.rot);
-    bgCx.font=p.size+'px serif';
-    bgCx.fillText(p.emoji,0,0);
-    bgCx.restore();
-  }
-  requestAnimationFrame(particleLoop);
-})();
-
 function spawnClickParticles(){}
 
 
@@ -819,23 +767,23 @@ const ICONS=[
   {id:'i22',e:'🎸',n:'Guitar',          rarity:'epic'},
   {id:'i23',e:'🍕',n:'Pizza',           rarity:'common'},
 ];
-const TRAILS=[
-  {id:'tr0',e:'🌸',n:'Petals',          rarity:'common'},
-  {id:'tr1',e:'⭐',n:'Stars',            rarity:'rare'},
-  {id:'tr2',e:'💫',n:'Sparkles',        rarity:'epic'},
-  {id:'tr3',e:'🦋',n:'Butterflies',     rarity:'legendary'},
-  {id:'tr4',e:'🍀',n:'Clovers',         rarity:'rare'},
-  {id:'tr5',e:'❄️',n:'Snowflakes',      rarity:'epic'},
-  {id:'tr6',e:'🌺',n:'Hibiscus Burst',  rarity:'epic'},
-  {id:'tr7',e:'✨',n:'Galaxy Dust',      rarity:'legendary'},
-  {id:'tr8',e:'🍂',n:'Autumn Leaves',   rarity:'rare'},
-  {id:'tr9',e:'🌟',n:'Shooting Stars',  rarity:'epic'},
-  {id:'tr10',e:'🎆',n:'Fireworks',      rarity:'legendary'},
-  {id:'tr11',e:'🍒',n:'Cherries',       rarity:'rare'},
-  {id:'tr12',e:'🎵',n:'Music Notes',    rarity:'rare'},
-  {id:'tr13',e:'🐝',n:'Bees',           rarity:'epic'},
-  {id:'tr14',e:'🫧',n:'Bubbles',        rarity:'common'},
-  {id:'tr15',e:'🌙',n:'Moons',          rarity:'legendary'},
+const BACKGROUNDS=[
+  {id:'bg0', e:'🌿',n:'Garden Dots',    rarity:'common',    css:'radial-gradient(circle,#f48fb1 1px,transparent 1px)',size:'28px 28px'},
+  {id:'bg1', e:'🌸',n:'Petal Grid',     rarity:'common',    css:'radial-gradient(circle,#b39ddb 1.5px,transparent 1.5px)',size:'32px 32px'},
+  {id:'bg2', e:'⭐',n:'Star Scatter',   rarity:'rare',      css:'radial-gradient(circle,#90caf9 1.5px,transparent 1.5px),radial-gradient(circle,#f48fb1 1px,transparent 1px)',size:'40px 40px,20px 20px'},
+  {id:'bg3', e:'🌊',n:'Ocean Waves',    rarity:'rare',      css:'repeating-linear-gradient(45deg,#80deea,#80deea 2px,transparent 2px,transparent 20px)'},
+  {id:'bg4', e:'🍀',n:'Clover Cross',   rarity:'rare',      css:'repeating-linear-gradient(0deg,#a5d6a7 0,#a5d6a7 1px,transparent 1px,transparent 24px),repeating-linear-gradient(90deg,#a5d6a7 0,#a5d6a7 1px,transparent 1px,transparent 24px)'},
+  {id:'bg5', e:'💜',n:'Diamond Hatch',  rarity:'epic',      css:'repeating-linear-gradient(45deg,#ce93d8,#ce93d8 1px,transparent 1px,transparent 18px),repeating-linear-gradient(-45deg,#ce93d8,#ce93d8 1px,transparent 1px,transparent 18px)'},
+  {id:'bg6', e:'🔥',n:'Ember Stripe',   rarity:'epic',      css:'repeating-linear-gradient(60deg,#ffcc80 0,#ffcc80 2px,transparent 2px,transparent 16px)'},
+  {id:'bg7', e:'❄️',n:'Frost Flake',    rarity:'epic',      css:'radial-gradient(circle,#b2dfdb 2px,transparent 2px),radial-gradient(circle,#80deea 1px,transparent 1px)',size:'36px 36px,18px 18px'},
+  {id:'bg8', e:'🌙',n:'Moon Rings',     rarity:'epic',      css:'radial-gradient(circle at 50% 50%,transparent 10px,#9fa8da 10px,#9fa8da 11px,transparent 11px),radial-gradient(circle at 50% 50%,transparent 20px,#c5cae9 20px,#c5cae9 21px,transparent 21px)',size:'60px 60px,60px 60px'},
+  {id:'bg9', e:'✨',n:'Sparkle Field',  rarity:'legendary', css:'radial-gradient(circle,#ffd54f 2px,transparent 2px),radial-gradient(circle,#f48fb1 1px,transparent 1px),radial-gradient(circle,#90caf9 1.5px,transparent 1.5px)',size:'60px 60px,30px 30px,45px 45px'},
+  {id:'bg10',e:'🌟',n:'Starburst',      rarity:'legendary', css:'repeating-conic-gradient(#ffd54f 0deg 10deg,transparent 10deg 20deg)'},
+  {id:'bg11',e:'🎆',n:'Firework Burst', rarity:'legendary', css:'radial-gradient(ellipse at 20% 30%,#f48fb1 1px,transparent 1px),radial-gradient(ellipse at 80% 70%,#90caf9 1px,transparent 1px),radial-gradient(ellipse at 50% 50%,#ffd54f 1.5px,transparent 1.5px)',size:'50px 50px,70px 70px,40px 40px'},
+  {id:'bg12',e:'🌺',n:'Bloom Lattice',  rarity:'rare',      css:'repeating-linear-gradient(30deg,#f48fb1 0,#f48fb1 1px,transparent 1px,transparent 20px),repeating-linear-gradient(150deg,#f48fb1 0,#f48fb1 1px,transparent 1px,transparent 20px)'},
+  {id:'bg13',e:'🎵',n:'Sound Wave',     rarity:'rare',      css:'repeating-linear-gradient(90deg,transparent,transparent 4px,#b39ddb 4px,#b39ddb 5px)'},
+  {id:'bg14',e:'🫧',n:'Bubble Float',   rarity:'epic',      css:'radial-gradient(circle at 25% 25%,#e3f2fd 3px,transparent 3px),radial-gradient(circle at 75% 75%,#f3e5f5 2px,transparent 2px),radial-gradient(circle at 60% 20%,#e8f5e9 4px,transparent 4px)',size:'50px 50px,40px 40px,70px 70px'},
+  {id:'bg15',e:'🌈',n:'Rainbow Beams',  rarity:'legendary', css:'repeating-linear-gradient(135deg,#fce4ec 0,#fce4ec 8px,#e3f2fd 8px,#e3f2fd 16px,#e8f5e9 16px,#e8f5e9 24px,#fffde7 24px,#fffde7 32px,#f3e5f5 32px,#f3e5f5 40px)'},
 ];
 
 // Rarity weights per crate tier
@@ -900,8 +848,8 @@ function freshState(){
     lootProg:0,lootPending:false,
     cratesOwned:{common:0,rare:0,legendary:0},
     cratesOpened:0,legendaryFound:0,
-    ownedCosmetics:['s0','t0','i0','tr0'],
-    equippedSkin:'s0',equippedTheme:'t0',equippedIcon:'i0',equippedTrail:'tr0',
+    ownedCosmetics:['s0','t0','i0','bg0'],
+    equippedSkin:'s0',equippedTheme:'t0',equippedIcon:'i0',equippedBg:'bg0',
     lastPps:0,quizStreak:0,crateHistory:[],
   };
 }
@@ -924,13 +872,13 @@ function deserial(raw){
     S=freshState();
     ['pts','te','tc','qc','qt','own','mc','csq','qth','rb','rm',
      'lootProg','cratesOwned','cratesOpened','legendaryFound',
-     'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','equippedTrail',
+     'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','equippedBg',
      'lastPps','quizStreak','crateHistory'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
     S.ul=new Set(d.ul||[]);
     S.lootPending=false;
     if(!S.cratesOwned)S.cratesOwned={common:0,rare:0,legendary:0};
     if(!S.crateHistory)S.crateHistory=[];
-    if(!S.ownedCosmetics.includes('tr0'))S.ownedCosmetics.push('tr0');
+    if(!S.ownedCosmetics.includes('bg0'))S.ownedCosmetics.push('bg0');
     if(d.sets&&Array.isArray(d.sets)){
       S.sets=d.sets.map(st=>({name:st.name,qs:st.qs,queue:shuffle([...st.qs]),wq:[]}));
     }
@@ -1039,6 +987,7 @@ function applyCosmetics(){
   const skin=SKINS.find(s=>s.id===S.equippedSkin)||SKINS[0];
   const theme=THEMES.find(t=>t.id===S.equippedTheme)||THEMES[0];
   const icon=ICONS.find(i=>i.id===S.equippedIcon)||ICONS[0];
+  const bg=BACKGROUNDS.find(b=>b.id===S.equippedBg)||BACKGROUNDS[0];
   const r=document.documentElement;
   r.style.setProperty('--orb-a',skin.orb_a);r.style.setProperty('--orb-b',skin.orb_b);
   r.style.setProperty('--orb-c',skin.orb_c);r.style.setProperty('--orb-glow',skin.glow);
@@ -1046,12 +995,18 @@ function applyCosmetics(){
   r.style.setProperty('--theme-bg',theme.bg);r.style.setProperty('--theme-panel',theme.panel);
   document.body.style.background=theme.bg;
   const orbEl=document.getElementById('orb');if(orbEl)orbEl.textContent=icon.e;
+  // Apply static background pattern
+  const bgLayer=document.getElementById('bg-layer');
+  if(bgLayer){
+    bgLayer.style.backgroundImage=bg.css;
+    bgLayer.style.backgroundSize=bg.size||'30px 30px';
+  }
 }
 function equipItem(type,id){
   if(type==='skin')S.equippedSkin=id;
   else if(type==='theme')S.equippedTheme=id;
   else if(type==='icon')S.equippedIcon=id;
-  else S.equippedTrail=id;
+  else if(type==='bg')S.equippedBg=id;
   applyCosmetics();renderCollModal();scheduleSave();showToast('Equipped! ✿');
 }
 
@@ -1229,7 +1184,7 @@ function pickCrateReward(type){
     ...SKINS.map(s=>({type:'skin',ref:s.id,name:s.n,icon:s.e,rarity:s.rarity})),
     ...THEMES.map(t=>({type:'theme',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity})),
     ...ICONS.map(i=>({type:'icon',ref:i.id,name:i.n,icon:i.e,rarity:i.rarity})),
-    ...TRAILS.map(t=>({type:'trail',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity})),
+    ...BACKGROUNDS.map(b=>({type:'bg',ref:b.id,name:b.n,icon:b.e,rarity:b.rarity})),
   ];
   // Weighted rarity pick
   const rand=Math.random()*100;
@@ -1250,7 +1205,7 @@ function runReel(finalItem){
     ...SKINS.map(s=>({icon:s.e,name:s.n,rarity:s.rarity})),
     ...THEMES.map(t=>({icon:t.e,name:t.n,rarity:t.rarity})),
     ...ICONS.map(i=>({icon:i.e,name:i.n,rarity:i.rarity})),
-    ...TRAILS.map(t=>({icon:t.e,name:t.n,rarity:t.rarity})),
+    ...BACKGROUNDS.map(b=>({icon:b.e,name:b.n,rarity:b.rarity})),
   ];
   const items=[];for(let i=0;i<30;i++)items.push(allItems[Math.floor(Math.random()*allItems.length)]);
   items[26]={icon:finalItem.icon,name:finalItem.name,rarity:finalItem.rarity};
@@ -1278,7 +1233,7 @@ function showReward(item){
   // Show reward card
   document.getElementById('cr-ico').textContent=item.icon;
   document.getElementById('cr-name').textContent=item.name+(isNew?'':' (duplicate)');
-  document.getElementById('cr-type').textContent={skin:'Orb Skin',theme:'Background Theme',icon:'Orb Icon',trail:'Click Trail'}[item.type]||item.type;
+  document.getElementById('cr-type').textContent={skin:'Orb Skin',theme:'Background Theme',icon:'Orb Icon',bg:'Background Pattern'}[item.type]||item.type;
   document.getElementById('cr-rarity').innerHTML=`<span class="r-${item.rarity}">${item.rarity.toUpperCase()}</span>`;
   document.getElementById('cov-reward').classList.add('show');
   document.getElementById('cov-sub').textContent=isNew?'New cosmetic unlocked!':'You already own this — collected duplicate.';
@@ -1380,7 +1335,7 @@ function renderAchs(){
 function renderCollModal(){
   const mkGrid=(items,type)=>items.map(item=>{
     const owned=S.ownedCosmetics.includes(item.id);
-    const equipped=[S.equippedSkin,S.equippedTheme,S.equippedIcon,S.equippedTrail].includes(item.id);
+    const equipped=[S.equippedSkin,S.equippedTheme,S.equippedIcon,S.equippedBg].includes(item.id);
     return`<div class="ci${owned?' unlocked':''}${equipped?' equipped':''}" onclick="${owned?`equipItem('${type}','${item.id}')`:''}" title="${owned?'Click to equip':'Locked'}">
       ${equipped?'<div class="ci-badge eq">on</div>':''}
       <span class="ci-ico">${item.e}</span>
@@ -1392,7 +1347,7 @@ function renderCollModal(){
   document.getElementById('coll-skins').innerHTML=mkGrid(SKINS,'skin');
   document.getElementById('coll-themes').innerHTML=mkGrid(THEMES,'theme');
   document.getElementById('coll-icons').innerHTML=mkGrid(ICONS,'icon');
-  document.getElementById('coll-trails').innerHTML=mkGrid(TRAILS,'trail');
+  document.getElementById('coll-trails').innerHTML=mkGrid(BACKGROUNDS,'bg');
 }
 function updateRbPill(){
   const p=document.getElementById('d-rbpill');
