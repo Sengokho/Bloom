@@ -24,11 +24,9 @@
 html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background .8s}
 canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
 
-/* ═══ SCREENS ═══ */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .4s,transform .4s}
 .screen.hidden{opacity:0;pointer-events:none;transform:translateY(14px)}
 
-/* ═══ IMPORT ═══ */
 #scr-import{background:var(--theme-bg);padding:28px 18px;gap:12px;overflow-y:auto}
 .imp-card{background:var(--card);border-radius:22px;padding:24px;box-shadow:var(--sh2);width:100%;max-width:560px}
 .tab-row{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
@@ -63,7 +61,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .cont-btn:hover{transform:translateY(-2px)}
 .save-badge{display:inline-flex;align-items:center;gap:7px;background:var(--mint);border:1px solid var(--mint2);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--mint4)}
 
-/* ═══ GAME ═══ */
+/* GAME */
 #scr-game{background:transparent;padding:0;flex-direction:row;align-items:stretch;justify-content:stretch}
 .gp{background:var(--theme-panel);backdrop-filter:blur(14px);display:flex;flex-direction:column;padding:13px 11px;overflow-y:auto;flex-shrink:0;transition:background .8s}
 .gp::-webkit-scrollbar{width:3px}.gp::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
@@ -143,7 +141,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .ibtn.red:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
 .ibtn span{display:block;font-size:12px;margin-bottom:1px}
 
-/* ═══ QUIZ OVERLAY ═══ */
+/* QUIZ OVERLAY */
 #qov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.78);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
 #qov.show{opacity:1;pointer-events:all}
 .qcard{background:#fff;border-radius:24px;padding:26px;max-width:430px;width:90%;box-shadow:var(--sh2);transform:translateY(20px);transition:transform .3s}
@@ -166,7 +164,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .qmult b{color:var(--mint4)}
 .qset-tag{font-size:10px;color:var(--sky4);background:var(--sky);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px}
 
-/* ═══ LOOT BOX OVERLAY ═══ */
+/* LOOT BOX OVERLAY */
 #lov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
 #lov.show{opacity:1;pointer-events:all}
 .lcard{background:#fff;border-radius:28px;padding:32px;max-width:400px;width:90%;box-shadow:var(--sh2);text-align:center;transform:scale(.85);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
@@ -189,7 +187,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .lclose-btn{padding:10px 22px;border-radius:12px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink2);cursor:pointer;margin-top:10px;transition:all .2s}
 .lclose-btn:hover{background:var(--bg2)}
 
-/* ═══ MODALS ═══ */
+/* MODALS */
 .mbk{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.84);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
 .mbk.show{opacity:1;pointer-events:all}
 .md{background:#fff;border-radius:24px;padding:24px;max-width:500px;width:92%;box-shadow:var(--sh2);transform:translateY(18px);transition:transform .3s;max-height:84vh;display:flex;flex-direction:column}
@@ -255,7 +253,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .srow:last-child{border:none}
 .srow b{color:var(--ink);font-weight:500}
 
-/* ═══ FLOATS / TOAST / MILESTONE ═══ */
+/*FLOATS / TOAST / MILESTONE*/
 .fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:14px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
 @keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(.85)}}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(38px);background:#fff;border-radius:13px;padding:10px 17px;box-shadow:var(--sh2);font-size:13px;color:var(--ink);z-index:999;opacity:0;transition:all .3s;border:1px solid var(--bg3);max-width:88vw;text-align:center;pointer-events:none}
@@ -271,7 +269,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 <body>
 <canvas id="bg"></canvas>
 
-<!-- ═══ IMPORT SCREEN ═══ -->
+<!--  IMPORT SCREEN -->
 <div class="screen" id="scr-import">
   <div style="font-family:'Fraunces',serif;font-size:42px;font-weight:300;color:var(--ink);letter-spacing:-1.5px;margin-bottom:2px">bloom <em style="color:var(--rose4)">✿</em></div>
   <div style="font-size:13px;color:var(--ink3);margin-bottom:14px">grow your garden of knowledge</div>
