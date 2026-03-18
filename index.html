@@ -481,8 +481,8 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
               <span style="color:var(--amber4)">Legendary</span> — 1%
             </div>
           </div>
-          <div class="crate-count">♾️ Unlimited common crates</div>
-          <button class="crate-open-btn common" onclick="startCrateOpen('common')">🌿 Open (answer a question)</button>
+          <div class="crate-count">🌿 <b id="common-crate-count">0</b> common crates</div>
+          <button class="crate-open-btn common" id="common-open-btn" onclick="startCrateOpen('common')" disabled>🌿 Open (answer a question)</button>
         </div>
         <!-- Rare -->
         <div class="crate-section" id="cs-rare">
@@ -668,37 +668,52 @@ let W,H;
 function rsz(){W=bgCv.width=innerWidth;H=bgCv.height=innerHeight;}
 rsz();window.addEventListener('resize',rsz);
 
-const BG_COLS=['#fce4ec','#e3f2fd','#ede7f6','#e8f5e9','#fff3e0'];
-const BG_PARTS=Array.from({length:18},()=>({
-  x:Math.random()*innerWidth,
-  y:Math.random()*innerHeight,
-  r:Math.random()*3+1.5,
-  vx:(Math.random()-.5)*.15,
-  vy:-(Math.random()*.2+.05),
-  c:BG_COLS[Math.floor(Math.random()*5)]
-}));
+// Falling cosmetic particles — use the player's equipped trail emoji
+// Max 10 on screen, spawned by timer, fall downward slowly
+const fallingParts=[];
+const MAX_FALL=10;
+
+function spawnFallingParticle(){
+  if(fallingParts.length>=MAX_FALL)return;
+  // Use equipped trail/icon emoji as the particle
+  const trailObj=TRAILS&&TRAILS.find(t=>t.id===(typeof S!=='undefined'?S.equippedTrail:'tr0'));
+  const emoji=(trailObj&&trailObj.e)||'🌸';
+  fallingParts.push({
+    x:Math.random()*W,
+    y:-20,
+    vy:0.4+Math.random()*0.5,   // slow fall downward
+    vx:(Math.random()-0.5)*0.3,
+    rot:Math.random()*Math.PI*2,
+    rotSpeed:(Math.random()-0.5)*0.01,
+    size:14+Math.random()*10,
+    alpha:0.6+Math.random()*0.3,
+    emoji
+  });
+}
+
+// Spawn a new particle every 1.5 seconds if under cap
+setInterval(spawnFallingParticle,1500);
 
 (function particleLoop(){
   bgCx.clearRect(0,0,W,H);
-  bgCx.globalAlpha=.22;
-  // One path per colour
-  BG_COLS.forEach(col=>{
-    bgCx.fillStyle=col;
-    bgCx.beginPath();
-    BG_PARTS.forEach(p=>{
-      if(p.c!==col)return;
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.y<-10){p.x=Math.random()*W;p.y=H+10;}
-      bgCx.moveTo(p.x+p.r,p.y);
-      bgCx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    });
-    bgCx.fill();
-  });
-  bgCx.globalAlpha=1;
+  bgCx.textAlign='center';
+  bgCx.textBaseline='middle';
+  for(let i=fallingParts.length-1;i>=0;i--){
+    const p=fallingParts[i];
+    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotSpeed;
+    if(p.y>H+30){fallingParts.splice(i,1);continue;}
+    bgCx.save();
+    bgCx.globalAlpha=p.alpha;
+    bgCx.translate(p.x,p.y);
+    bgCx.rotate(p.rot);
+    bgCx.font=p.size+'px serif';
+    bgCx.fillText(p.emoji,0,0);
+    bgCx.restore();
+  }
   requestAnimationFrame(particleLoop);
 })();
 
-function spawnClickParticles(){}  // removed - no click particles
+function spawnClickParticles(){}
 
 
 // CONSTANTS — UPGRADES
@@ -743,7 +758,7 @@ const SKINS=[
   {id:'s1', e:'🌙',n:'Moonflower',       rarity:'rare',      orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#9fa8da',glow:'rgba(121,134,203,.4)',ring:'#9fa8da'},
   {id:'s2', e:'🔥',n:'Ember Rose',       rarity:'rare',      orb_a:'#fff3e0',orb_b:'#ffe0b2',orb_c:'#ffcc80',glow:'rgba(255,167,38,.35)',ring:'#ffcc80'},
   {id:'s3', e:'🌊',n:'Ocean Drift',      rarity:'epic',      orb_a:'#e0f7fa',orb_b:'#b2ebf2',orb_c:'#80deea',glow:'rgba(0,188,212,.3)',ring:'#80deea'},
-  {id:'s4', e:'💜',n:'Amethyst Garden',  rarity:'epic',      orb_a:'#f3e5f5',orb_b:'#e1bee7',orb_c:'#ce93d8',glow:'rgba(171,71,188,.35)',ring:'#ce93d8'},
+  {id:'s4', e:'💜',n:'Amethyst',         rarity:'epic',      orb_a:'#f3e5f5',orb_b:'#e1bee7',orb_c:'#ce93d8',glow:'rgba(171,71,188,.35)',ring:'#ce93d8'},
   {id:'s5', e:'⚡',n:'Storm Petal',      rarity:'epic',      orb_a:'#fffde7',orb_b:'#fff176',orb_c:'#ffee58',glow:'rgba(253,216,53,.45)',ring:'#ffee58'},
   {id:'s6', e:'❄️',n:'Frost Bloom',      rarity:'epic',      orb_a:'#e0f2f1',orb_b:'#b2dfdb',orb_c:'#4db6ac',glow:'rgba(0,150,136,.3)',ring:'#4db6ac'},
   {id:'s7', e:'🌟',n:'Celestial',        rarity:'legendary', orb_a:'#fce4ec',orb_b:'#fff8e1',orb_c:'#e8eaf6',glow:'rgba(255,213,79,.55)',ring:'#ffd54f'},
@@ -751,6 +766,14 @@ const SKINS=[
   {id:'s9', e:'🌺',n:'Hibiscus Dream',   rarity:'epic',      orb_a:'#fce4ec',orb_b:'#f8bbd0',orb_c:'#f48fb1',glow:'rgba(233,30,99,.35)',ring:'#f48fb1'},
   {id:'s10',e:'🌠',n:'Shooting Star',    rarity:'legendary', orb_a:'#e8eaf6',orb_b:'#fff8e1',orb_c:'#e0f7fa',glow:'rgba(179,157,219,.5)',ring:'#b39ddb'},
   {id:'s11',e:'🍯',n:'Honey Gold',       rarity:'rare',      orb_a:'#fff8e1',orb_b:'#ffecb3',orb_c:'#ffe082',glow:'rgba(249,168,37,.35)',ring:'#ffd54f'},
+  {id:'s12',e:'🍒',n:'Cherry Pop',       rarity:'rare',      orb_a:'#ffebee',orb_b:'#ffcdd2',orb_c:'#ef9a9a',glow:'rgba(229,57,53,.3)',ring:'#ef9a9a'},
+  {id:'s13',e:'🫐',n:'Blueberry',        rarity:'rare',      orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#7986cb',glow:'rgba(57,73,171,.3)',ring:'#7986cb'},
+  {id:'s14',e:'🥝',n:'Kiwi Fresh',       rarity:'epic',      orb_a:'#f1f8e9',orb_b:'#dcedc8',orb_c:'#aed581',glow:'rgba(124,179,66,.3)',ring:'#aed581'},
+  {id:'s15',e:'🌴',n:'Tropical Night',   rarity:'epic',      orb_a:'#e0f2f1',orb_b:'#e8f5e9',orb_c:'#b2dfdb',glow:'rgba(0,137,123,.3)',ring:'#4db6ac'},
+  {id:'s16',e:'🎆',n:'Fireworks',        rarity:'legendary', orb_a:'#fce4ec',orb_b:'#fff3e0',orb_c:'#e8eaf6',glow:'rgba(233,30,99,.6)',ring:'#f06292'},
+  {id:'s17',e:'🌮',n:'Spicy Coral',      rarity:'epic',      orb_a:'#fbe9e7',orb_b:'#ffccbc',orb_c:'#ffab91',glow:'rgba(244,81,30,.3)',ring:'#ffab91'},
+  {id:'s18',e:'🫧',n:'Soap Bubble',      rarity:'rare',      orb_a:'#e3f2fd',orb_b:'#f3e5f5',orb_c:'#e0f7fa',glow:'rgba(144,202,249,.4)',ring:'#90caf9'},
+  {id:'s19',e:'🎸',n:'Neon Rock',        rarity:'legendary', orb_a:'#f3e5f5',orb_b:'#ede7f6',orb_c:'#d1c4e9',glow:'rgba(123,31,162,.5)',ring:'#ce93d8'},
 ];
 const THEMES=[
   {id:'t0', n:'Spring Garden', e:'🌸',rarity:'common',    bg:'#fdfaf6',panel:'rgba(255,255,255,.86)'},
@@ -761,6 +784,14 @@ const THEMES=[
   {id:'t5', n:'Mint Fresh',    e:'🍀',rarity:'rare',      bg:'#f2faf3',panel:'rgba(240,249,240,.9)'},
   {id:'t6', n:'Sakura Dusk',   e:'🌸',rarity:'epic',      bg:'#fdf0f5',panel:'rgba(253,240,245,.9)'},
   {id:'t7', n:'Starfield',     e:'🌌',rarity:'legendary', bg:'#f5f3fd',panel:'rgba(243,240,253,.9)'},
+  {id:'t8', n:'Desert Sand',   e:'🏜️',rarity:'rare',      bg:'#fdf8f0',panel:'rgba(255,248,235,.9)'},
+  {id:'t9', n:'Arctic Ice',    e:'❄️',rarity:'epic',      bg:'#f0f4ff',panel:'rgba(235,240,255,.9)'},
+  {id:'t10',n:'Jungle Deep',   e:'🌿',rarity:'rare',      bg:'#f1faf3',panel:'rgba(235,248,237,.9)'},
+  {id:'t11',n:'Candy Floss',   e:'🍭',rarity:'epic',      bg:'#fef0f5',panel:'rgba(254,240,245,.9)'},
+  {id:'t12',n:'Volcanic',      e:'🌋',rarity:'legendary', bg:'#fdf2ee',panel:'rgba(253,242,238,.9)'},
+  {id:'t13',n:'Moonlit Lake',  e:'🌕',rarity:'epic',      bg:'#f3f0fb',panel:'rgba(243,240,251,.9)'},
+  {id:'t14',n:'Sunrise Coral', e:'🌅',rarity:'rare',      bg:'#fff6f0',panel:'rgba(255,246,240,.9)'},
+  {id:'t15',n:'Deep Forest',   e:'🌲',rarity:'legendary', bg:'#eef7f0',panel:'rgba(238,247,240,.9)'},
 ];
 const ICONS=[
   {id:'i0', e:'✿', n:'Classic',         rarity:'common'},
@@ -775,8 +806,19 @@ const ICONS=[
   {id:'i9', e:'🌙',n:'Crescent',        rarity:'epic'},
   {id:'i10',e:'⭐',n:'Star',            rarity:'rare'},
   {id:'i11',e:'🔮',n:'Crystal Ball',    rarity:'legendary'},
+  {id:'i12',e:'🎯',n:'Bullseye',        rarity:'rare'},
+  {id:'i13',e:'🎪',n:'Carnival',        rarity:'epic'},
+  {id:'i14',e:'🐝',n:'Bee',             rarity:'rare'},
+  {id:'i15',e:'🦊',n:'Fox',             rarity:'epic'},
+  {id:'i16',e:'🐉',n:'Dragon',          rarity:'legendary'},
+  {id:'i17',e:'🍄',n:'Mushroom',        rarity:'rare'},
+  {id:'i18',e:'🎵',n:'Music Note',      rarity:'common'},
+  {id:'i19',e:'🏆',n:'Trophy',          rarity:'epic'},
+  {id:'i20',e:'🎭',n:'Theatre',         rarity:'rare'},
+  {id:'i21',e:'🌍',n:'Earth',           rarity:'legendary'},
+  {id:'i22',e:'🎸',n:'Guitar',          rarity:'epic'},
+  {id:'i23',e:'🍕',n:'Pizza',           rarity:'common'},
 ];
-// Click trail cosmetics
 const TRAILS=[
   {id:'tr0',e:'🌸',n:'Petals',          rarity:'common'},
   {id:'tr1',e:'⭐',n:'Stars',            rarity:'rare'},
@@ -786,6 +828,14 @@ const TRAILS=[
   {id:'tr5',e:'❄️',n:'Snowflakes',      rarity:'epic'},
   {id:'tr6',e:'🌺',n:'Hibiscus Burst',  rarity:'epic'},
   {id:'tr7',e:'✨',n:'Galaxy Dust',      rarity:'legendary'},
+  {id:'tr8',e:'🍂',n:'Autumn Leaves',   rarity:'rare'},
+  {id:'tr9',e:'🌟',n:'Shooting Stars',  rarity:'epic'},
+  {id:'tr10',e:'🎆',n:'Fireworks',      rarity:'legendary'},
+  {id:'tr11',e:'🍒',n:'Cherries',       rarity:'rare'},
+  {id:'tr12',e:'🎵',n:'Music Notes',    rarity:'rare'},
+  {id:'tr13',e:'🐝',n:'Bees',           rarity:'epic'},
+  {id:'tr14',e:'🫧',n:'Bubbles',        rarity:'common'},
+  {id:'tr15',e:'🌙',n:'Moons',          rarity:'legendary'},
 ];
 
 // Rarity weights per crate tier
@@ -848,7 +898,7 @@ function freshState(){
     ul:new Set(),rb:0,rm:1,
     sets:[],activeSet:0,
     lootProg:0,lootPending:false,
-    cratesOwned:{common:999,rare:0,legendary:0},
+    cratesOwned:{common:0,rare:0,legendary:0},
     cratesOpened:0,legendaryFound:0,
     ownedCosmetics:['s0','t0','i0','tr0'],
     equippedSkin:'s0',equippedTheme:'t0',equippedIcon:'i0',equippedTrail:'tr0',
@@ -878,7 +928,7 @@ function deserial(raw){
      'lastPps','quizStreak','crateHistory'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
     S.ul=new Set(d.ul||[]);
     S.lootPending=false;
-    if(!S.cratesOwned)S.cratesOwned={common:999,rare:0,legendary:0};
+    if(!S.cratesOwned)S.cratesOwned={common:0,rare:0,legendary:0};
     if(!S.crateHistory)S.crateHistory=[];
     if(!S.ownedCosmetics.includes('tr0'))S.ownedCosmetics.push('tr0');
     if(d.sets&&Array.isArray(d.sets)){
@@ -1106,20 +1156,21 @@ function activateQuizBonus(){
 
 // LOOT / CRATE PROGRESS
 
-function getLootThresh(){return Math.max(30,Math.floor(75*(1-Math.min(S.rb*.1,.5))));}
+function getLootThresh(){return Math.max(30,Math.floor(100*(1-Math.min(S.rb*.1,.5))));}
 function checkLoot(){
   const thresh=getLootThresh();
   document.getElementById('ltf').style.width=Math.min(S.lootProg/thresh,1)*100+'%';
   const rem=Math.max(0,thresh-S.lootProg);
-  document.getElementById('ltl').textContent=rem>0?`🌰 crate in ${rem} actions`:'🌰 crate ready!';
+  document.getElementById('ltl').textContent=rem>0?`🌿 common crate in ${rem} clicks`:'🌿 crate ready!';
   if(S.lootProg>=thresh&&!S.lootPending){
     S.lootProg=0;S.lootPending=true;
-    setTimeout(()=>{S.cratesOwned.common=Math.max(999,S.cratesOwned.common);S.lootPending=false;renderCratePanel();showToast('🌰 Common crate ready — check your crates!');},200);
+    S.cratesOwned.common=(S.cratesOwned.common||0)+1;
+    S.lootPending=false;
+    renderCratePanel();
+    showToast('🌿 Common crate earned — open it in Crates!');
   }
 }
-function checkLootFromQuiz(){
-  checkLoot();
-}
+function checkLootFromQuiz(){checkLoot();}
 
 // CRATE OPENING (CS:GO STYLE)
 
@@ -1244,10 +1295,18 @@ function renderCrateHistory(){
   el.innerHTML=S.crateHistory.slice(0,5).map(h=>`<div class="ch-item"><span class="chi">${h.icon}</span><span style="flex:1;color:var(--ink)">${h.name}</span><span class="r-${h.rarity}" style="font-size:10px;font-weight:500">${h.rarity}</span></div>`).join('');
 }
 function renderCratePanel(){
-  document.getElementById('rare-crate-count').textContent=S.cratesOwned.rare||0;
-  document.getElementById('leg-crate-count').textContent=S.cratesOwned.legendary||0;
-  document.getElementById('rare-open-btn').disabled=(S.cratesOwned.rare||0)<=0;
-  document.getElementById('leg-open-btn').disabled=(S.cratesOwned.legendary||0)<=0;
+  const cc=document.getElementById('common-crate-count');
+  const rc=document.getElementById('rare-crate-count');
+  const lc=document.getElementById('leg-crate-count');
+  if(cc)cc.textContent=S.cratesOwned.common||0;
+  if(rc)rc.textContent=S.cratesOwned.rare||0;
+  if(lc)lc.textContent=S.cratesOwned.legendary||0;
+  const commonBtn=document.getElementById('common-open-btn');
+  const rareBtn=document.getElementById('rare-open-btn');
+  const legBtn=document.getElementById('leg-open-btn');
+  if(commonBtn)commonBtn.disabled=(S.cratesOwned.common||0)<=0;
+  if(rareBtn)rareBtn.disabled=(S.cratesOwned.rare||0)<=0;
+  if(legBtn)legBtn.disabled=(S.cratesOwned.legendary||0)<=0;
   renderCrateHistory();
 }
 
