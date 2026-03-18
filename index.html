@@ -32,11 +32,9 @@ html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'D
 canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
 canvas#click-canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
 
-/* ══ SCREENS ══ */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .4s,transform .4s}
 .screen.hidden{opacity:0;pointer-events:none;transform:translateY(16px)}
 
-/* ══ IMPORT SCREEN ══ */
 #scr-import{background:var(--theme-bg);padding:24px 16px;gap:14px;overflow-y:auto}
 .bloom-logo{font-family:'Fraunces',serif;font-size:52px;font-weight:300;color:var(--ink);letter-spacing:-2px;text-align:center;line-height:1}
 .bloom-logo em{color:var(--rose4);font-style:italic}
@@ -73,7 +71,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .cont-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(165,214,167,.5)}
 .save-badge{display:inline-flex;align-items:center;gap:8px;background:var(--mint);border:1px solid var(--mint2);border-radius:12px;padding:9px 16px;font-size:12px;color:var(--mint4);box-shadow:0 2px 12px rgba(67,160,71,.12)}
 
-/* ══ GAME LAYOUT ══ */
 #scr-game{padding:0;flex-direction:row;align-items:stretch;justify-content:stretch}
 .gwrap{display:flex;width:100%;height:100%;z-index:10;padding:14px;gap:0}
 .ig{display:flex;flex:1;height:100%;border-radius:22px;overflow:hidden;box-shadow:var(--sh3);border:1px solid rgba(237,228,216,.5)}
@@ -83,7 +80,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 #rp{width:218px;border-left:1px solid rgba(237,228,216,.7);border-radius:0 22px 22px 0;padding:0}
 #cp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 10px;position:relative;background:transparent}
 
-/* ══ RIGHT PANEL TABS ══ */
 .rp-tabs{display:flex;border-bottom:1px solid var(--bg3);flex-shrink:0}
 .rpt{flex:1;padding:11px 4px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--ink3);cursor:pointer;text-align:center;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-1px;line-height:1.3}
 .rpt span{display:block;font-size:14px;margin-bottom:2px}
@@ -93,10 +89,8 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .rp-section::-webkit-scrollbar{width:3px}.rp-section::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:99px}
 .rp-footer{flex-shrink:0;padding:10px 12px;border-top:1px solid var(--bg3)}
 
-/* ══ PANEL LABELS ══ */
 .plabel{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--bg3)}
 
-/* ══ STATS AREA ══ */
 .stat-main{text-align:center;margin-bottom:2px}
 .snum{font-family:'Fraunces',serif;font-size:34px;font-weight:500;color:var(--ink);line-height:1;letter-spacing:-1.5px}
 .slabel{font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.3px}
@@ -107,7 +101,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .pill-rose{background:var(--rose);color:var(--rose4)}
 .pill-sky{background:var(--sky);color:var(--sky4)}
 
-/* ══ ORB ══ */
 #clkwrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 #clkbtn{width:148px;height:148px;border-radius:50%;border:none;cursor:pointer;background:transparent;transition:transform .1s;position:relative;user-select:none}
 #clkbtn:active{transform:scale(.9)}
@@ -122,7 +115,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .ring2.pop{animation:rp2 .8s ease-out .1s forwards}
 @keyframes rp2{0%{transform:scale(1);opacity:.35}100%{transform:scale(2.1);opacity:0}}
 
-/* ══ COMBO ══ */
 .combo-wrap{width:100%;max-width:188px;text-align:center}
 .ctrack{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:4px;position:relative}
 .cbar{height:100%;background:linear-gradient(90deg,var(--rose3),var(--lav3),var(--sky3));border-radius:99px;transition:width .12s;width:0%}
@@ -131,7 +123,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .clabel{font-size:11px;color:var(--ink3);letter-spacing:.2px}
 .clabel.on{color:var(--rose4);font-weight:500}
 
-/* ══ PROGRESS BARS ══ */
 .prog-stack{width:100%;max-width:188px;display:flex;flex-direction:column;gap:5px}
 .pbar-row{display:flex;flex-direction:column;gap:2px}
 .pbar-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
@@ -146,7 +137,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .set-pill{display:flex;align-items:center;gap:5px;background:var(--sky);border:1px solid var(--sky2);border-radius:10px;padding:5px 10px;font-size:11px;color:var(--sky4);cursor:pointer;transition:all .2s;width:100%;max-width:188px;justify-content:center}
 .set-pill:hover{background:var(--sky2);transform:translateY(-1px)}
 
-/* ══ UPGRADES ══ */
 .upg-sec-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin:10px 0 4px;font-weight:500;display:flex;align-items:center;gap:6px}
 .upg-sec-label::after{content:'';flex:1;height:1px;background:var(--bg3)}
 .ui{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:13px;border:1.5px solid transparent;margin-bottom:4px;cursor:pointer;transition:all .15s;position:relative}
@@ -161,14 +151,12 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .uc{font-size:10px;font-weight:500;color:var(--peach4)}
 .uk{font-size:10px;color:var(--mint4);margin-top:1px}
 
-/* ══ LEFT PANEL FOOTER ══ */
 .ibtns{display:flex;gap:3px;margin-top:auto;padding-top:10px;border-top:1px solid var(--bg3);flex-wrap:wrap}
 .ibtn{flex:1;min-width:28px;padding:6px 2px;border-radius:9px;border:1px solid var(--bg3);background:rgba(255,255,255,.7);font-size:9px;color:var(--ink2);cursor:pointer;text-align:center;transition:all .2s;line-height:1.3}
 .ibtn:hover{background:var(--bg2);border-color:var(--rose3);color:var(--ink);transform:translateY(-1px)}
 .ibtn.red:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
 .ibtn span{display:block;font-size:13px;margin-bottom:1px}
 
-/* ══ RIGHT PANEL CONTENT ══ */
 /* --- Achievements --- */
 .ai{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:11px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:5px;opacity:.25;transition:all .4s}
 .ai.done{opacity:1;background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2);box-shadow:0 2px 10px rgba(244,143,177,.15)}
@@ -228,7 +216,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .ch-item{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:8px;background:var(--bg2);margin-bottom:4px;font-size:11px;color:var(--ink2)}
 .ch-item .chi{font-size:14px}
 
-/* ══ QUIZ OVERLAY ══ */
 #qov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.8);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
 #qov.show{opacity:1;pointer-events:all}
 .qcard{background:#fff;border-radius:26px;padding:28px;max-width:440px;width:90%;box-shadow:var(--sh3);transform:translateY(22px) scale(.97);transition:all .3s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(237,228,216,.6)}
@@ -256,15 +243,16 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .qcrate-reward.show{display:flex;align-items:center;gap:6px}
 .qcrate-reward b{color:var(--amber4)}
 
-/* ══ CRATE OPENING OVERLAY (CS:GO style) ══ */
-#cov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.88);backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:opacity .35s}
+/* Crate opening - card overlay, not full screen */
+#cov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.78);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
 #cov.show{opacity:1;pointer-events:all}
-.cov-inner{max-width:600px;width:92%;text-align:center}
-.cov-title{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--ink);margin-bottom:4px}
-.cov-sub{font-size:12px;color:var(--ink3);margin-bottom:20px}
+.cov-inner{background:#fff;border-radius:24px;padding:24px;max-width:520px;width:92%;box-shadow:var(--sh3);text-align:center;max-height:90vh;overflow-y:auto;border:1px solid rgba(237,228,216,.5)}
+.cov-inner::-webkit-scrollbar{width:3px}.cov-inner::-webkit-scrollbar-thumb{background:var(--bg3)}
+.cov-title{font-family:'Fraunces',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.cov-sub{font-size:12px;color:var(--ink3);margin-bottom:14px}
 
 /* CSGO scroll reel */
-.reel-wrap{position:relative;height:100px;overflow:hidden;border-radius:14px;background:var(--bg2);border:1.5px solid var(--bg3);margin-bottom:20px}
+.reel-wrap{position:relative;height:96px;overflow:hidden;border-radius:12px;background:var(--bg2);border:1.5px solid var(--bg3);margin-bottom:14px}
 .reel-wrap::before,.reel-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
 .reel-wrap::before{left:0;background:linear-gradient(90deg,var(--bg2),transparent)}
 .reel-wrap::after{right:0;background:linear-gradient(270deg,var(--bg2),transparent)}
@@ -282,10 +270,10 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .reel-item.r-legendary{border-color:var(--amber3);background:linear-gradient(145deg,var(--amber),#fff)}
 
 /* reward final display */
-.cov-reward{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:20px;padding:24px;border:2px solid var(--amber3);display:none;margin-bottom:20px;box-shadow:var(--sh2)}
+.cov-reward{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:16px;padding:18px;border:2px solid var(--amber3);display:none;margin-bottom:14px;box-shadow:var(--sh)}
 .cov-reward.show{display:block;animation:rewardPop .6s cubic-bezier(.34,1.56,.64,1)}
 @keyframes rewardPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
-.cov-reward .cr-ico{font-size:64px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
+.cov-reward .cr-ico{font-size:48px;display:block;margin-bottom:6px}
 .cov-reward .cr-name{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:3px}
 .cov-reward .cr-type{font-size:11px;color:var(--ink2);letter-spacing:1px;text-transform:uppercase}
 .cov-reward .cr-rarity{font-size:13px;font-weight:600;margin-top:5px}
@@ -293,7 +281,7 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .cov-close:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(244,143,177,.45)}
 
 /* crate question */
-.cov-question{background:#fff;border-radius:16px;padding:18px;text-align:left;margin-bottom:18px;border:1px solid var(--bg3);display:none;box-shadow:var(--sh)}
+.cov-question{background:#fff;border-radius:14px;padding:14px;text-align:left;margin-bottom:12px;border:1px solid var(--bg3);display:none;box-shadow:var(--sh)}
 .cov-question.show{display:block}
 .cov-q-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose4);background:var(--rose);padding:3px 10px;border-radius:99px;font-weight:500;display:inline-block;margin-bottom:10px}
 .cov-q-text{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:12px}
@@ -309,7 +297,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .cov-q-g{flex:1;padding:9px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
 .cov-q-g.w{background:var(--rose);color:var(--rose4)}.cov-q-g.c{background:var(--mint);color:var(--mint4)}
 
-/* ══ MODALS ══ */
 .mbk{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.86);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity .3s}
 .mbk.show{opacity:1;pointer-events:all}
 .md{background:#fff;border-radius:26px;padding:26px;max-width:500px;width:92%;box-shadow:var(--sh3);transform:translateY(20px) scale(.97);transition:all .3s cubic-bezier(.34,1.56,.64,1);max-height:84vh;display:flex;flex-direction:column;border:1px solid rgba(237,228,216,.6)}
@@ -359,7 +346,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .set-entry-del{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;transition:all .2s}
 .set-entry-del:hover{background:var(--rose2);color:var(--rose4)}
 
-/* ══ FLOATS / TOAST / MILESTONE ══ */
 .fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:15px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
 @keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(40px);background:rgba(61,44,44,.92);backdrop-filter:blur(10px);color:#fff;border-radius:14px;padding:11px 20px;font-size:13px;z-index:999;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:88vw;text-align:center;border:1px solid rgba(255,255,255,.1)}
@@ -374,7 +360,6 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 <canvas id="bg"></canvas>
 <canvas id="click-canvas"></canvas>
 
-<!-- ══ IMPORT SCREEN ══ -->
 <div class="screen" id="scr-import">
   <div class="bloom-logo">bloom <em>✿</em></div>
   <div class="bloom-tagline">grow your garden of knowledge</div>
@@ -414,12 +399,10 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
   </div>
 </div>
 
-<!-- ══ GAME SCREEN ══ -->
 <div class="screen hidden" id="scr-game">
   <div class="gwrap"><div class="ig">
 
-    <!-- LEFT: UPGRADES -->
-    <div class="gp" id="lp">
+        <div class="gp" id="lp">
       <div class="plabel">Garden</div>
       <div id="upg-list"></div>
       <div class="ibtns">
@@ -468,8 +451,7 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
       </div>
     </div>
 
-    <!-- RIGHT: TABBED PANEL -->
-    <div class="gp" id="rp">
+        <div class="gp" id="rp">
       <div class="rp-tabs">
         <button class="rpt on" onclick="swRp(0)"><span>🏆</span>Achs</button>
         <button class="rpt" onclick="swRp(1)"><span>🌰</span>Crates</button>
@@ -561,7 +543,6 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
   </div></div>
 </div>
 
-<!-- ══ QUIZ OVERLAY ══ -->
 <div id="qov">
   <div class="qcard">
     <div>
@@ -583,7 +564,6 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
   </div>
 </div>
 
-<!-- ══ CRATE OPENING OVERLAY ══ -->
 <div id="cov">
   <div class="cov-inner">
     <div class="cov-title" id="cov-title">Opening crate…</div>
@@ -622,7 +602,6 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
   </div>
 </div>
 
-<!-- ══ MODALS ══ -->
 <div class="mbk" id="mod-editor">
   <div class="md">
     <div class="mh"><div class="mt">✏️ Edit Questions</div><button class="mx" onclick="closeMod('mod-editor')">×</button></div>
@@ -683,9 +662,9 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════════
+
 // BACKGROUND PARTICLES
-// ════════════════════════════════════════════════
+
 const bgCv=document.getElementById('bg'),bgCx=bgCv.getContext('2d');
 const clkCv=document.getElementById('click-canvas'),clkCx=clkCv.getContext('2d');
 let W,H;
@@ -709,9 +688,8 @@ const BG_PARTS=Array.from({length:60},()=>({
   requestAnimationFrame(bgLoop);
 })();
 
-// ════════════════════════════════════════════════
 // CLICK PARTICLES (fall from orb)
-// ════════════════════════════════════════════════
+
 let clickParticles=[];
 const CLICK_EMOJIS=['✿','🌸','🌺','🌼','🌷','💮','🏵️','🌻','🍀','⭐','✨','💫'];
 const CLICK_COLS=['#f48fb1','#b39ddb','#90caf9','#a5d6a7','#ffcc80','#f48fb1','#ce93d8'];
@@ -771,9 +749,8 @@ function spawnClickParticles(x,y,combo){
   requestAnimationFrame(clickLoop);
 })();
 
-// ════════════════════════════════════════════════
 // CONSTANTS — UPGRADES
-// ════════════════════════════════════════════════
+
 const UPGRADES=[
   {id:'u0', e:'🌱',n:'Seedling',       d:'A tiny sprout catches the light',         base:10,      bpps:.1,   tier:1},
   {id:'u1', e:'🌿',n:'Wild Grass',     d:'Rustles in an invisible breeze',          base:40,      bpps:.4,   tier:1},
@@ -807,9 +784,8 @@ const UPGRADES=[
   {id:'u29',e:'💫',n:'Eternal Bloom',  d:'The garden that never fades',             base:3e8,     bpps:300000,tier:6,minSeason:3},
 ];
 
-// ════════════════════════════════════════════════
 // COSMETICS — massively expanded
-// ════════════════════════════════════════════════
+
 const SKINS=[
   {id:'s0', e:'✿', n:'Classic Bloom',    rarity:'common',    orb_a:'#fce4ec',orb_b:'#e3f2fd',orb_c:'#ede7f6',glow:'rgba(244,143,177,.35)',ring:'#f48fb1'},
   {id:'s1', e:'🌙',n:'Moonflower',       rarity:'rare',      orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#9fa8da',glow:'rgba(121,134,203,.4)',ring:'#9fa8da'},
@@ -867,9 +843,8 @@ const CRATE_ODDS={
   legendary:{common:0, rare:0, epic:60,legendary:40},
 };
 
-// ════════════════════════════════════════════════
 // ACHIEVEMENTS
-// ════════════════════════════════════════════════
+
 const ACHS=[
   {id:'a0', e:'🌱',n:'First Petal',      d:'Earn your first petal',              f:s=>s.te>=1},
   {id:'a1', e:'🌸',n:'Blooming',         d:'Reach 1,000 petals',                 f:s=>s.te>=1000},
@@ -893,9 +868,8 @@ const ACHS=[
   {id:'a19',e:'🌊',n:'Unstoppable',      d:'Hit a 25× combo',                    f:s=>s.mc>=25},
 ];
 
-// ════════════════════════════════════════════════
 // SEASONS
-// ════════════════════════════════════════════════
+
 const SEASONS=[
   {n:'Spring',e:'🌸',bg:'#fdfaf6',panel:'rgba(255,255,255,.86)',orb:'✿',ring:'#f48fb1'},
   {n:'Summer',e:'🌻',bg:'#fffef5',panel:'rgba(255,254,240,.9)', orb:'☀️',ring:'#ffcc80'},
@@ -911,9 +885,8 @@ const DEMO_QS=[
   {q:"Define osmosis.",a:"Movement of water through a semipermeable membrane from high to low concentration."},
 ];
 
-// ════════════════════════════════════════════════
 // STATE
-// ════════════════════════════════════════════════
+
 const SAVE_KEY='bloom_v6';
 function freshState(){
   return{
@@ -936,9 +909,8 @@ let quizBonusTimer=null;
 // Crate opening state
 let activeCrateType=null,activeCrateQ=null,activeCrateResult=null;
 
-// ════════════════════════════════════════════════
 // PERSISTENCE
-// ════════════════════════════════════════════════
+
 function serial(){
   const d={...S,ul:[...S.ul]};
   d.sets=S.sets.map(st=>({name:st.name,qs:st.qs}));
@@ -968,9 +940,8 @@ function saveLocal(){try{localStorage.setItem(SAVE_KEY,serial());}catch(e){}}
 function loadLocal(){const r=localStorage.getItem(SAVE_KEY);return r?deserial(r):false;}
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveLocal,4000);}
 
-// ════════════════════════════════════════════════
 // STARTUP
-// ════════════════════════════════════════════════
+
 window.addEventListener('load',()=>{
   if(loadLocal()&&S.sets.length>0){
     const badge=document.getElementById('save-badge');
@@ -983,9 +954,8 @@ window.addEventListener('load',()=>{
 });
 function continueGame(){launchGame();}
 
-// ════════════════════════════════════════════════
 // IMPORT SCREEN
-// ════════════════════════════════════════════════
+
 function swTab(id,i){
   document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
   ['notes','qa','json'].forEach(t=>document.getElementById('tc-'+t).classList.toggle('on',t===id));
@@ -1052,9 +1022,8 @@ function launchGame(){
   showToast(`${S.sets.reduce((a,st)=>a+st.qs.length,0)} questions loaded ✿`);
 }
 
-// ════════════════════════════════════════════════
 // HELPERS
-// ════════════════════════════════════════════════
+
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
 function fmt(n){if(n>=1e12)return(n/1e12).toFixed(1)+'T';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n).toString();}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -1062,9 +1031,8 @@ function calcPps(){pps=UPGRADES.reduce((sum,u)=>{const n=S.own[u.id]||0;if(!n)re
 function cost(u){return Math.floor(u.base*Math.pow(1.15,S.own[u.id]||0));}
 function getRarity(){const rolls={common:['common','common','common','rare','rare','rare','epic','legendary'],rare:['rare','rare','rare','epic','epic','legendary'],legendary:['epic','epic','epic','legendary','legendary']};return rolls[Math.random()<.001?'legendary':Math.random()<.07?'rare':'common'][Math.floor(Math.random()*8)];}
 
-// ════════════════════════════════════════════════
 // COSMETICS
-// ════════════════════════════════════════════════
+
 function applyCosmetics(){
   const skin=SKINS.find(s=>s.id===S.equippedSkin)||SKINS[0];
   const theme=THEMES.find(t=>t.id===S.equippedTheme)||THEMES[0];
@@ -1085,9 +1053,8 @@ function equipItem(type,id){
   applyCosmetics();renderCollModal();scheduleSave();showToast('Equipped! ✿');
 }
 
-// ════════════════════════════════════════════════
 // CLICK
-// ════════════════════════════════════════════════
+
 function doClick(e){
   if(S.qa||document.getElementById('cov').classList.contains('show'))return;
   clearTimeout(S._ct);
@@ -1115,9 +1082,8 @@ function spawnFloat(x,y,v){
   document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
 }
 
-// ════════════════════════════════════════════════
 // QUIZ
-// ════════════════════════════════════════════════
+
 function checkQuiz(){
   const pct=S.csq/S.qth;
   document.getElementById('qtf').style.width=Math.min(pct*100,100)+'%';
@@ -1184,9 +1150,8 @@ function activateQuizBonus(){
   quizBonusTimer=setTimeout(()=>document.getElementById('d-quizbonus').style.display='none',30000);
 }
 
-// ════════════════════════════════════════════════
 // LOOT / CRATE PROGRESS
-// ════════════════════════════════════════════════
+
 function getLootThresh(){return Math.max(30,Math.floor(75*(1-Math.min(S.rb*.1,.5))));}
 function checkLoot(){
   const thresh=getLootThresh();
@@ -1202,9 +1167,8 @@ function checkLootFromQuiz(){
   checkLoot();
 }
 
-// ════════════════════════════════════════════════
 // CRATE OPENING (CS:GO STYLE)
-// ════════════════════════════════════════════════
+
 function startCrateOpen(type){
   if(S.sets.length===0||!S.sets[S.activeSet]?.qs.length){showToast('No questions loaded!');return;}
   if(type!=='common'&&(S.cratesOwned[type]||0)<=0){showToast('No '+type+' crates!');return;}
@@ -1333,9 +1297,8 @@ function renderCratePanel(){
   renderCrateHistory();
 }
 
-// ════════════════════════════════════════════════
 // RIGHT PANEL TABS
-// ════════════════════════════════════════════════
+
 function swRp(i){
   document.querySelectorAll('.rpt').forEach((b,j)=>b.classList.toggle('on',j===i));
   ['rps-achs','rps-crates','rps-coll','rps-stats'].forEach((id,j)=>document.getElementById(id).classList.toggle('on',j===i));
@@ -1351,9 +1314,8 @@ function swColl(i){
   ['colls-skins','colls-themes','colls-icons','colls-trails'].forEach((id,j)=>document.getElementById(id).classList.toggle('on',j===i));
 }
 
-// ════════════════════════════════════════════════
 // RENDER
-// ════════════════════════════════════════════════
+
 function renderAll(){renderUpgs();renderAchs();renderStats();renderCratePanel();updateRbPill();updateActiveSetPill();applyCosmetics();}
 function renderCombo(){
   document.getElementById('cbar').style.width=(S.combo/30*100)+'%';
@@ -1435,9 +1397,8 @@ function checkAchs(){
   if(changed)renderAchs();
 }
 
-// ════════════════════════════════════════════════
 // MODALS
-// ════════════════════════════════════════════════
+
 function openMod(id){
   if(id==='mod-editor'){
     const set=S.sets[S.activeSet],qs=set?set.qs:[];
@@ -1483,9 +1444,8 @@ function switchSet(i){S.activeSet=i;updateActiveSetPill();renderSetsModal();show
 function deleteSet(i){if(S.sets.length<=1){showToast("Can't delete last set!");return;}S.sets.splice(i,1);if(S.activeSet>=S.sets.length)S.activeSet=S.sets.length-1;renderSetsModal();updateActiveSetPill();scheduleSave();}
 function handleJsonMid(input){handleJsonUpload(input);setTimeout(()=>renderSetsModal(),300);}
 
-// ════════════════════════════════════════════════
 // REBIRTH / SEASON
-// ════════════════════════════════════════════════
+
 function openRebirth(){
   const rb=S.rb,nm=parseFloat((1+(rb+1)*.25).toFixed(2));
   const next=SEASONS[(rb+1)%SEASONS.length];
@@ -1512,9 +1472,8 @@ function doRebirth(){
   showMilestone(`${season.e} Season ${S.rb+1}: ${season.n}!`,`${S.rm}× permanent multiplier active`);
 }
 
-// ════════════════════════════════════════════════
 // SAVE MODAL
-// ════════════════════════════════════════════════
+
 function openSave(){
   document.getElementById('save-status').innerHTML=
     [['Petals earned',fmt(S.te)],['Season',S.rb+1],['Cosmetics',S.ownedCosmetics.length],
@@ -1533,9 +1492,8 @@ function importSave(input){
   r.readAsText(f);input.value='';
 }
 
-// ════════════════════════════════════════════════
 // RESET
-// ════════════════════════════════════════════════
+
 function doReset(){
   localStorage.removeItem(SAVE_KEY);S=freshState();pps=0;
   closeMod('mod-reset');
@@ -1546,9 +1504,8 @@ function doReset(){
   showToast('Garden reset. Fresh start!');
 }
 
-// ════════════════════════════════════════════════
 // MILESTONE / TOAST
-// ════════════════════════════════════════════════
+
 function showMilestone(t,s){
   const el=document.createElement('div');el.className='mpop';
   el.innerHTML=`<div class="mpt">${t}</div><div class="mps">${s}</div>`;
@@ -1557,9 +1514,8 @@ function showMilestone(t,s){
 let tT;
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
 
-// ════════════════════════════════════════════════
 // GAME LOOP
-// ════════════════════════════════════════════════
+
 let lastTs=0;
 function gameLoop(ts){
   const dt=Math.min(ts-lastTs,100);lastTs=ts;
