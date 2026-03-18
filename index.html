@@ -4,204 +4,326 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Bloom ✿</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#fdfaf6;--bg2:#f5efe8;--bg3:#ede4d8;
+  --bg:#fdfaf6;--bg2:#f5efe8;--bg3:#ede4d8;--bg4:#e5dcd2;
   --rose:#fce4ec;--rose2:#f8bbd0;--rose3:#f48fb1;--rose4:#e91e63;
   --sky:#e3f2fd;--sky2:#bbdefb;--sky3:#90caf9;--sky4:#1e88e5;
   --mint:#e8f5e9;--mint2:#c8e6c9;--mint3:#a5d6a7;--mint4:#43a047;
   --peach:#fff3e0;--peach2:#ffe0b2;--peach3:#ffcc80;--peach4:#fb8c00;
   --lav:#ede7f6;--lav2:#d1c4e9;--lav3:#b39ddb;--lav4:#7e57c2;
   --amber:#fff8e1;--amber2:#ffecb3;--amber3:#ffd54f;--amber4:#f9a825;
-  --ink:#3d2c2c;--ink2:#7a6060;--ink3:#b09898;
-  --card:#fff;--sh:0 2px 20px rgba(61,44,44,.07);--sh2:0 8px 40px rgba(61,44,44,.13);
-  --orb-a:#fce4ec;--orb-b:#e3f2fd;--orb-c:#ede7f6;
-  --orb-glow:rgba(244,143,177,.3);
-  --theme-bg:#fdfaf6;--theme-panel:rgba(255,255,255,.83);
+  --teal:#e0f2f1;--teal2:#b2dfdb;--teal3:#4db6ac;--teal4:#00897b;
+  --ink:#3d2c2c;--ink2:#7a6060;--ink3:#b09898;--ink4:#cbbcbc;
+  --card:#fff;
+  --sh:0 2px 24px rgba(61,44,44,.08);
+  --sh2:0 12px 48px rgba(61,44,44,.14);
+  --sh3:0 24px 80px rgba(61,44,44,.18);
+  --orb-a:#fce4ec;--orb-b:#e3f2fd;--orb-c:#ede7f6;--orb-glow:rgba(244,143,177,.35);
+  --ring-color:var(--rose3);
+  --theme-bg:#fdfaf6;--theme-panel:rgba(255,255,255,.86);
+  --crate-common:#e8f5e9;--crate-common-b:#43a047;
+  --crate-rare:#e3f2fd;--crate-rare-b:#1e88e5;
+  --crate-legendary:#fff8e1;--crate-legendary-b:#f9a825;
 }
-html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background .8s}
+html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background 1s}
 canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+canvas#click-canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
 
+/* ══ SCREENS ══ */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .4s,transform .4s}
-.screen.hidden{opacity:0;pointer-events:none;transform:translateY(14px)}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(16px)}
 
-#scr-import{background:var(--theme-bg);padding:28px 18px;gap:12px;overflow-y:auto}
-.imp-card{background:var(--card);border-radius:22px;padding:24px;box-shadow:var(--sh2);width:100%;max-width:560px}
-.tab-row{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
-.tb{flex:1;min-width:60px;padding:8px 4px;border-radius:11px;border:1.5px solid var(--bg3);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--ink2);cursor:pointer;transition:all .2s;text-align:center}
-.tb.on{background:var(--rose);border-color:var(--rose3);color:var(--ink)}
+/* ══ IMPORT SCREEN ══ */
+#scr-import{background:var(--theme-bg);padding:24px 16px;gap:14px;overflow-y:auto}
+.bloom-logo{font-family:'Fraunces',serif;font-size:52px;font-weight:300;color:var(--ink);letter-spacing:-2px;text-align:center;line-height:1}
+.bloom-logo em{color:var(--rose4);font-style:italic}
+.bloom-tagline{font-size:13px;color:var(--ink3);text-align:center;margin-top:4px;letter-spacing:.5px}
+.imp-card{background:var(--card);border-radius:24px;padding:24px;box-shadow:var(--sh2);width:100%;max-width:540px;border:1px solid rgba(237,228,216,.6)}
+.tab-row{display:flex;gap:5px;margin-bottom:12px}
+.tb{flex:1;padding:9px 4px;border-radius:12px;border:1.5px solid var(--bg3);background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);cursor:pointer;transition:all .2s;text-align:center}
+.tb.on{background:var(--rose);border-color:var(--rose3);color:var(--ink);font-weight:500}
 .tc{display:none}.tc.on{display:block}
-textarea.ni{width:100%;height:130px;border:1.5px solid var(--bg3);border-radius:13px;padding:11px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);resize:none;outline:none;line-height:1.7;transition:border .2s}
-textarea.ni:focus{border-color:var(--rose3);background:#fff}
+textarea.ni{width:100%;height:130px;border:1.5px solid var(--bg3);border-radius:13px;padding:11px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);resize:none;outline:none;line-height:1.7;transition:all .2s}
+textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px rgba(244,143,177,.1)}
 .hint{font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5}
 .qa-row{display:flex;gap:5px;margin-bottom:6px}
-.qa-row input{flex:1;padding:8px 10px;border:1.5px solid var(--bg3);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);outline:none;min-width:0;transition:border .2s}
+.qa-row input{flex:1;padding:8px 10px;border:1.5px solid var(--bg3);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);outline:none;min-width:0;transition:all .2s}
 .qa-row input:focus{border-color:var(--sky3);background:#fff}
 .qa-row input::placeholder{color:var(--ink3)}
 .add-qa{padding:8px;border-radius:10px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-bottom:8px;transition:all .2s}
-.add-qa:hover{background:var(--sky2)}
-.rm-qa{width:28px;height:28px;border-radius:7px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:14px;flex-shrink:0}
-
-/* JSON sets list */
-.json-set{display:flex;align-items:center;gap:7px;background:var(--bg2);border-radius:10px;padding:8px 10px;margin-bottom:6px;border:1px solid var(--bg3)}
+.add-qa:hover{background:var(--sky2);transform:translateY(-1px)}
+.rm-qa{width:28px;height:28px;border-radius:8px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:14px;flex-shrink:0;transition:all .2s}
+.rm-qa:hover{background:var(--rose2)}
+.json-set{display:flex;align-items:center;gap:7px;background:var(--bg2);border-radius:10px;padding:8px 10px;margin-bottom:6px;border:1px solid var(--bg3);transition:all .2s}
+.json-set:hover{border-color:var(--lav3)}
 .json-set-name{flex:1;font-size:12px;color:var(--ink);font-weight:500}
 .json-set-cnt{font-size:11px;color:var(--ink3)}
 .json-set-rm{width:24px;height:24px;border-radius:6px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:13px;flex-shrink:0}
 .upload-json-btn{padding:9px;border-radius:10px;border:1.5px dashed var(--lav3);background:var(--lav);color:var(--lav4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-bottom:8px;transition:all .2s}
 .upload-json-btn:hover{background:var(--lav2)}
-
-.go-btn{width:100%;padding:14px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;font-family:'Fraunces',serif;font-size:17px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:12px;letter-spacing:.3px}
-.go-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,143,177,.4)}
+.go-btn{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;font-family:'Fraunces',serif;font-size:18px;font-weight:500;cursor:pointer;transition:all .25s;margin-top:12px;letter-spacing:.3px;box-shadow:0 4px 20px rgba(244,143,177,.3)}
+.go-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(244,143,177,.45)}
 .go-btn:active{transform:translateY(0)}
-.demo-btn{font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;margin-top:5px;padding:3px 7px;font-family:'DM Sans',sans-serif}
-.demo-btn:hover{color:var(--ink2)}
-.cont-btn{padding:12px 26px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--mint3),var(--sky3));color:#fff;font-family:'Fraunces',serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.3px;box-shadow:0 4px 16px rgba(165,214,167,.4)}
-.cont-btn:hover{transform:translateY(-2px)}
-.save-badge{display:inline-flex;align-items:center;gap:7px;background:var(--mint);border:1px solid var(--mint2);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--mint4)}
+.demo-btn{font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;margin-top:5px;padding:3px 7px;font-family:'DM Sans',sans-serif;transition:color .2s}
+.demo-btn:hover{color:var(--rose4)}
+.cont-btn{padding:13px 30px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--mint3),var(--sky3));color:#fff;font-family:'Fraunces',serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .25s;letter-spacing:.3px;box-shadow:0 4px 20px rgba(165,214,167,.4)}
+.cont-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(165,214,167,.5)}
+.save-badge{display:inline-flex;align-items:center;gap:8px;background:var(--mint);border:1px solid var(--mint2);border-radius:12px;padding:9px 16px;font-size:12px;color:var(--mint4);box-shadow:0 2px 12px rgba(67,160,71,.12)}
 
-/* GAME */
-#scr-game{background:transparent;padding:0;flex-direction:row;align-items:stretch;justify-content:stretch}
-.gp{background:var(--theme-panel);backdrop-filter:blur(14px);display:flex;flex-direction:column;padding:13px 11px;overflow-y:auto;flex-shrink:0;transition:background .8s}
-.gp::-webkit-scrollbar{width:3px}.gp::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
-#lp{width:220px;border-right:1px solid rgba(237,228,216,.8);border-radius:20px 0 0 20px}
-#rp{width:210px;border-left:1px solid rgba(237,228,216,.8);border-radius:0 20px 20px 0}
-#cp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:13px 8px}
+/* ══ GAME LAYOUT ══ */
+#scr-game{padding:0;flex-direction:row;align-items:stretch;justify-content:stretch}
+.gwrap{display:flex;width:100%;height:100%;z-index:10;padding:14px;gap:0}
+.ig{display:flex;flex:1;height:100%;border-radius:22px;overflow:hidden;box-shadow:var(--sh3);border:1px solid rgba(237,228,216,.5)}
+.gp{background:var(--theme-panel);backdrop-filter:blur(16px);display:flex;flex-direction:column;padding:14px 12px;overflow-y:auto;flex-shrink:0;transition:background 1s}
+.gp::-webkit-scrollbar{width:3px}.gp::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:99px}
+#lp{width:218px;border-right:1px solid rgba(237,228,216,.7);border-radius:22px 0 0 22px}
+#rp{width:218px;border-left:1px solid rgba(237,228,216,.7);border-radius:0 22px 22px 0;padding:0}
+#cp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 10px;position:relative;background:transparent}
+
+/* ══ RIGHT PANEL TABS ══ */
+.rp-tabs{display:flex;border-bottom:1px solid var(--bg3);flex-shrink:0}
+.rpt{flex:1;padding:11px 4px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--ink3);cursor:pointer;text-align:center;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-1px;line-height:1.3}
+.rpt span{display:block;font-size:14px;margin-bottom:2px}
+.rpt.on{color:var(--rose4);border-bottom-color:var(--rose4);font-weight:500}
+.rpt:hover:not(.on){color:var(--ink2);background:var(--bg2)}
+.rp-section{display:none;flex:1;overflow-y:auto;padding:12px}.rp-section.on{display:flex;flex-direction:column}
+.rp-section::-webkit-scrollbar{width:3px}.rp-section::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:99px}
+.rp-footer{flex-shrink:0;padding:10px 12px;border-top:1px solid var(--bg3)}
+
+/* ══ PANEL LABELS ══ */
 .plabel{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--bg3)}
 
-/* Stats */
-.snum{font-family:'Fraunces',serif;font-size:32px;font-weight:500;color:var(--ink);line-height:1;letter-spacing:-1px}
-.slabel{font-size:11px;color:var(--ink3);margin-top:2px}
-.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:500;margin-top:3px}
+/* ══ STATS AREA ══ */
+.stat-main{text-align:center;margin-bottom:2px}
+.snum{font-family:'Fraunces',serif;font-size:34px;font-weight:500;color:var(--ink);line-height:1;letter-spacing:-1.5px}
+.slabel{font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.3px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:500;margin-top:3px}
 .pill-mint{background:var(--mint);color:var(--mint4)}
 .pill-amber{background:var(--amber);color:var(--amber4)}
 .pill-lav{background:var(--lav);color:var(--lav4)}
 .pill-rose{background:var(--rose);color:var(--rose4)}
+.pill-sky{background:var(--sky);color:var(--sky4)}
 
-/* ORB */
-#clkwrap{position:relative;display:flex;align-items:center;justify-content:center}
-#clkbtn{width:140px;height:140px;border-radius:50%;border:none;cursor:pointer;background:transparent;transition:transform .1s;position:relative}
-#clkbtn:active{transform:scale(.91)}
-.orb{width:140px;height:140px;border-radius:50%;background:linear-gradient(145deg,var(--orb-a),var(--orb-b),var(--orb-c));box-shadow:0 4px 22px var(--orb-glow),inset 0 2px 8px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:54px;position:relative;overflow:hidden;transition:background .8s,box-shadow .8s}
-.orb::before{content:'';position:absolute;top:7px;left:16px;width:32px;height:16px;background:rgba(255,255,255,.5);border-radius:50%;filter:blur(4px)}
-#clkbtn:active .orb{box-shadow:0 1px 8px var(--orb-glow),inset 0 4px 12px rgba(0,0,0,.07)}
-.ring{position:absolute;border-radius:50%;border:1.5px solid var(--rose3);width:140px;height:140px;opacity:0;pointer-events:none}
-.ring.pop{animation:rp .5s ease-out forwards}
-@keyframes rp{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.65);opacity:0}}
+/* ══ ORB ══ */
+#clkwrap{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#clkbtn{width:148px;height:148px;border-radius:50%;border:none;cursor:pointer;background:transparent;transition:transform .1s;position:relative;user-select:none}
+#clkbtn:active{transform:scale(.9)}
+.orb{width:148px;height:148px;border-radius:50%;background:radial-gradient(circle at 35% 32%,var(--orb-a),var(--orb-b) 55%,var(--orb-c));box-shadow:0 6px 30px var(--orb-glow),0 0 0 1px rgba(255,255,255,.5),inset 0 2px 10px rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:58px;position:relative;overflow:hidden;transition:all .9s}
+.orb::before{content:'';position:absolute;top:10px;left:20px;width:38px;height:18px;background:rgba(255,255,255,.65);border-radius:50%;filter:blur(5px);pointer-events:none}
+.orb::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 70% 70%,rgba(0,0,0,.04),transparent 60%);pointer-events:none}
+#clkbtn:active .orb{box-shadow:0 2px 12px var(--orb-glow),inset 0 5px 16px rgba(0,0,0,.09)}
+.ring{position:absolute;border-radius:50%;border:2px solid var(--ring-color);width:148px;height:148px;opacity:0;pointer-events:none}
+.ring.pop{animation:rp .55s ease-out forwards}
+@keyframes rp{0%{transform:scale(1);opacity:.65}100%{transform:scale(1.75);opacity:0}}
+.ring2{position:absolute;border-radius:50%;border:1px solid var(--ring-color);width:148px;height:148px;opacity:0;pointer-events:none}
+.ring2.pop{animation:rp2 .8s ease-out .1s forwards}
+@keyframes rp2{0%{transform:scale(1);opacity:.35}100%{transform:scale(2.1);opacity:0}}
 
-/* Combo */
-.ctrack{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:3px;width:100%;max-width:180px}
-.cbar{height:100%;background:linear-gradient(90deg,var(--rose3),var(--lav3));border-radius:99px;transition:width .15s;width:0%}
-.clabel{font-size:11px;color:var(--ink3)}
+/* ══ COMBO ══ */
+.combo-wrap{width:100%;max-width:188px;text-align:center}
+.ctrack{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:4px;position:relative}
+.cbar{height:100%;background:linear-gradient(90deg,var(--rose3),var(--lav3),var(--sky3));border-radius:99px;transition:width .12s;width:0%}
+.ctrack::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimBar 2s infinite}
+@keyframes shimBar{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.clabel{font-size:11px;color:var(--ink3);letter-spacing:.2px}
 .clabel.on{color:var(--rose4);font-weight:500}
 
-/* Quiz trigger */
-.qtbar{width:100%;max-width:180px}
-.qtt{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
-.qtf{height:100%;background:linear-gradient(90deg,var(--sky3),var(--lav3));border-radius:99px;transition:width .3s}
-.qtl{font-size:10px;color:var(--ink3);margin-top:3px;text-align:center}
+/* ══ PROGRESS BARS ══ */
+.prog-stack{width:100%;max-width:188px;display:flex;flex-direction:column;gap:5px}
+.pbar-row{display:flex;flex-direction:column;gap:2px}
+.pbar-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:99px;transition:width .3s}
+.pbar-fill.quiz{background:linear-gradient(90deg,var(--sky3),var(--lav3))}
+.pbar-fill.loot{background:linear-gradient(90deg,var(--amber3),var(--peach3))}
+.pbar-label{font-size:10px;color:var(--ink3);text-align:center}
+.pbar-label.quiz{color:var(--sky4)}
+.pbar-label.loot{color:var(--amber4);font-weight:500}
 
-/* Loot bar */
-.loot-bar{width:100%;max-width:180px;margin-top:4px}
-.loot-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
-.loot-fill{height:100%;background:linear-gradient(90deg,var(--amber3),var(--peach3));border-radius:99px;transition:width .3s}
-.loot-label{font-size:10px;color:var(--amber4);margin-top:3px;text-align:center;font-weight:500}
+/* active set pill */
+.set-pill{display:flex;align-items:center;gap:5px;background:var(--sky);border:1px solid var(--sky2);border-radius:10px;padding:5px 10px;font-size:11px;color:var(--sky4);cursor:pointer;transition:all .2s;width:100%;max-width:188px;justify-content:center}
+.set-pill:hover{background:var(--sky2);transform:translateY(-1px)}
 
-/* Active set pill */
-.set-pill{display:flex;align-items:center;gap:5px;background:var(--sky);border:1px solid var(--sky2);border-radius:10px;padding:5px 9px;font-size:11px;color:var(--sky4);cursor:pointer;transition:all .2s;width:100%;max-width:180px;justify-content:center}
-.set-pill:hover{background:var(--sky2)}
-
-/* UPGRADES */
-.ui{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:12px;border:1.5px solid transparent;margin-bottom:4px;cursor:pointer;transition:all .15s}
-.ui:hover:not(.ul){background:var(--bg2);border-color:var(--bg3)}
-.ul{opacity:.32;cursor:not-allowed}
-.uo{border-color:var(--mint2);background:var(--mint)}
-.ue{font-size:19px;flex-shrink:0;line-height:1}
+/* ══ UPGRADES ══ */
+.upg-sec-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin:10px 0 4px;font-weight:500;display:flex;align-items:center;gap:6px}
+.upg-sec-label::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.ui{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:13px;border:1.5px solid transparent;margin-bottom:4px;cursor:pointer;transition:all .15s;position:relative}
+.ui:hover:not(.ul){background:var(--bg2);border-color:var(--bg3);transform:translateX(2px)}
+.ul{opacity:.3;cursor:not-allowed}
+.uo{border-color:var(--mint2)!important;background:linear-gradient(135deg,var(--mint),#fff)!important}
+.ue{font-size:20px;flex-shrink:0;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.1))}
 .ut{flex:1;min-width:0}
 .un{font-size:11px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ud{font-size:10px;color:var(--ink3);margin-top:1px}
+.ud{font-size:10px;color:var(--ink3);margin-top:1px;line-height:1.3}
 .ur{text-align:right;flex-shrink:0}
 .uc{font-size:10px;font-weight:500;color:var(--peach4)}
 .uk{font-size:10px;color:var(--mint4);margin-top:1px}
-.upg-section{margin-bottom:3px}
-.upg-sec-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin:8px 0 4px;font-weight:500}
 
-/* ACHIEVEMENTS */
-.ai{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:4px;opacity:.27;transition:opacity .4s,background .3s}
-.ai.done{opacity:1;background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2)}
-.aico{font-size:15px}
-.at{flex:1}.at b{display:block;font-size:11px;color:var(--ink)}
+/* ══ LEFT PANEL FOOTER ══ */
+.ibtns{display:flex;gap:3px;margin-top:auto;padding-top:10px;border-top:1px solid var(--bg3);flex-wrap:wrap}
+.ibtn{flex:1;min-width:28px;padding:6px 2px;border-radius:9px;border:1px solid var(--bg3);background:rgba(255,255,255,.7);font-size:9px;color:var(--ink2);cursor:pointer;text-align:center;transition:all .2s;line-height:1.3}
+.ibtn:hover{background:var(--bg2);border-color:var(--rose3);color:var(--ink);transform:translateY(-1px)}
+.ibtn.red:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
+.ibtn span{display:block;font-size:13px;margin-bottom:1px}
+
+/* ══ RIGHT PANEL CONTENT ══ */
+/* --- Achievements --- */
+.ai{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:11px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:5px;opacity:.25;transition:all .4s}
+.ai.done{opacity:1;background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2);box-shadow:0 2px 10px rgba(244,143,177,.15)}
+.aico{font-size:16px;flex-shrink:0}
+.at{flex:1;min-width:0}.at b{display:block;font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .at span{font-size:10px;color:var(--ink3)}
 
-/* ICON BTNS */
-.ibtns{display:flex;gap:3px;margin-top:auto;padding-top:10px;border-top:1px solid var(--bg3);flex-wrap:wrap}
-.ibtn{flex:1;min-width:30px;padding:6px 2px;border-radius:9px;border:1px solid var(--bg3);background:#fff;font-size:9px;color:var(--ink2);cursor:pointer;text-align:center;transition:all .2s;line-height:1.4}
-.ibtn:hover{background:var(--bg2);border-color:var(--rose3);color:var(--ink)}
-.ibtn.red:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
-.ibtn span{display:block;font-size:12px;margin-bottom:1px}
+/* --- Stats rows --- */
+.srow{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink3);padding:4px 0;border-bottom:1px solid var(--bg3)}
+.srow:last-child{border:none}
+.srow b{color:var(--ink);font-weight:500}
 
-/* QUIZ OVERLAY */
-#qov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.78);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
+/* --- Collection --- */
+.coll-tabs{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+.ctab{flex:1;padding:6px 4px;border-radius:9px;border:1.5px solid var(--bg3);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--ink2);cursor:pointer;transition:all .2s;text-align:center}
+.ctab.on{background:var(--lav);border-color:var(--lav3);color:var(--lav4);font-weight:500}
+.ctab:hover:not(.on){background:var(--bg2)}
+.coll-section{display:none}.coll-section.on{display:block}
+.coll-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ci{border-radius:12px;padding:10px 8px;text-align:center;border:1.5px solid var(--bg3);background:var(--bg2);cursor:default;transition:all .25s;position:relative;overflow:hidden}
+.ci.unlocked{cursor:pointer;background:linear-gradient(145deg,#fff,var(--bg2))}
+.ci.unlocked:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(61,44,44,.1)}
+.ci.equipped{border-color:var(--amber3);background:linear-gradient(145deg,var(--amber),var(--peach));box-shadow:0 3px 12px rgba(249,168,37,.25)}
+.ci-ico{font-size:26px;display:block;margin-bottom:4px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.12))}
+.ci-name{font-size:10px;color:var(--ink);font-weight:500;line-height:1.2}
+.ci-lock{font-size:9px;color:var(--ink4);margin-top:2px}
+.ci-rarity{font-size:9px;margin-top:2px;font-weight:500}
+.r-common{color:var(--ink3)}.r-rare{color:var(--sky4)}.r-epic{color:var(--lav4)}.r-legendary{color:var(--amber4)}
+.ci-badge{position:absolute;top:5px;right:5px;font-size:9px;padding:1px 5px;border-radius:99px;font-weight:500}
+.ci-badge.eq{background:var(--amber);color:var(--amber4)}
+
+/* --- Crates panel --- */
+.crate-tab-row{display:flex;gap:5px;margin-bottom:12px}
+.cratet{flex:1;padding:8px 4px;border-radius:11px;border:1.5px solid var(--bg3);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--ink2);cursor:pointer;transition:all .2s;text-align:center;line-height:1.4}
+.cratet.on.common{background:var(--crate-common);border-color:var(--crate-common-b);color:var(--mint4)}
+.cratet.on.rare{background:var(--crate-rare);border-color:var(--crate-rare-b);color:var(--sky4)}
+.cratet.on.legendary{background:var(--crate-legendary);border-color:var(--crate-legendary-b);color:var(--amber4)}
+.cratet span{display:block;font-size:18px;margin-bottom:2px}
+.crate-info{border-radius:14px;padding:14px;margin-bottom:12px;border:1.5px solid}
+.crate-info.common{background:var(--mint);border-color:var(--mint2)}
+.crate-info.rare{background:var(--sky);border-color:var(--sky2)}
+.crate-info.legendary{background:var(--amber);border-color:var(--amber2)}
+.crate-title{font-family:'Fraunces',serif;font-size:16px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.crate-desc{font-size:11px;color:var(--ink2);line-height:1.5;margin-bottom:8px}
+.crate-odds{font-size:10px;color:var(--ink3);line-height:1.7}
+.crate-odds span{font-weight:500}
+.crate-count{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);background:rgba(255,255,255,.6);border-radius:8px;padding:4px 9px;margin-bottom:10px;border:1px solid rgba(0,0,0,.06)}
+.crate-count b{color:var(--ink);font-weight:600}
+.crate-open-btn{width:100%;padding:12px;border-radius:13px;border:none;font-family:'Fraunces',serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.crate-open-btn.common{background:linear-gradient(135deg,var(--mint3),var(--teal3));color:#fff;box-shadow:0 3px 12px rgba(67,160,71,.3)}
+.crate-open-btn.rare{background:linear-gradient(135deg,var(--sky3),var(--lav3));color:#fff;box-shadow:0 3px 12px rgba(30,136,229,.3)}
+.crate-open-btn.legendary{background:linear-gradient(135deg,var(--amber3),var(--peach3));color:var(--ink);box-shadow:0 3px 12px rgba(249,168,37,.35)}
+.crate-open-btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+.crate-open-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.crate-section{display:none}.crate-section.on{display:block}
+.crate-history{margin-top:10px}
+.ch-item{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:8px;background:var(--bg2);margin-bottom:4px;font-size:11px;color:var(--ink2)}
+.ch-item .chi{font-size:14px}
+
+/* ══ QUIZ OVERLAY ══ */
+#qov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.8);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
 #qov.show{opacity:1;pointer-events:all}
-.qcard{background:#fff;border-radius:24px;padding:26px;max-width:430px;width:90%;box-shadow:var(--sh2);transform:translateY(20px);transition:transform .3s}
-#qov.show .qcard{transform:translateY(0)}
-.qtag{display:inline-block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose4);background:var(--rose);padding:3px 11px;border-radius:99px;margin-bottom:11px;font-weight:500}
-.qq{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:15px}
-.qi2{width:100%;padding:11px 13px;border:1.5px solid var(--bg3);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--bg2);outline:none;transition:border .2s;margin-bottom:11px}
-.qi2:focus{border-color:var(--sky3);background:#fff}
+.qcard{background:#fff;border-radius:26px;padding:28px;max-width:440px;width:90%;box-shadow:var(--sh3);transform:translateY(22px) scale(.97);transition:all .3s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(237,228,216,.6)}
+#qov.show .qcard{transform:translateY(0) scale(1)}
+.qtag{display:inline-block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose4);background:var(--rose);padding:3px 12px;border-radius:99px;margin-bottom:10px;font-weight:500}
+.qset-tag{font-size:10px;color:var(--sky4);background:var(--sky);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:7px;margin-left:5px}
+.qq{font-family:'Fraunces',serif;font-size:19px;font-weight:500;color:var(--ink);line-height:1.45;margin-bottom:16px}
+.qi2{width:100%;padding:12px 14px;border:1.5px solid var(--bg3);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--bg2);outline:none;transition:all .2s;margin-bottom:11px}
+.qi2:focus{border-color:var(--sky3);background:#fff;box-shadow:0 0 0 3px rgba(144,202,249,.15)}
 .qrv{width:100%;padding:11px;border-radius:14px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink2);cursor:pointer;transition:all .2s;margin-bottom:8px}
-.qrv:hover{background:var(--bg2)}
-.qans{background:var(--mint);border-radius:12px;padding:11px 13px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:12px;display:none;border:1px solid var(--mint2)}
-.qans.show{display:block}
-.qbtns{display:flex;gap:5px}.qbtns.hid{display:none}
-.qb{flex:1;padding:10px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s}
+.qrv:hover{background:var(--bg2);border-color:var(--bg4)}
+.qans{background:linear-gradient(135deg,var(--mint),var(--teal));border-radius:12px;padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:12px;display:none;border:1px solid var(--mint2)}
+.qans.show{display:block;animation:fadeSlide .3s ease}
+@keyframes fadeSlide{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
+.qbtns{display:flex;gap:6px}.qbtns.hid{display:none}
+.qb{flex:1;padding:11px;border-radius:13px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.qb:hover{transform:translateY(-2px)}
 .qb.w{background:var(--rose);color:var(--rose4)}.qb.w:hover{background:var(--rose2)}
 .qb.a{background:var(--peach);color:var(--peach4)}.qb.a:hover{background:var(--peach2)}
 .qb.c{background:var(--mint);color:var(--mint4)}.qb.c:hover{background:var(--mint2)}
 .qb.s{background:var(--bg2);color:var(--ink3)}.qb.s:hover{background:var(--bg3)}
-.qmult{font-size:11px;color:var(--ink3);text-align:center;margin-top:8px}
+.qmult{font-size:11px;color:var(--ink3);text-align:center;margin-top:9px}
 .qmult b{color:var(--mint4)}
-.qset-tag{font-size:10px;color:var(--sky4);background:var(--sky);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px}
+.qcrate-reward{margin-top:9px;background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:10px;padding:8px 12px;font-size:11px;color:var(--ink2);border:1px solid var(--amber3);display:none}
+.qcrate-reward.show{display:flex;align-items:center;gap:6px}
+.qcrate-reward b{color:var(--amber4)}
 
-/* LOOT BOX OVERLAY */
-#lov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
-#lov.show{opacity:1;pointer-events:all}
-.lcard{background:#fff;border-radius:28px;padding:32px;max-width:400px;width:90%;box-shadow:var(--sh2);text-align:center;transform:scale(.85);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
-#lov.show .lcard{transform:scale(1)}
-.loot-box-icon{font-size:72px;display:block;margin-bottom:8px;animation:lbob 1.5s ease-in-out infinite}
-@keyframes lbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
-.loot-box-icon.opening{animation:lopen .6s ease-out forwards}
-@keyframes lopen{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.3) rotate(-10deg)}60%{transform:scale(.8) rotate(15deg)}100%{transform:scale(0) rotate(30deg);opacity:0}}
-.ltitle{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:4px}
-.lsub{font-size:12px;color:var(--ink3);margin-bottom:20px}
-.reward-reveal{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:18px;padding:20px;margin-bottom:18px;display:none;border:2px solid var(--amber3)}
-.reward-reveal.show{display:block;animation:rreveal .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes rreveal{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
-.reward-icon{font-size:48px;display:block;margin-bottom:6px}
-.reward-name{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink)}
-.reward-type{font-size:11px;color:var(--ink2);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
-.rarity-common{color:var(--ink3)}.rarity-rare{color:var(--sky4)}.rarity-epic{color:var(--lav4)}.rarity-legendary{color:var(--amber4)}
-.lopen-btn{padding:13px 28px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--amber3),var(--peach3));color:var(--ink);font-family:'Fraunces',serif;font-size:17px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(255,213,79,.4)}
-.lopen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,213,79,.5)}
-.lclose-btn{padding:10px 22px;border-radius:12px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink2);cursor:pointer;margin-top:10px;transition:all .2s}
-.lclose-btn:hover{background:var(--bg2)}
+/* ══ CRATE OPENING OVERLAY (CS:GO style) ══ */
+#cov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.88);backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:opacity .35s}
+#cov.show{opacity:1;pointer-events:all}
+.cov-inner{max-width:600px;width:92%;text-align:center}
+.cov-title{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.cov-sub{font-size:12px;color:var(--ink3);margin-bottom:20px}
 
-/* MODALS */
-.mbk{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.84);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
+/* CSGO scroll reel */
+.reel-wrap{position:relative;height:100px;overflow:hidden;border-radius:14px;background:var(--bg2);border:1.5px solid var(--bg3);margin-bottom:20px}
+.reel-wrap::before,.reel-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.reel-wrap::before{left:0;background:linear-gradient(90deg,var(--bg2),transparent)}
+.reel-wrap::after{right:0;background:linear-gradient(270deg,var(--bg2),transparent)}
+.reel-pointer{position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);background:var(--rose4);z-index:3}
+.reel-pointer::before,.reel-pointer::after{content:'';position:absolute;left:50%;transform:translateX(-50%);border:6px solid transparent}
+.reel-pointer::before{top:0;border-top-color:var(--rose4)}
+.reel-pointer::after{bottom:0;border-bottom-color:var(--rose4)}
+.reel-track{display:flex;align-items:center;height:100%;gap:6px;padding:0 calc(50% - 48px);will-change:transform}
+.reel-item{flex-shrink:0;width:90px;height:82px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid var(--bg3);background:#fff;transition:border-color .2s;gap:4px}
+.reel-item .ri-ico{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
+.reel-item .ri-name{font-size:10px;color:var(--ink2);font-weight:500;text-align:center;padding:0 4px;line-height:1.2}
+.reel-item.highlighted{border-color:var(--rose4);box-shadow:0 0 0 3px rgba(233,30,99,.15)}
+.reel-item.r-rare{border-color:var(--sky3);background:linear-gradient(145deg,var(--sky),#fff)}
+.reel-item.r-epic{border-color:var(--lav3);background:linear-gradient(145deg,var(--lav),#fff)}
+.reel-item.r-legendary{border-color:var(--amber3);background:linear-gradient(145deg,var(--amber),#fff)}
+
+/* reward final display */
+.cov-reward{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:20px;padding:24px;border:2px solid var(--amber3);display:none;margin-bottom:20px;box-shadow:var(--sh2)}
+.cov-reward.show{display:block;animation:rewardPop .6s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rewardPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.cov-reward .cr-ico{font-size:64px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
+.cov-reward .cr-name{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.cov-reward .cr-type{font-size:11px;color:var(--ink2);letter-spacing:1px;text-transform:uppercase}
+.cov-reward .cr-rarity{font-size:13px;font-weight:600;margin-top:5px}
+.cov-close{padding:13px 32px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;font-family:'Fraunces',serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .25s;box-shadow:0 4px 18px rgba(244,143,177,.35)}
+.cov-close:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(244,143,177,.45)}
+
+/* crate question */
+.cov-question{background:#fff;border-radius:16px;padding:18px;text-align:left;margin-bottom:18px;border:1px solid var(--bg3);display:none;box-shadow:var(--sh)}
+.cov-question.show{display:block}
+.cov-q-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose4);background:var(--rose);padding:3px 10px;border-radius:99px;font-weight:500;display:inline-block;margin-bottom:10px}
+.cov-q-text{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:12px}
+.cov-q-inp{width:100%;padding:10px 13px;border:1.5px solid var(--bg3);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg2);outline:none;transition:all .2s;margin-bottom:10px}
+.cov-q-inp:focus{border-color:var(--sky3);background:#fff}
+.cov-q-btns{display:flex;gap:7px}
+.cov-q-btn{flex:1;padding:10px;border-radius:11px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.cov-q-btn.reveal{background:var(--bg2);color:var(--ink2)}.cov-q-btn.reveal:hover{background:var(--bg3)}
+.cov-q-ans{background:var(--mint);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--ink);line-height:1.5;margin-bottom:10px;display:none;border:1px solid var(--mint2)}
+.cov-q-ans.show{display:block}
+.cov-q-grade{display:flex;gap:6px;display:none}
+.cov-q-grade.show{display:flex}
+.cov-q-g{flex:1;padding:9px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
+.cov-q-g.w{background:var(--rose);color:var(--rose4)}.cov-q-g.c{background:var(--mint);color:var(--mint4)}
+
+/* ══ MODALS ══ */
+.mbk{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.86);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity .3s}
 .mbk.show{opacity:1;pointer-events:all}
-.md{background:#fff;border-radius:24px;padding:24px;max-width:500px;width:92%;box-shadow:var(--sh2);transform:translateY(18px);transition:transform .3s;max-height:84vh;display:flex;flex-direction:column}
-.mbk.show .md{transform:translateY(0)}
+.md{background:#fff;border-radius:26px;padding:26px;max-width:500px;width:92%;box-shadow:var(--sh3);transform:translateY(20px) scale(.97);transition:all .3s cubic-bezier(.34,1.56,.64,1);max-height:84vh;display:flex;flex-direction:column;border:1px solid rgba(237,228,216,.6)}
+.mbk.show .md{transform:translateY(0) scale(1)}
 .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
-.mt{font-family:'Fraunces',serif;font-size:20px;font-weight:500;color:var(--ink)}
-.mx{width:28px;height:28px;border-radius:99px;border:1px solid var(--bg3);background:var(--bg2);color:var(--ink2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mt{font-family:'Fraunces',serif;font-size:21px;font-weight:500;color:var(--ink)}
+.mx{width:30px;height:30px;border-radius:99px;border:1px solid var(--bg3);background:var(--bg2);color:var(--ink2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .mx:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
-.mb{overflow-y:auto;flex:1}.mb::-webkit-scrollbar{width:3px}.mb::-webkit-scrollbar-thumb{background:var(--bg3)}
-.mf{flex-shrink:0;margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
-.mbtn{flex:1;min-width:90px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .2s;text-align:center}
-.mbtn:hover{background:var(--bg2)}
-.mbtn.pri{background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;border-color:transparent}
-.mbtn.pri:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(244,143,177,.35)}
+.mb{overflow-y:auto;flex:1}.mb::-webkit-scrollbar{width:3px}.mb::-webkit-scrollbar-thumb{background:var(--bg4)}
+.mf{flex-shrink:0;margin-top:14px;display:flex;gap:7px;flex-wrap:wrap}
+.mbtn{flex:1;min-width:90px;padding:11px 13px;border-radius:13px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .2s;text-align:center}
+.mbtn:hover{background:var(--bg2);transform:translateY(-1px)}
+.mbtn.pri{background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;border-color:transparent;box-shadow:0 3px 14px rgba(244,143,177,.3)}
+.mbtn.pri:hover{box-shadow:0 6px 20px rgba(244,143,177,.4)}
 .mbtn.amb{background:var(--amber);border-color:var(--amber3);color:var(--amber4)}
 .mbtn.amb:hover{background:var(--amber2)}
 .mbtn.dan{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
@@ -209,122 +331,101 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff}
 .mbtn.grn{background:var(--mint);border-color:var(--mint3);color:var(--mint4)}
 .mbtn.grn:hover{background:var(--mint2)}
 /* editor */
-.erow{display:flex;align-items:flex-start;gap:5px;margin-bottom:5px;padding:7px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3)}
+.erow{display:flex;align-items:flex-start;gap:5px;margin-bottom:5px;padding:8px;border-radius:11px;background:var(--bg2);border:1px solid var(--bg3)}
 .efields{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
-.ei{width:100%;padding:6px 8px;border:1px solid var(--bg3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:#fff;outline:none}
-.ei:focus{border-color:var(--lav3)}
+.ei{width:100%;padding:7px 9px;border:1px solid var(--bg3);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:#fff;outline:none;transition:all .2s}
+.ei:focus{border-color:var(--lav3);box-shadow:0 0 0 2px rgba(179,157,219,.15)}
 .ei::placeholder{color:var(--ink3)}
-.edel{width:22px;height:22px;border-radius:5px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;flex-shrink:0;margin-top:2px}
+.edel{width:23px;height:23px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;flex-shrink:0;margin-top:2px;transition:all .2s}
 .edel:hover{background:var(--rose2);color:var(--rose4)}
-.eadd{padding:7px;border-radius:9px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-top:3px}
+.eadd{padding:8px;border-radius:10px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-top:4px;transition:all .2s}
 .eadd:hover{background:var(--sky2)}
 /* rebirth */
-.rinfo{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid var(--amber3)}
-.rstat{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.rinfo{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:16px;padding:15px;margin-bottom:12px;border:1px solid var(--amber3)}
+.rstat{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--ink2)}
 .rstat:last-child{margin-bottom:0}
-.rstat b{color:var(--amber4)}
-.rperk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid var(--bg3);margin-bottom:5px}
-.rpico{font-size:18px;flex-shrink:0}
-.rptxt{font-size:12px;color:var(--ink)}
-.rptxt b{display:block;font-size:12px;margin-bottom:1px}
-/* season preview */
-.season-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.season-card{border-radius:12px;padding:12px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .2s}
-.season-card.active{border-color:var(--rose3)}
-.season-card:hover{transform:translateY(-2px)}
-/* collection */
-.coll-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.coll-item{background:var(--bg2);border-radius:12px;padding:10px;text-align:center;border:1px solid var(--bg3);transition:all .2s}
-.coll-item.owned{background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2)}
-.coll-item.equipped{border:2px solid var(--amber3);background:var(--amber)}
-.coll-ico{font-size:24px;display:block;margin-bottom:3px}
-.coll-name{font-size:10px;color:var(--ink2);line-height:1.2}
-.coll-item.owned .coll-name{color:var(--ink)}
-/* sets panel */
-.set-entry{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:6px;cursor:pointer;transition:all .2s}
+.rstat b{color:var(--amber4);font-weight:600}
+.rperk{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;background:#fff;border:1px solid var(--bg3);margin-bottom:6px;transition:all .2s}
+.rperk:hover{border-color:var(--rose3);transform:translateX(3px)}
+.rpico{font-size:19px;flex-shrink:0}
+.rptxt{font-size:12px;color:var(--ink);line-height:1.4}
+.rptxt b{display:block;font-size:12px;margin-bottom:1px;color:var(--ink)}
+/* sets */
+.set-entry{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:11px;background:var(--bg2);border:1.5px solid var(--bg3);margin-bottom:6px;cursor:pointer;transition:all .2s}
 .set-entry.active{background:var(--sky);border-color:var(--sky3)}
 .set-entry:hover:not(.active){background:var(--lav);border-color:var(--lav3)}
 .set-entry-name{flex:1;font-size:12px;font-weight:500;color:var(--ink)}
 .set-entry-cnt{font-size:11px;color:var(--ink3)}
-.set-entry-del{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px}
+.set-entry-del{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;transition:all .2s}
 .set-entry-del:hover{background:var(--rose2);color:var(--rose4)}
-/* stat rows */
-.srow{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);padding:3px 0;border-bottom:1px solid var(--bg3)}
-.srow:last-child{border:none}
-.srow b{color:var(--ink);font-weight:500}
 
-/*FLOATS / TOAST / MILESTONE*/
-.fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:14px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
-@keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(.85)}}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(38px);background:#fff;border-radius:13px;padding:10px 17px;box-shadow:var(--sh2);font-size:13px;color:var(--ink);z-index:999;opacity:0;transition:all .3s;border:1px solid var(--bg3);max-width:88vw;text-align:center;pointer-events:none}
+/* ══ FLOATS / TOAST / MILESTONE ══ */
+.fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:15px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
+@keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(40px);background:rgba(61,44,44,.92);backdrop-filter:blur(10px);color:#fff;border-radius:14px;padding:11px 20px;font-size:13px;z-index:999;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:88vw;text-align:center;border:1px solid rgba(255,255,255,.1)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.mpop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:#fff;border-radius:20px;padding:20px 26px;box-shadow:var(--sh2);text-align:center;z-index:300;animation:mp 2.8s ease forwards;border:2px solid var(--rose2)}
-@keyframes mp{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}}
-.mpt{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:3px}
-.mps{font-size:12px;color:var(--ink3)}
-.gwrap{display:flex;width:100%;height:100%;z-index:10;padding:12px}
-.ig{display:flex;flex:1;height:100%;border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}
+.mpop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.7);background:#fff;border-radius:22px;padding:22px 28px;box-shadow:var(--sh3);text-align:center;z-index:300;animation:mp 3s ease forwards;border:2px solid var(--rose2);pointer-events:none}
+@keyframes mp{0%{opacity:0;transform:translate(-50%,-50%) scale(.65)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}18%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}}
+.mpt{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.mps{font-size:12px;color:var(--ink3);margin-top:2px}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
+<canvas id="click-canvas"></canvas>
 
-<!--  IMPORT SCREEN -->
+<!-- ══ IMPORT SCREEN ══ -->
 <div class="screen" id="scr-import">
-  <div style="font-family:'Fraunces',serif;font-size:42px;font-weight:300;color:var(--ink);letter-spacing:-1.5px;margin-bottom:2px">bloom <em style="color:var(--rose4)">✿</em></div>
-  <div style="font-size:13px;color:var(--ink3);margin-bottom:14px">grow your garden of knowledge</div>
-  <div id="save-badge" style="display:none;margin-bottom:10px"></div>
-  <div id="cont-wrap" style="margin-bottom:10px;display:none">
+  <div class="bloom-logo">bloom <em>✿</em></div>
+  <div class="bloom-tagline">grow your garden of knowledge</div>
+  <div id="save-badge" style="display:none;margin-top:6px"></div>
+  <div id="cont-wrap" style="margin-top:6px;display:none">
     <button class="cont-btn" onclick="continueGame()">Continue saved garden ✓</button>
   </div>
-  <div class="imp-card">
+  <div class="imp-card" style="margin-top:14px">
     <div class="tab-row">
-      <button class="tb on"  onclick="swTab('notes',0)">📄 Notes</button>
-      <button class="tb"     onclick="swTab('qa',1)">❓ Q&amp;A</button>
-      <button class="tb"     onclick="swTab('json',2)">{ } JSON Sets</button>
+      <button class="tb on" onclick="swTab('notes',0)">📄 Notes</button>
+      <button class="tb" onclick="swTab('qa',1)">❓ Q&amp;A</button>
+      <button class="tb" onclick="swTab('json',2)">{ } JSON Sets</button>
     </div>
-
     <div class="tc on" id="tc-notes">
-      <textarea class="ni" id="t-notes" placeholder="Paste revision notes here…
+      <textarea class="ni" id="t-notes" placeholder="Paste revision notes…
 
-Newton's First Law — an object at rest stays at rest unless acted upon by a force.
-Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
-      <div class="hint">Use "Term — Definition" format for best results.</div>
+Term — Definition format works best:
+Osmosis — movement of water across a semipermeable membrane
+Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
+      <div class="hint">Use "Term — Definition" or "Term: Definition" format. Paste from anywhere.</div>
     </div>
-
     <div class="tc" id="tc-qa">
       <div id="qa-list">
         <div class="qa-row"><input placeholder="Question…" class="qi-q"><input placeholder="Answer…" class="qi-a"><button class="rm-qa" onclick="rmQA(this)">×</button></div>
       </div>
       <button class="add-qa" onclick="addQA()">+ Add question</button>
     </div>
-
     <div class="tc" id="tc-json">
-      <p style="font-size:12px;color:var(--ink2);margin-bottom:10px;line-height:1.6">Upload multiple JSON question sets. Switch between them mid-game from the left panel.</p>
+      <p style="font-size:12px;color:var(--ink2);margin-bottom:10px;line-height:1.6">Upload multiple JSON sets. Switch between them mid-game from the Sets panel.</p>
       <div id="json-sets-list"></div>
       <button class="upload-json-btn" onclick="document.getElementById('json-file-input').click()">⬆ Upload JSON file(s)</button>
       <input type="file" id="json-file-input" accept=".json" multiple style="display:none" onchange="handleJsonUpload(this)">
-      <div class="hint">Format: [{"q":"…","a":"…"}] — one file per topic.</div>
+      <div class="hint">Format: [{"q":"…","a":"…"}] — one file per topic. Also accepts {question,answer} or {front,back}.</div>
     </div>
-
     <button class="go-btn" onclick="startGame()">Begin Blooming ✿</button>
     <div style="text-align:center"><button class="demo-btn" onclick="demoGame()">Try with demo questions →</button></div>
   </div>
 </div>
 
-<!-- ═══ GAME SCREEN ═══ -->
+<!-- ══ GAME SCREEN ══ -->
 <div class="screen hidden" id="scr-game">
   <div class="gwrap"><div class="ig">
 
-    <!-- LEFT -->
+    <!-- LEFT: UPGRADES -->
     <div class="gp" id="lp">
       <div class="plabel">Garden</div>
       <div id="upg-list"></div>
       <div class="ibtns">
-        <button class="ibtn" onclick="openMod('mod-editor')"><span>✏️</span>Edit Qs</button>
+        <button class="ibtn" onclick="openMod('mod-editor')"><span>✏️</span>Qs</button>
         <button class="ibtn" onclick="openMod('mod-sets')"><span>📚</span>Sets</button>
         <button class="ibtn" onclick="openRebirth()"><span>🌸</span>Season</button>
-        <button class="ibtn" onclick="openMod('mod-coll')"><span>✨</span>Cosmetics</button>
         <button class="ibtn" onclick="openSave()"><span>💾</span>Save</button>
         <button class="ibtn red" onclick="openMod('mod-reset')"><span>↺</span>Reset</button>
       </div>
@@ -332,55 +433,141 @@ Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
 
     <!-- CENTER -->
     <div id="cp">
-      <div style="text-align:center">
+      <div class="stat-main">
         <div class="snum" id="d-pts">0</div>
         <div class="slabel">petals</div>
-        <div class="pill pill-mint" style="margin-top:4px"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="#43a047"/></svg><span id="d-pps">0</span>/sec</div>
+        <div class="pill pill-mint" style="margin-top:5px"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="#43a047"/></svg><span id="d-pps">0</span>/sec</div>
         <div class="pill pill-amber" id="d-rbpill" style="display:none;margin-top:2px">✨ Season <span id="d-rbnum">1</span> · <span id="d-rbmult">1.25</span>×</div>
-        <div class="pill pill-lav" id="d-quizbonus" style="display:none;margin-top:2px">🎯 Quiz bonus active!</div>
+        <div class="pill pill-sky" id="d-quizbonus" style="display:none;margin-top:2px">🎯 Quiz streak!</div>
       </div>
 
       <div id="clkwrap">
         <div class="ring" id="ring"></div>
+        <div class="ring2" id="ring2"></div>
         <button id="clkbtn" onclick="doClick(event)"><div class="orb" id="orb">✿</div></button>
       </div>
 
-      <div style="width:100%;max-width:180px;text-align:center">
+      <div class="combo-wrap">
         <div class="ctrack"><div class="cbar" id="cbar"></div></div>
         <div class="clabel" id="clabel">click to bloom</div>
       </div>
 
       <button class="set-pill" onclick="openMod('mod-sets')" id="active-set-pill">
-        📚 <span id="active-set-name">Demo Questions</span>
+        📚 <span id="active-set-name">Demo</span>
       </button>
 
-      <div class="qtbar">
-        <div class="qtt"><div class="qtf" id="qtf" style="width:0%"></div></div>
-        <div class="qtl" id="qtl">quiz in 50 blooms</div>
-      </div>
-
-      <div class="loot-bar">
-        <div class="loot-track"><div class="loot-fill" id="ltf" style="width:0%"></div></div>
-        <div class="loot-label" id="ltl">🌰 loot box progress</div>
+      <div class="prog-stack">
+        <div class="pbar-row">
+          <div class="pbar-track"><div class="pbar-fill quiz" id="qtf" style="width:0%"></div></div>
+          <div class="pbar-label quiz" id="qtl">quiz in 50 blooms</div>
+        </div>
+        <div class="pbar-row">
+          <div class="pbar-track"><div class="pbar-fill loot" id="ltf" style="width:0%"></div></div>
+          <div class="pbar-label loot" id="ltl">🌰 crate in 75 actions</div>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT -->
+    <!-- RIGHT: TABBED PANEL -->
     <div class="gp" id="rp">
-      <div class="plabel">Achievements</div>
-      <div id="ach-list"></div>
-      <div class="plabel" style="margin-top:12px">Stats</div>
-      <div id="stat-list"></div>
+      <div class="rp-tabs">
+        <button class="rpt on" onclick="swRp(0)"><span>🏆</span>Achs</button>
+        <button class="rpt" onclick="swRp(1)"><span>🌰</span>Crates</button>
+        <button class="rpt" onclick="swRp(2)"><span>✨</span>Collect</button>
+        <button class="rpt" onclick="swRp(3)"><span>📊</span>Stats</button>
+      </div>
+
+      <!-- ACHIEVEMENTS -->
+      <div class="rp-section on" id="rps-achs">
+        <div id="ach-list"></div>
+      </div>
+
+      <!-- CRATES -->
+      <div class="rp-section" id="rps-crates">
+        <div class="crate-tab-row">
+          <button class="cratet on common" onclick="swCrate(0)"><span>🌿</span>Common</button>
+          <button class="cratet rare" onclick="swCrate(1)"><span>💎</span>Rare</button>
+          <button class="cratet legendary" onclick="swCrate(2)"><span>⚜️</span>Legendary</button>
+        </div>
+        <!-- Common -->
+        <div class="crate-section on" id="cs-common">
+          <div class="crate-info common">
+            <div class="crate-title">🌿 Common Crate</div>
+            <div class="crate-desc">Unlimited supply. Answer a question to open — any correct answer counts.</div>
+            <div class="crate-odds">
+              <span style="color:var(--ink3)">Common</span> — 65% &nbsp;
+              <span style="color:var(--sky4)">Rare</span> — 27% &nbsp;
+              <span style="color:var(--lav4)">Epic</span> — 7% &nbsp;
+              <span style="color:var(--amber4)">Legendary</span> — 1%
+            </div>
+          </div>
+          <div class="crate-count">♾️ Unlimited common crates</div>
+          <button class="crate-open-btn common" onclick="startCrateOpen('common')">🌿 Open (answer a question)</button>
+        </div>
+        <!-- Rare -->
+        <div class="crate-section" id="cs-rare">
+          <div class="crate-info rare">
+            <div class="crate-title">💎 Rare Crate</div>
+            <div class="crate-desc">Earned by answering quiz questions correctly while blooming.</div>
+            <div class="crate-odds">
+              <span style="color:var(--sky4)">Rare</span> — 55% &nbsp;
+              <span style="color:var(--lav4)">Epic</span> — 35% &nbsp;
+              <span style="color:var(--amber4)">Legendary</span> — 10%
+            </div>
+          </div>
+          <div class="crate-count">💎 <b id="rare-crate-count">0</b> rare crates</div>
+          <button class="crate-open-btn rare" id="rare-open-btn" onclick="startCrateOpen('rare')" disabled>💎 Open (answer a question)</button>
+        </div>
+        <!-- Legendary -->
+        <div class="crate-section" id="cs-legendary">
+          <div class="crate-info legendary">
+            <div class="crate-title">⚜️ Legendary Crate</div>
+            <div class="crate-desc">Only from quiz perfect streaks. Guaranteed Epic or Legendary reward.</div>
+            <div class="crate-odds">
+              <span style="color:var(--lav4)">Epic</span> — 60% &nbsp;
+              <span style="color:var(--amber4)">Legendary</span> — 40%
+            </div>
+          </div>
+          <div class="crate-count">⚜️ <b id="leg-crate-count">0</b> legendary crates</div>
+          <button class="crate-open-btn legendary" id="leg-open-btn" onclick="startCrateOpen('legendary')" disabled>⚜️ Open (answer a question)</button>
+        </div>
+        <!-- History -->
+        <div class="crate-history">
+          <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:5px">Recent opens</div>
+          <div id="crate-history-list"><div style="font-size:11px;color:var(--ink3)">No crates opened yet</div></div>
+        </div>
+      </div>
+
+      <!-- COLLECTION -->
+      <div class="rp-section" id="rps-coll">
+        <div class="coll-tabs">
+          <button class="ctab on" onclick="swColl(0)">🌸 Skins</button>
+          <button class="ctab" onclick="swColl(1)">🎨 Themes</button>
+          <button class="ctab" onclick="swColl(2)">✨ Icons</button>
+          <button class="ctab" onclick="swColl(3)">🌊 Trails</button>
+        </div>
+        <div class="coll-section on" id="colls-skins"><div class="coll-grid" id="coll-skins"></div></div>
+        <div class="coll-section" id="colls-themes"><div class="coll-grid" id="coll-themes"></div></div>
+        <div class="coll-section" id="colls-icons"><div class="coll-grid" id="coll-icons"></div></div>
+        <div class="coll-section" id="colls-trails"><div class="coll-grid" id="coll-trails"></div></div>
+      </div>
+
+      <!-- STATS -->
+      <div class="rp-section" id="rps-stats">
+        <div id="stat-list"></div>
+      </div>
     </div>
 
   </div></div>
 </div>
 
-<!-- ═══ QUIZ OVERLAY ═══ -->
+<!-- ══ QUIZ OVERLAY ══ -->
 <div id="qov">
   <div class="qcard">
-    <div class="qset-tag" id="q-set-tag"></div>
-    <div class="qtag">✿ quiz time</div>
+    <div>
+      <div class="qtag">✿ quiz time</div>
+      <div class="qset-tag" id="q-set-tag"></div>
+    </div>
     <div class="qq" id="q-text"></div>
     <input class="qi2" id="q-inp" placeholder="Type your answer… (or reveal below)" onkeydown="if(event.key==='Enter')revealAns()">
     <button class="qrv" onclick="revealAns()">Reveal answer</button>
@@ -392,64 +579,78 @@ Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
     </div>
     <div class="qbtns" id="q-skip"><button class="qb s" onclick="grade(-1)">Skip</button></div>
     <div class="qmult" id="q-mult"></div>
+    <div class="qcrate-reward" id="q-crate-reward"><span id="q-cr-ico">🌰</span><span>Correct answer earns a <b id="q-cr-type">Rare</b> crate!</span></div>
   </div>
 </div>
 
-<!-- ═══ LOOT BOX OVERLAY ═══ -->
-<div id="lov">
-  <div class="lcard" id="lcard">
-    <span class="loot-box-icon" id="lbox-icon">🌰</span>
-    <div class="ltitle" id="ltitle">Loot Box Ready!</div>
-    <div class="lsub" id="lsub">A mystery reward awaits</div>
-    <div class="reward-reveal" id="reward-reveal">
-      <span class="reward-icon" id="reward-icon">✿</span>
-      <div class="reward-name" id="reward-name"></div>
-      <div class="reward-type" id="reward-type"></div>
+<!-- ══ CRATE OPENING OVERLAY ══ -->
+<div id="cov">
+  <div class="cov-inner">
+    <div class="cov-title" id="cov-title">Opening crate…</div>
+    <div class="cov-sub" id="cov-sub">Answer the question to unlock</div>
+
+    <!-- Question gate -->
+    <div class="cov-question" id="cov-question">
+      <div class="cov-q-label">Answer to open</div>
+      <div class="cov-q-text" id="cov-q-text"></div>
+      <input class="cov-q-inp" id="cov-q-inp" placeholder="Your answer…" onkeydown="if(event.key==='Enter')covReveal()">
+      <div class="cov-q-ans" id="cov-q-ans"></div>
+      <div class="cov-q-btns" id="cov-q-initial-btns">
+        <button class="cov-q-btn reveal" onclick="covReveal()">Reveal answer</button>
+      </div>
+      <div class="cov-q-grade" id="cov-q-grade">
+        <button class="cov-q-g w" onclick="covGrade(false)">✗ Got it wrong</button>
+        <button class="cov-q-g c" onclick="covGrade(true)">✓ Got it right!</button>
+      </div>
     </div>
-    <button class="lopen-btn" id="lopen-btn" onclick="openLootBox()">🌰 Open!</button>
-    <br>
-    <button class="lclose-btn" id="lclose-btn" style="display:none" onclick="closeLoot()">Continue blooming</button>
+
+    <!-- Spinning reel -->
+    <div class="reel-wrap" id="reel-wrap" style="display:none">
+      <div class="reel-pointer"></div>
+      <div class="reel-track" id="reel-track"></div>
+    </div>
+
+    <!-- Reward reveal -->
+    <div class="cov-reward" id="cov-reward">
+      <span class="cr-ico" id="cr-ico"></span>
+      <div class="cr-name" id="cr-name"></div>
+      <div class="cr-type" id="cr-type"></div>
+      <div class="cr-rarity" id="cr-rarity"></div>
+    </div>
+
+    <button class="cov-close" id="cov-close" style="display:none" onclick="closeCrateOverlay()">Continue blooming ✿</button>
   </div>
 </div>
 
-<!-- ═══ MODALS ═══ -->
-
-<!-- Question editor -->
+<!-- ══ MODALS ══ -->
 <div class="mbk" id="mod-editor">
   <div class="md">
     <div class="mh"><div class="mt">✏️ Edit Questions</div><button class="mx" onclick="closeMod('mod-editor')">×</button></div>
     <div class="mb" id="ed-list"></div>
-    <div class="mf">
-      <button class="mbtn" onclick="closeMod('mod-editor')">Cancel</button>
-      <button class="mbtn pri" onclick="saveEditor()">Save ✿</button>
-    </div>
+    <div class="mf"><button class="mbtn" onclick="closeMod('mod-editor')">Cancel</button><button class="mbtn pri" onclick="saveEditor()">Save ✿</button></div>
   </div>
 </div>
-
-<!-- Question sets -->
 <div class="mbk" id="mod-sets">
   <div class="md">
     <div class="mh"><div class="mt">📚 Question Sets</div><button class="mx" onclick="closeMod('mod-sets')">×</button></div>
     <div class="mb" id="sets-list"></div>
     <div class="mf">
-      <button class="mbtn" onclick="document.getElementById('json-mid-input').click()">⬆ Upload more JSON</button>
+      <button class="mbtn" onclick="document.getElementById('json-mid-input').click()">⬆ Upload JSON</button>
       <input type="file" id="json-mid-input" accept=".json" multiple style="display:none" onchange="handleJsonMid(this)">
       <button class="mbtn" onclick="closeMod('mod-sets')">Close</button>
     </div>
   </div>
 </div>
-
-<!-- Rebirth / Season -->
 <div class="mbk" id="mod-rebirth">
   <div class="md">
     <div class="mh"><div class="mt">🌸 Change Season</div><button class="mx" onclick="closeMod('mod-rebirth')">×</button></div>
     <div class="mb">
-      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Each new Season resets your petals &amp; garden, but grants a permanent multiplier and unlocks exclusive perks. Your questions, achievements, and collection are kept.</p>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Each Season resets petals &amp; garden but grants permanent bonuses. Questions, achievements, and cosmetics are kept.</p>
       <div class="rinfo" id="rb-info"></div>
-      <div class="rperk"><div class="rpico">⚡</div><div class="rptxt"><b>+25% permanent multiplier per Season</b>Stacks on all petal gains forever.</div></div>
-      <div class="rperk"><div class="rpico">🌰</div><div class="rptxt"><b>Loot boxes spawn faster</b>Each Season reduces loot box click cost by 10%.</div></div>
-      <div class="rperk"><div class="rpico">🎨</div><div class="rptxt"><b>Season theme unlocked</b>Garden changes colour and the orb gets a new skin.</div></div>
-      <div class="rperk"><div class="rpico">🚀</div><div class="rptxt"><b>Prestige upgrades unlock</b>Higher Seasons unlock more powerful garden items.</div></div>
+      <div class="rperk"><div class="rpico">⚡</div><div class="rptxt"><b>+25% permanent multiplier</b>Stacks on all petal gains.</div></div>
+      <div class="rperk"><div class="rpico">🌰</div><div class="rptxt"><b>Faster crate drops</b>10% cheaper per Season (min 30).</div></div>
+      <div class="rperk"><div class="rpico">🎨</div><div class="rptxt"><b>Season theme + new orb</b>Visual refresh.</div></div>
+      <div class="rperk"><div class="rpico">🚀</div><div class="rptxt"><b>Tier 6 unlocks at Season 2</b>Cosmic garden items.</div></div>
     </div>
     <div class="mf">
       <button class="mbtn" onclick="closeMod('mod-rebirth')">Stay in Season <span id="rb-cur-season">1</span></button>
@@ -457,28 +658,10 @@ Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
     </div>
   </div>
 </div>
-
-<!-- Cosmetics collection -->
-<div class="mbk" id="mod-coll">
-  <div class="md" style="max-width:560px">
-    <div class="mh"><div class="mt">✨ Collection</div><button class="mx" onclick="closeMod('mod-coll')">×</button></div>
-    <div class="mb">
-      <div class="plabel" style="margin-bottom:8px">Orb Skins</div>
-      <div class="coll-grid" id="coll-skins"></div>
-      <div class="plabel" style="margin:14px 0 8px">Background Themes</div>
-      <div class="coll-grid" id="coll-themes"></div>
-      <div class="plabel" style="margin:14px 0 8px">Icons</div>
-      <div class="coll-grid" id="coll-icons"></div>
-    </div>
-    <div class="mf"><button class="mbtn" onclick="closeMod('mod-coll')">Close</button></div>
-  </div>
-</div>
-
-<!-- Save -->
 <div class="mbk" id="mod-save">
   <div class="md">
     <div class="mh"><div class="mt">💾 Save &amp; Export</div><button class="mx" onclick="closeMod('mod-save')">×</button></div>
-    <div class="mb"><div id="save-status" style="font-size:12px;color:var(--ink3);background:var(--bg2);border-radius:11px;padding:11px 13px;line-height:1.9"></div></div>
+    <div class="mb"><div id="save-status" style="font-size:12px;color:var(--ink3);background:var(--bg2);border-radius:12px;padding:12px 14px;line-height:1.9"></div></div>
     <div class="mf">
       <button class="mbtn grn" onclick="exportSave()">⬇ Export save</button>
       <button class="mbtn" onclick="document.getElementById('imp-file').click()">⬆ Import save</button>
@@ -486,127 +669,207 @@ Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
     </div>
   </div>
 </div>
-
-<!-- Reset -->
 <div class="mbk" id="mod-reset">
   <div class="md">
     <div class="mh"><div class="mt">↺ Reset Garden</div><button class="mx" onclick="closeMod('mod-reset')">×</button></div>
     <div class="mb">
-      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Wipes all progress, Seasons, and cosmetics. Back to the start screen.</p>
-      <div style="background:var(--rose);border-radius:11px;padding:12px;font-size:12px;color:var(--rose4);border:1px solid var(--rose3)">⚠️ Export your save first if you want a backup.</div>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Wipes all progress, Seasons, crates, and cosmetics.</p>
+      <div style="background:var(--rose);border-radius:12px;padding:12px;font-size:12px;color:var(--rose4);border:1px solid var(--rose3)">⚠️ Export your save first if you want a backup.</div>
     </div>
-    <div class="mf">
-      <button class="mbtn" onclick="closeMod('mod-reset')">Cancel</button>
-      <button class="mbtn dan" onclick="doReset()">Delete everything</button>
-    </div>
+    <div class="mf"><button class="mbtn" onclick="closeMod('mod-reset')">Cancel</button><button class="mbtn dan" onclick="doReset()">Delete everything</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════
-// PARTICLES
-// ═══════════════════════════════════════════════
-const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+// ════════════════════════════════════════════════
+// BACKGROUND PARTICLES
+// ════════════════════════════════════════════════
+const bgCv=document.getElementById('bg'),bgCx=bgCv.getContext('2d');
+const clkCv=document.getElementById('click-canvas'),clkCx=clkCv.getContext('2d');
 let W,H;
-const PC=['#fce4ec','#e3f2fd','#ede7f6','#e8f5e9','#fff3e0'];
-function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}rsz();
-window.addEventListener('resize',rsz);
-const PARTS=Array.from({length:55},()=>({x:Math.random()*2000,y:Math.random()*1000,r:Math.random()*3.5+1.5,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.1),a:Math.random()*.55+.18,c:PC[Math.floor(Math.random()*5)],w:Math.random()*Math.PI*2,ws:Math.random()*.018}));
-(function ploop(){cx.clearRect(0,0,W,H);PARTS.forEach(p=>{p.y+=p.vy;p.x+=p.vx+Math.sin(p.w)*.28;p.w+=p.ws;if(p.y<-20){p.x=Math.random()*W;p.y=H+20;}cx.save();cx.globalAlpha=p.a;cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();});requestAnimationFrame(ploop);})();
+const BG_COLS=['#fce4ec','#e3f2fd','#ede7f6','#e8f5e9','#fff3e0','#f3e5f5','#e0f7fa'];
+function rsz(){W=bgCv.width=clkCv.width=innerWidth;H=bgCv.height=clkCv.height=innerHeight}
+rsz();window.addEventListener('resize',rsz);
+const BG_PARTS=Array.from({length:60},()=>({
+  x:Math.random()*3000,y:Math.random()*1000,r:Math.random()*3.5+1.5,
+  vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.1),
+  a:Math.random()*.5+.15,c:BG_COLS[Math.floor(Math.random()*BG_COLS.length)],
+  w:Math.random()*Math.PI*2,ws:Math.random()*.018
+}));
+(function bgLoop(){
+  bgCx.clearRect(0,0,W,H);
+  BG_PARTS.forEach(p=>{
+    p.y+=p.vy;p.x+=p.vx+Math.sin(p.w)*.3;p.w+=p.ws;
+    if(p.y<-20){p.x=Math.random()*W;p.y=H+20;}
+    bgCx.save();bgCx.globalAlpha=p.a;bgCx.fillStyle=p.c;
+    bgCx.beginPath();bgCx.arc(p.x,p.y,p.r,0,Math.PI*2);bgCx.fill();bgCx.restore();
+  });
+  requestAnimationFrame(bgLoop);
+})();
 
-// ═══════════════════════════════════════════════
-// CONSTANTS — UPGRADES (30+)
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// CLICK PARTICLES (fall from orb)
+// ════════════════════════════════════════════════
+let clickParticles=[];
+const CLICK_EMOJIS=['✿','🌸','🌺','🌼','🌷','💮','🏵️','🌻','🍀','⭐','✨','💫'];
+const CLICK_COLS=['#f48fb1','#b39ddb','#90caf9','#a5d6a7','#ffcc80','#f48fb1','#ce93d8'];
+
+function spawnClickParticles(x,y,combo){
+  const count=Math.min(3+Math.floor(combo/5),8);
+  for(let i=0;i<count;i++){
+    const angle=(Math.random()*Math.PI*2);
+    const speed=2+Math.random()*3+combo*.1;
+    const useEmoji=Math.random()<.3;
+    clickParticles.push({
+      x,y,
+      vx:Math.cos(angle)*speed*(Math.random()>.5?1:.6),
+      vy:-Math.abs(Math.sin(angle)*speed)-2,
+      gravity:.15,
+      life:1,decay:.015+Math.random()*.015,
+      r:useEmoji?0:Math.random()*5+3,
+      emoji:useEmoji?CLICK_EMOJIS[Math.floor(Math.random()*CLICK_EMOJIS.length)]:null,
+      col:CLICK_COLS[Math.floor(Math.random()*CLICK_COLS.length)],
+      rot:Math.random()*Math.PI*2,
+      rotSpeed:(Math.random()-.5)*.2,
+      scale:1+Math.random()*.5
+    });
+  }
+  // Big combo burst
+  if(combo>10){
+    for(let i=0;i<5;i++){
+      const a=(i/5)*Math.PI*2;
+      clickParticles.push({
+        x,y,vx:Math.cos(a)*5,vy:Math.sin(a)*5-2,
+        gravity:.1,life:1,decay:.02,r:0,
+        emoji:CLICK_EMOJIS[Math.floor(Math.random()*CLICK_EMOJIS.length)],
+        col:'',rot:0,rotSpeed:.1,scale:1.5
+      });
+    }
+  }
+}
+
+(function clickLoop(){
+  clkCx.clearRect(0,0,W,H);
+  clickParticles=clickParticles.filter(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;
+    p.vx*=.98;p.life-=p.decay;p.rot+=p.rotSpeed;
+    if(p.life<=0)return false;
+    clkCx.save();clkCx.globalAlpha=p.life;
+    if(p.emoji){
+      clkCx.translate(p.x,p.y);clkCx.rotate(p.rot);clkCx.scale(p.scale,p.scale);
+      clkCx.font=`${18}px serif`;clkCx.textAlign='center';clkCx.textBaseline='middle';
+      clkCx.fillText(p.emoji,0,0);
+    } else {
+      clkCx.fillStyle=p.col;clkCx.beginPath();
+      clkCx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);clkCx.fill();
+    }
+    clkCx.restore();
+    return true;
+  });
+  requestAnimationFrame(clickLoop);
+})();
+
+// ════════════════════════════════════════════════
+// CONSTANTS — UPGRADES
+// ════════════════════════════════════════════════
 const UPGRADES=[
-  // Tier 1 — Sprouts (base 10–500)
-  {id:'u0', e:'🌱',n:'Seedling',       d:'A tiny sprout catches the light',       base:10,    bpps:.1,  tier:1},
-  {id:'u1', e:'🌿',n:'Wild Grass',     d:'Rustles in an invisible breeze',        base:40,    bpps:.4,  tier:1},
-  {id:'u2', e:'🍀',n:'Clover Patch',   d:'Lucky three-leaf clusters',             base:100,   bpps:1,   tier:1},
-  {id:'u3', e:'🌸',n:'Cherry Blossom', d:'Petals drift on a warm wind',          base:280,   bpps:2.5, tier:1},
-  {id:'u4', e:'🌻',n:'Sunflower',      d:'Turns its face toward the light',       base:600,   bpps:5,   tier:1},
-  // Tier 2 — Bloomers (base 1k–20k)
-  {id:'u5', e:'🌷',n:'Tulip Row',      d:'Neat lines of spring colour',           base:1200,  bpps:10,  tier:2},
-  {id:'u6', e:'🌺',n:'Hibiscus',       d:'Vibrant petals, tropical flair',        base:2800,  bpps:22,  tier:2},
-  {id:'u7', e:'🌹',n:'Rose Arbour',    d:'Thorns guard a sweet perfume',          base:5500,  bpps:42,  tier:2},
-  {id:'u8', e:'💐',n:'Bouquet',        d:'A gathered celebration of blooms',      base:9000,  bpps:68,  tier:2},
-  {id:'u9', e:'🌼',n:'Chamomile Field',d:'Calming waves of white and gold',       base:14000, bpps:100, tier:2},
-  // Tier 3 — Trees (base 20k–200k)
-  {id:'u10',e:'🎋',n:'Bamboo Grove',   d:'Rapid growth, quiet strength',          base:22000, bpps:160, tier:3},
-  {id:'u11',e:'🌴',n:'Palm Tree',      d:'Sways gracefully in the cosmos',        base:38000, bpps:240, tier:3},
-  {id:'u12',e:'🌲',n:'Ancient Pine',   d:'Holds centuries of memory',             base:65000, bpps:380, tier:3},
-  {id:'u13',e:'🍁',n:'Maple Spirit',   d:'Autumn wisdom crystallised in red',     base:100000,bpps:560, tier:3},
-  {id:'u14',e:'🌳',n:'World Tree',     d:'Roots reach every corner of the garden',base:160000,bpps:800, tier:3},
-  // Tier 4 — Creatures (base 250k–2M)
-  {id:'u15',e:'🦋',n:'Butterfly Cloud',d:'Carries pollen between universes',      base:250000,bpps:1200,tier:4},
-  {id:'u16',e:'🐝',n:'Cosmic Hive',    d:'A thousand bees, a thousand blooms',    base:400000,bpps:1800,tier:4},
-  {id:'u17',e:'🦜',n:'Parrot Flock',   d:'Repeats your knowledge endlessly',      base:650000,bpps:2600,tier:4},
-  {id:'u18',e:'🦚',n:'Peacock Display',d:'Shows off every colour at once',        base:1000000,bpps:3800,tier:4},
-  {id:'u19',e:'🐉',n:'Garden Dragon',  d:'Breathes life into every petal',        base:1600000,bpps:5500,tier:4},
-  // Tier 5 — Phenomena (base 3M+)
-  {id:'u20',e:'☁️',n:'Rain Cloud',     d:'Nourishes the entire garden at once',   base:3000000,bpps:8000,tier:5},
-  {id:'u21',e:'🌈',n:'Rainbow Arc',    d:'Spans the whole sky with light',        base:5000000,bpps:12000,tier:5},
-  {id:'u22',e:'⭐',n:'Falling Star',   d:'Each wish plants a new seed',           base:8000000,bpps:18000,tier:5},
-  {id:'u23',e:'🌙',n:'Moon Garden',    d:'Blooms only in silver light',           base:12000000,bpps:27000,tier:5},
-  {id:'u24',e:'☀️',n:'Sun Forge',      d:'Pure stellar energy poured into petals',base:20000000,bpps:40000,tier:5},
-  // Tier 6 — Cosmic (season 2+ required)
-  {id:'u25',e:'🌌',n:'Nebula Garden',  d:'Flowers made of stardust',              base:35000000,bpps:60000,tier:6,minSeason:2},
-  {id:'u26',e:'🪐',n:'Petal Planet',   d:'A whole world blanketed in blooms',     base:60000000,bpps:90000,tier:6,minSeason:2},
-  {id:'u27',e:'✨',n:'Quantum Bloom',  d:'Exists in all gardens simultaneously',  base:100000000,bpps:135000,tier:6,minSeason:2},
-  {id:'u28',e:'🌀',n:'Time Garden',    d:'Petals from every past and future',     base:175000000,bpps:200000,tier:6,minSeason:3},
-  {id:'u29',e:'💫',n:'Eternal Bloom',  d:'The garden that never fades',           base:300000000,bpps:300000,tier:6,minSeason:3},
+  {id:'u0', e:'🌱',n:'Seedling',       d:'A tiny sprout catches the light',         base:10,      bpps:.1,   tier:1},
+  {id:'u1', e:'🌿',n:'Wild Grass',     d:'Rustles in an invisible breeze',          base:40,      bpps:.4,   tier:1},
+  {id:'u2', e:'🍀',n:'Clover Patch',   d:'Lucky three-leaf clusters',               base:100,     bpps:1,    tier:1},
+  {id:'u3', e:'🌸',n:'Cherry Blossom', d:'Petals drift on a warm wind',             base:280,     bpps:2.5,  tier:1},
+  {id:'u4', e:'🌻',n:'Sunflower',      d:'Turns its face toward the light',         base:600,     bpps:5,    tier:1},
+  {id:'u5', e:'🌷',n:'Tulip Row',      d:'Neat lines of spring colour',             base:1200,    bpps:10,   tier:2},
+  {id:'u6', e:'🌺',n:'Hibiscus',       d:'Vibrant petals, tropical flair',          base:2800,    bpps:22,   tier:2},
+  {id:'u7', e:'🌹',n:'Rose Arbour',    d:'Thorns guard a sweet perfume',            base:5500,    bpps:42,   tier:2},
+  {id:'u8', e:'💐',n:'Bouquet',        d:'A gathered celebration of blooms',        base:9000,    bpps:68,   tier:2},
+  {id:'u9', e:'🌼',n:'Chamomile Field',d:'Calming waves of white and gold',         base:14000,   bpps:100,  tier:2},
+  {id:'u10',e:'🎋',n:'Bamboo Grove',   d:'Rapid growth, quiet strength',            base:22000,   bpps:160,  tier:3},
+  {id:'u11',e:'🌴',n:'Palm Tree',      d:'Sways gracefully in the cosmos',          base:38000,   bpps:240,  tier:3},
+  {id:'u12',e:'🌲',n:'Ancient Pine',   d:'Holds centuries of memory',               base:65000,   bpps:380,  tier:3},
+  {id:'u13',e:'🍁',n:'Maple Spirit',   d:'Autumn wisdom in red',                    base:100000,  bpps:560,  tier:3},
+  {id:'u14',e:'🌳',n:'World Tree',     d:'Roots reach every corner of the garden',  base:160000,  bpps:800,  tier:3},
+  {id:'u15',e:'🦋',n:'Butterfly Cloud',d:'Carries pollen between universes',        base:250000,  bpps:1200, tier:4},
+  {id:'u16',e:'🐝',n:'Cosmic Hive',    d:'A thousand bees, a thousand blooms',      base:400000,  bpps:1800, tier:4},
+  {id:'u17',e:'🦜',n:'Parrot Flock',   d:'Repeats your knowledge endlessly',        base:650000,  bpps:2600, tier:4},
+  {id:'u18',e:'🦚',n:'Peacock Display',d:'Shows off every colour at once',          base:1000000, bpps:3800, tier:4},
+  {id:'u19',e:'🐉',n:'Garden Dragon',  d:'Breathes life into every petal',          base:1600000, bpps:5500, tier:4},
+  {id:'u20',e:'☁️',n:'Rain Cloud',     d:'Nourishes the entire garden at once',     base:3000000, bpps:8000, tier:5},
+  {id:'u21',e:'🌈',n:'Rainbow Arc',    d:'Spans the whole sky with light',          base:5000000, bpps:12000,tier:5},
+  {id:'u22',e:'⭐',n:'Falling Star',   d:'Each wish plants a new seed',             base:8000000, bpps:18000,tier:5},
+  {id:'u23',e:'🌙',n:'Moon Garden',    d:'Blooms only in silver light',             base:12000000,bpps:27000,tier:5},
+  {id:'u24',e:'☀️',n:'Sun Forge',      d:'Pure stellar energy poured into petals',  base:20000000,bpps:40000,tier:5},
+  {id:'u25',e:'🌌',n:'Nebula Garden',  d:'Flowers made of stardust',                base:35000000,bpps:60000, tier:6,minSeason:2},
+  {id:'u26',e:'🪐',n:'Petal Planet',   d:'A whole world blanketed in blooms',       base:60000000,bpps:90000, tier:6,minSeason:2},
+  {id:'u27',e:'✨',n:'Quantum Bloom',  d:'Exists in all gardens simultaneously',    base:1e8,     bpps:135000,tier:6,minSeason:2},
+  {id:'u28',e:'🌀',n:'Time Garden',    d:'Petals from every past and future',       base:1.75e8,  bpps:200000,tier:6,minSeason:3},
+  {id:'u29',e:'💫',n:'Eternal Bloom',  d:'The garden that never fades',             base:3e8,     bpps:300000,tier:6,minSeason:3},
 ];
 
-// ═══════════════════════════════════════════════
-// COSMETICS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// COSMETICS — massively expanded
+// ════════════════════════════════════════════════
 const SKINS=[
-  {id:'s0',e:'✿',  n:'Classic Bloom',   rarity:'common',    owned:true, equipped:true,
-   orb_a:'#fce4ec',orb_b:'#e3f2fd',orb_c:'#ede7f6',glow:'rgba(244,143,177,.3)'},
-  {id:'s1',e:'🌙', n:'Moonflower',      rarity:'rare',
-   orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#9fa8da',glow:'rgba(121,134,203,.4)'},
-  {id:'s2',e:'🔥', n:'Ember Rose',      rarity:'rare',
-   orb_a:'#fff3e0',orb_b:'#ffe0b2',orb_c:'#ffcc80',glow:'rgba(255,167,38,.35)'},
-  {id:'s3',e:'🌊', n:'Ocean Drift',     rarity:'epic',
-   orb_a:'#e0f7fa',orb_b:'#b2ebf2',orb_c:'#80deea',glow:'rgba(0,188,212,.3)'},
-  {id:'s4',e:'💜', n:'Amethyst Garden', rarity:'epic',
-   orb_a:'#f3e5f5',orb_b:'#e1bee7',orb_c:'#ce93d8',glow:'rgba(171,71,188,.35)'},
-  {id:'s5',e:'⚡', n:'Storm Petal',     rarity:'epic',
-   orb_a:'#fffde7',orb_b:'#fff176',orb_c:'#ffee58',glow:'rgba(253,216,53,.4)'},
-  {id:'s6',e:'❄️', n:'Frost Bloom',    rarity:'legendary',
-   orb_a:'#e0f2f1',orb_b:'#b2dfdb',orb_c:'#4db6ac',glow:'rgba(0,150,136,.3)'},
-  {id:'s7',e:'🌟', n:'Celestial',       rarity:'legendary',
-   orb_a:'#fce4ec',orb_b:'#fff8e1',orb_c:'#e8eaf6',glow:'rgba(255,213,79,.5)'},
+  {id:'s0', e:'✿', n:'Classic Bloom',    rarity:'common',    orb_a:'#fce4ec',orb_b:'#e3f2fd',orb_c:'#ede7f6',glow:'rgba(244,143,177,.35)',ring:'#f48fb1'},
+  {id:'s1', e:'🌙',n:'Moonflower',       rarity:'rare',      orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#9fa8da',glow:'rgba(121,134,203,.4)',ring:'#9fa8da'},
+  {id:'s2', e:'🔥',n:'Ember Rose',       rarity:'rare',      orb_a:'#fff3e0',orb_b:'#ffe0b2',orb_c:'#ffcc80',glow:'rgba(255,167,38,.35)',ring:'#ffcc80'},
+  {id:'s3', e:'🌊',n:'Ocean Drift',      rarity:'epic',      orb_a:'#e0f7fa',orb_b:'#b2ebf2',orb_c:'#80deea',glow:'rgba(0,188,212,.3)',ring:'#80deea'},
+  {id:'s4', e:'💜',n:'Amethyst Garden',  rarity:'epic',      orb_a:'#f3e5f5',orb_b:'#e1bee7',orb_c:'#ce93d8',glow:'rgba(171,71,188,.35)',ring:'#ce93d8'},
+  {id:'s5', e:'⚡',n:'Storm Petal',      rarity:'epic',      orb_a:'#fffde7',orb_b:'#fff176',orb_c:'#ffee58',glow:'rgba(253,216,53,.45)',ring:'#ffee58'},
+  {id:'s6', e:'❄️',n:'Frost Bloom',      rarity:'epic',      orb_a:'#e0f2f1',orb_b:'#b2dfdb',orb_c:'#4db6ac',glow:'rgba(0,150,136,.3)',ring:'#4db6ac'},
+  {id:'s7', e:'🌟',n:'Celestial',        rarity:'legendary', orb_a:'#fce4ec',orb_b:'#fff8e1',orb_c:'#e8eaf6',glow:'rgba(255,213,79,.55)',ring:'#ffd54f'},
+  {id:'s8', e:'🍀',n:'Lucky Clover',     rarity:'rare',      orb_a:'#e8f5e9',orb_b:'#c8e6c9',orb_c:'#a5d6a7',glow:'rgba(67,160,71,.3)',ring:'#a5d6a7'},
+  {id:'s9', e:'🌺',n:'Hibiscus Dream',   rarity:'epic',      orb_a:'#fce4ec',orb_b:'#f8bbd0',orb_c:'#f48fb1',glow:'rgba(233,30,99,.35)',ring:'#f48fb1'},
+  {id:'s10',e:'🌠',n:'Shooting Star',    rarity:'legendary', orb_a:'#e8eaf6',orb_b:'#fff8e1',orb_c:'#e0f7fa',glow:'rgba(179,157,219,.5)',ring:'#b39ddb'},
+  {id:'s11',e:'🍯',n:'Honey Gold',       rarity:'rare',      orb_a:'#fff8e1',orb_b:'#ffecb3',orb_c:'#ffe082',glow:'rgba(249,168,37,.35)',ring:'#ffd54f'},
 ];
 const THEMES=[
-  {id:'t0',n:'Spring Garden', e:'🌸',rarity:'common', owned:true,equipped:true,bg:'#fdfaf6',panel:'rgba(255,255,255,.83)'},
-  {id:'t1',n:'Autumn Leaves', e:'🍂',rarity:'rare',   bg:'#fdf6ec',panel:'rgba(255,248,235,.9)'},
-  {id:'t2',n:'Night Garden',  e:'🌙',rarity:'epic',   bg:'#f0edf7',panel:'rgba(237,231,246,.9)'},
-  {id:'t3',n:'Ocean Mist',    e:'🌊',rarity:'epic',   bg:'#edf7f9',panel:'rgba(224,247,250,.9)'},
-  {id:'t4',n:'Golden Hour',   e:'✨',rarity:'legendary',bg:'#fdf8ed',panel:'rgba(255,248,225,.9)'},
+  {id:'t0', n:'Spring Garden', e:'🌸',rarity:'common',    bg:'#fdfaf6',panel:'rgba(255,255,255,.86)'},
+  {id:'t1', n:'Autumn Leaves', e:'🍂',rarity:'rare',      bg:'#fdf6ec',panel:'rgba(255,248,235,.9)'},
+  {id:'t2', n:'Night Garden',  e:'🌙',rarity:'epic',      bg:'#f0edf7',panel:'rgba(237,231,246,.9)'},
+  {id:'t3', n:'Ocean Mist',    e:'🌊',rarity:'epic',      bg:'#edf7f9',panel:'rgba(224,247,250,.9)'},
+  {id:'t4', n:'Golden Hour',   e:'✨',rarity:'legendary', bg:'#fdf8ed',panel:'rgba(255,248,225,.9)'},
+  {id:'t5', n:'Mint Fresh',    e:'🍀',rarity:'rare',      bg:'#f2faf3',panel:'rgba(240,249,240,.9)'},
+  {id:'t6', n:'Sakura Dusk',   e:'🌸',rarity:'epic',      bg:'#fdf0f5',panel:'rgba(253,240,245,.9)'},
+  {id:'t7', n:'Starfield',     e:'🌌',rarity:'legendary', bg:'#f5f3fd',panel:'rgba(243,240,253,.9)'},
 ];
 const ICONS=[
-  {id:'i0',e:'✿', n:'Classic',     rarity:'common',  owned:true, equipped:true},
-  {id:'i1',e:'🌸',n:'Cherry',      rarity:'common'},
-  {id:'i2',e:'🌺',n:'Hibiscus',    rarity:'rare'},
-  {id:'i3',e:'🌻',n:'Sunflower',   rarity:'rare'},
-  {id:'i4',e:'🌹',n:'Rose',        rarity:'epic'},
-  {id:'i5',e:'🦋',n:'Butterfly',   rarity:'epic'},
-  {id:'i6',e:'🌈',n:'Rainbow',     rarity:'legendary'},
-  {id:'i7',e:'💫',n:'Cosmic',      rarity:'legendary'},
+  {id:'i0', e:'✿', n:'Classic',         rarity:'common'},
+  {id:'i1', e:'🌸',n:'Cherry',          rarity:'common'},
+  {id:'i2', e:'🌺',n:'Hibiscus',        rarity:'rare'},
+  {id:'i3', e:'🌻',n:'Sunflower',       rarity:'rare'},
+  {id:'i4', e:'🌹',n:'Rose',            rarity:'epic'},
+  {id:'i5', e:'🦋',n:'Butterfly',       rarity:'epic'},
+  {id:'i6', e:'🌈',n:'Rainbow',         rarity:'legendary'},
+  {id:'i7', e:'💫',n:'Cosmic',          rarity:'legendary'},
+  {id:'i8', e:'🍀',n:'Clover',          rarity:'rare'},
+  {id:'i9', e:'🌙',n:'Crescent',        rarity:'epic'},
+  {id:'i10',e:'⭐',n:'Star',            rarity:'rare'},
+  {id:'i11',e:'🔮',n:'Crystal Ball',    rarity:'legendary'},
+];
+// Click trail cosmetics
+const TRAILS=[
+  {id:'tr0',e:'🌸',n:'Petals',          rarity:'common'},
+  {id:'tr1',e:'⭐',n:'Stars',            rarity:'rare'},
+  {id:'tr2',e:'💫',n:'Sparkles',        rarity:'epic'},
+  {id:'tr3',e:'🦋',n:'Butterflies',     rarity:'legendary'},
+  {id:'tr4',e:'🍀',n:'Clovers',         rarity:'rare'},
+  {id:'tr5',e:'❄️',n:'Snowflakes',      rarity:'epic'},
+  {id:'tr6',e:'🌺',n:'Hibiscus Burst',  rarity:'epic'},
+  {id:'tr7',e:'✨',n:'Galaxy Dust',      rarity:'legendary'},
 ];
 
-// Loot box reward pool
-const LOOT_POOL=[
-  ...SKINS.filter(s=>!s.owned).map(s=>({type:'skin',ref:s.id,weight:{rare:40,epic:15,legendary:5}[s.rarity]||60})),
-  ...THEMES.filter(t=>!t.owned).map(t=>({type:'theme',ref:t.id,weight:{rare:40,epic:15,legendary:5}[t.rarity]||60})),
-  ...ICONS.filter(i=>!i.owned).map(i=>({type:'icon',ref:i.id,weight:{rare:40,epic:15,legendary:5}[i.rarity]||60})),
-];
+// Rarity weights per crate tier
+const CRATE_ODDS={
+  common:   {common:65,rare:27,epic:7,legendary:1},
+  rare:     {common:0, rare:55,epic:35,legendary:10},
+  legendary:{common:0, rare:0, epic:60,legendary:40},
+};
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // ACHIEVEMENTS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 const ACHS=[
   {id:'a0', e:'🌱',n:'First Petal',      d:'Earn your first petal',              f:s=>s.te>=1},
   {id:'a1', e:'🌸',n:'Blooming',         d:'Reach 1,000 petals',                 f:s=>s.te>=1000},
@@ -618,66 +881,66 @@ const ACHS=[
   {id:'a7', e:'🔥',n:'Relentless',       d:'Click 1,000 times',                  f:s=>s.tc>=1000},
   {id:'a8', e:'🌸',n:'New Season',       d:'Complete your first Season change',  f:s=>s.rb>=1},
   {id:'a9', e:'🌀',n:'Cycle Keeper',     d:'Complete 3 Season changes',          f:s=>s.rb>=3},
-  {id:'a10',e:'🌰',n:'Treasure Finder',  d:'Open your first loot box',           f:s=>s.lootOpened>=1},
-  {id:'a11',e:'✨',n:'Collector',        d:'Own 5 cosmetics',                    f:s=>s.lootOpened>=5},
+  {id:'a10',e:'🌰',n:'Treasure Finder',  d:'Open your first crate',              f:s=>s.cratesOpened>=1},
+  {id:'a11',e:'✨',n:'Collector',        d:'Own 6 cosmetics',                    f:s=>s.ownedCosmetics.length>=6},
   {id:'a12',e:'💫',n:'Legendary',        d:'Find a Legendary item',              f:s=>s.legendaryFound>=1},
   {id:'a13',e:'🎓',n:'Quiz Master',      d:'Answer 50 correctly',                f:s=>s.qc>=50},
-  {id:'a14',e:'🌈',n:'Rainbow Garden',   d:'Own all background themes',          f:s=>THEMES.every(t=>s.ownedCosmetics.includes(t.id))},
+  {id:'a14',e:'🌈',n:'Full Spectrum',    d:'Own all background themes',          f:s=>THEMES.every(t=>s.ownedCosmetics.includes(t.id))},
   {id:'a15',e:'🌙',n:'Night Owl',        d:'Reach 100 petals/sec',               f:s=>s.lastPps>=100},
   {id:'a16',e:'☀️',n:'Sun God',          d:'Reach 10,000 petals/sec',            f:s=>s.lastPps>=10000},
+  {id:'a17',e:'💎',n:'Crate Addict',     d:'Open 25 crates',                     f:s=>s.cratesOpened>=25},
+  {id:'a18',e:'🎪',n:'Full House',       d:'Own all orb skins',                  f:s=>SKINS.every(sk=>s.ownedCosmetics.includes(sk.id))},
+  {id:'a19',e:'🌊',n:'Unstoppable',      d:'Hit a 25× combo',                    f:s=>s.mc>=25},
 ];
 
-// ═══════════════════════════════════════════════
-// SEASONS (rebirth themes)
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// SEASONS
+// ════════════════════════════════════════════════
 const SEASONS=[
-  {n:'Spring', e:'🌸', bg:'#fdfaf6', panel:'rgba(255,255,255,.83)', orb:'✿'},
-  {n:'Summer', e:'🌻', bg:'#fffef5', panel:'rgba(255,254,240,.9)',  orb:'☀️'},
-  {n:'Autumn', e:'🍁', bg:'#fdf9f3', panel:'rgba(255,248,235,.9)',  orb:'🍂'},
-  {n:'Winter', e:'❄️', bg:'#f5f7fd', panel:'rgba(240,243,255,.9)',  orb:'❄️'},
-  {n:'Cosmic', e:'🌌', bg:'#f7f5fd', panel:'rgba(243,240,255,.9)',  orb:'✨'},
+  {n:'Spring',e:'🌸',bg:'#fdfaf6',panel:'rgba(255,255,255,.86)',orb:'✿',ring:'#f48fb1'},
+  {n:'Summer',e:'🌻',bg:'#fffef5',panel:'rgba(255,254,240,.9)', orb:'☀️',ring:'#ffcc80'},
+  {n:'Autumn',e:'🍁',bg:'#fdf9f3',panel:'rgba(255,248,235,.9)', orb:'🍂',ring:'#ffb74d'},
+  {n:'Winter',e:'❄️',bg:'#f5f7fd',panel:'rgba(240,243,255,.9)', orb:'❄️',ring:'#90caf9'},
+  {n:'Cosmic',e:'🌌',bg:'#f7f5fd',panel:'rgba(243,240,255,.9)', orb:'✨',ring:'#b39ddb'},
 ];
-
-// ═══════════════════════════════════════════════
-// DEMO QUESTIONS
-// ═══════════════════════════════════════════════
 const DEMO_QS=[
-  {q:"What is photosynthesis?",a:"The process by which plants convert sunlight, water, and CO₂ into glucose and oxygen."},
-  {q:"Define Newton's First Law.",a:"An object stays at rest or in uniform motion unless acted on by a net external force."},
-  {q:"What is momentum?",a:"Mass × velocity (p = mv). It is conserved in closed systems."},
+  {q:"What is photosynthesis?",a:"Plants convert sunlight, water, and CO₂ into glucose and oxygen."},
+  {q:"Define Newton's First Law.",a:"An object stays at rest or in uniform motion unless acted on by a net force."},
+  {q:"What is momentum?",a:"Mass × velocity (p = mv). Conserved in closed systems."},
   {q:"What is the speed of light?",a:"Approximately 3 × 10⁸ m/s in a vacuum."},
-  {q:"Define osmosis.",a:"The movement of water molecules through a semi-permeable membrane from high to low concentration."},
+  {q:"Define osmosis.",a:"Movement of water through a semipermeable membrane from high to low concentration."},
 ];
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
-const SAVE_KEY='bloom_v5';
+// ════════════════════════════════════════════════
+const SAVE_KEY='bloom_v6';
 function freshState(){
   return{
-    pts:0, te:0, tc:0, qc:0, qt:0,
-    own:{}, combo:0, mc:0, cm:1,
-    csq:0, qth:50, qa:false,
-    ul:new Set(), rb:0, rm:1,
-    sets:[], activeSet:0,
-    lootProg:0, lootThresh:75, lootPending:false,
-    lootOpened:0, legendaryFound:0,
-    ownedCosmetics:['s0','t0','i0'],
-    equippedSkin:'s0', equippedTheme:'t0', equippedIcon:'i0',
-    lastPps:0,
+    pts:0,te:0,tc:0,qc:0,qt:0,
+    own:{},combo:0,mc:0,cm:1,
+    csq:0,qth:50,qa:false,
+    ul:new Set(),rb:0,rm:1,
+    sets:[],activeSet:0,
+    lootProg:0,lootPending:false,
+    cratesOwned:{common:999,rare:0,legendary:0},
+    cratesOpened:0,legendaryFound:0,
+    ownedCosmetics:['s0','t0','i0','tr0'],
+    equippedSkin:'s0',equippedTheme:'t0',equippedIcon:'i0',equippedTrail:'tr0',
+    lastPps:0,quizStreak:0,crateHistory:[],
   };
 }
 let S=freshState();
-let pps=0, tickAcc=0, saveTimer=null, currentQ=null, loopStarted=false;
-let pendingLoot=null;
+let pps=0,tickAcc=0,saveTimer=null,currentQ=null,loopStarted=false;
 let quizBonusTimer=null;
+// Crate opening state
+let activeCrateType=null,activeCrateQ=null,activeCrateResult=null;
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // PERSISTENCE
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function serial(){
   const d={...S,ul:[...S.ul]};
-  // Serialise sets (just names + questions, not queue)
   d.sets=S.sets.map(st=>({name:st.name,qs:st.qs}));
   return JSON.stringify(d);
 }
@@ -686,13 +949,14 @@ function deserial(raw){
     const d=JSON.parse(raw);
     S=freshState();
     ['pts','te','tc','qc','qt','own','mc','csq','qth','rb','rm',
-     'lootProg','lootThresh','lootOpened','legendaryFound',
-     'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','lastPps'].forEach(k=>{
-      if(d[k]!==undefined)S[k]=d[k];
-    });
-    S.lootPending=false; // always reset pending on load
+     'lootProg','cratesOwned','cratesOpened','legendaryFound',
+     'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','equippedTrail',
+     'lastPps','quizStreak','crateHistory'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
     S.ul=new Set(d.ul||[]);
-    // Restore sets
+    S.lootPending=false;
+    if(!S.cratesOwned)S.cratesOwned={common:999,rare:0,legendary:0};
+    if(!S.crateHistory)S.crateHistory=[];
+    if(!S.ownedCosmetics.includes('tr0'))S.ownedCosmetics.push('tr0');
     if(d.sets&&Array.isArray(d.sets)){
       S.sets=d.sets.map(st=>({name:st.name,qs:st.qs,queue:shuffle([...st.qs]),wq:[]}));
     }
@@ -704,25 +968,24 @@ function saveLocal(){try{localStorage.setItem(SAVE_KEY,serial());}catch(e){}}
 function loadLocal(){const r=localStorage.getItem(SAVE_KEY);return r?deserial(r):false;}
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveLocal,4000);}
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // STARTUP
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 window.addEventListener('load',()=>{
   if(loadLocal()&&S.sets.length>0){
     const badge=document.getElementById('save-badge');
-    badge.style.display='inline-flex';
-    badge.className='save-badge';
-    const total=S.sets.reduce((a,st)=>a+st.qs.length,0);
-    badge.innerHTML=`<span style="width:7px;height:7px;border-radius:50%;background:var(--mint4);display:inline-block"></span> Saved garden — ${total} questions, ${fmt(S.te)} petals`;
+    badge.style.display='inline-flex';badge.className='save-badge';
+    const tot=S.sets.reduce((a,st)=>a+st.qs.length,0);
+    badge.innerHTML=`<svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="#43a047"/></svg> Saved — ${tot} questions, ${fmt(S.te)} petals`;
     document.getElementById('cont-wrap').style.display='block';
     renderJsonSetsList();
   }
 });
 function continueGame(){launchGame();}
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // IMPORT SCREEN
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function swTab(id,i){
   document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
   ['notes','qa','json'].forEach(t=>document.getElementById('tc-'+t).classList.toggle('on',t===id));
@@ -734,80 +997,51 @@ function addQA(){
   list.appendChild(row);
 }
 function rmQA(btn){const r=btn.closest('.qa-row');if(document.querySelectorAll('.qa-row').length>1)r.remove();}
-
 function handleJsonUpload(input){
-  const files=Array.from(input.files);
-  if(!files.length)return;
-  files.forEach(f=>{
+  Array.from(input.files).forEach(f=>{
     const reader=new FileReader();
     reader.onload=e=>{
       try{
         const parsed=JSON.parse(e.target.result);
-        // Accept array of {q,a} or {question,answer} or {front,back}
         let arr=Array.isArray(parsed)?parsed:parsed.questions||parsed.cards||[];
-        arr=arr.map(o=>({
-          q:o.q||o.question||o.front||o.prompt||'',
-          a:o.a||o.answer||o.back||o.response||''
-        })).filter(o=>o.q&&o.a);
-        if(arr.length===0){showToast('No valid Q&A found in '+f.name);return;}
+        arr=arr.map(o=>({q:o.q||o.question||o.front||o.prompt||'',a:o.a||o.answer||o.back||o.response||''})).filter(o=>o.q&&o.a);
+        if(!arr.length){showToast('No valid Q&A in '+f.name);return;}
         const name=f.name.replace(/\.json$/i,'').replace(/[_-]/g,' ');
         S.sets.push({name,qs:arr,queue:shuffle([...arr]),wq:[]});
-        renderJsonSetsList();
-        showToast(`✓ "${name}" loaded — ${arr.length} questions`);
-      }catch(err){showToast('Invalid JSON in '+f.name+': '+err.message);}
+        renderJsonSetsList();showToast(`✓ "${name}" — ${arr.length} questions`);
+      }catch(err){showToast('Invalid JSON: '+f.name);}
     };
     reader.readAsText(f);
   });
   input.value='';
 }
-
 function renderJsonSetsList(){
-  const el=document.getElementById('json-sets-list');
-  if(!el)return;
-  el.innerHTML=S.sets.length===0?
-    '<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No sets uploaded yet.</p>':
-    S.sets.map((st,i)=>`<div class="json-set">
-      <div class="json-set-name">${st.name}</div>
-      <div class="json-set-cnt">${st.qs.length}q</div>
-      <button class="json-set-rm" onclick="removeSet(${i})">×</button>
-    </div>`).join('');
+  const el=document.getElementById('json-sets-list');if(!el)return;
+  el.innerHTML=S.sets.length?S.sets.map((st,i)=>`<div class="json-set"><div class="json-set-name">${st.name}</div><div class="json-set-cnt">${st.qs.length}q</div><button class="json-set-rm" onclick="removeSet(${i})">×</button></div>`).join(''):'<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No sets uploaded yet.</p>';
 }
 function removeSet(i){S.sets.splice(i,1);renderJsonSetsList();if(S.activeSet>=S.sets.length)S.activeSet=Math.max(0,S.sets.length-1);}
-
 function parseNotes(txt){
   const qs=[];
   txt.trim().split('\n').filter(l=>l.trim()).forEach(l=>{
     const m=l.match(/^(.+?)[\s:–—-]+(.+)$/);
-    if(m&&m[1].length<60&&m[2].length>3){
-      qs.push({q:`What is ${m[1].trim()}?`,a:m[2].trim()});
-      qs.push({q:`Define: "${m[1].trim()}"`,a:m[2].trim()});
-    }
+    if(m&&m[1].length<60&&m[2].length>3){qs.push({q:`What is ${m[1].trim()}?`,a:m[2].trim()});qs.push({q:`Define: "${m[1].trim()}"`,a:m[2].trim()});}
   });
-  const sents=(txt.match(/[^.!?]+[.!?]+/g)||[]);
-  sents.forEach(s=>{s=s.trim();if(s.length>30&&s.length<200){const ws=s.split(' ');if(ws.length>5){const ki=Math.floor(ws.length*.4+Math.random()*ws.length*.3);const k=ws[ki].replace(/[,;:]/g,'');if(k.length>3)qs.push({q:`Complete: "${ws.slice(0,ki).join(' ')} ___ ${ws.slice(ki+1).join(' ')}"`,a:k});}}});
+  (txt.match(/[^.!?]+[.!?]+/g)||[]).forEach(s=>{
+    s=s.trim();if(s.length>30&&s.length<200){const ws=s.split(' ');if(ws.length>5){const ki=Math.floor(ws.length*.4+Math.random()*ws.length*.3);const k=ws[ki].replace(/[,;:]/g,'');if(k.length>3)qs.push({q:`Complete: "${ws.slice(0,ki).join(' ')} ___ ${ws.slice(ki+1).join(' ')}"`,a:k});}}
+  });
   return qs;
 }
-
 function startGame(){
   const qs=[];
   const n=document.getElementById('t-notes').value.trim();
   if(n)qs.push(...parseNotes(n));
   document.querySelectorAll('.qa-row').forEach(r=>{const q=r.querySelector('.qi-q').value.trim(),a=r.querySelector('.qi-a').value.trim();if(q&&a)qs.push({q,a});});
-  if(qs.length>0){
-    // Prepend notes as a set
-    S.sets.unshift({name:'My Notes',qs,queue:shuffle([...qs]),wq:[]});
-    S.activeSet=0;
-  }
-  // Allow start if there are any sets at all (could be JSON-only)
-  if(S.sets.length===0){showToast('Add some questions first — paste notes, type Q&A, or upload JSON!');return;}
+  if(qs.length>0){S.sets.unshift({name:'My Notes',qs,queue:shuffle([...qs]),wq:[]});S.activeSet=0;}
+  if(S.sets.length===0){showToast('Add some questions first!');return;}
   if(S.activeSet>=S.sets.length)S.activeSet=0;
   launchGame();
 }
-function demoGame(){
-  S.sets=[{name:'Demo Questions',qs:DEMO_QS,queue:shuffle([...DEMO_QS]),wq:[]}];
-  S.activeSet=0;launchGame();
-}
-
+function demoGame(){S.sets=[{name:'Demo Questions',qs:DEMO_QS,queue:shuffle([...DEMO_QS]),wq:[]}];S.activeSet=0;launchGame();}
 function launchGame(){
   applyCosmetics();
   document.getElementById('scr-import').classList.add('hidden');
@@ -815,98 +1049,86 @@ function launchGame(){
   calcPps();renderAll();
   if(!loopStarted){loopStarted=true;requestAnimationFrame(gameLoop);}
   scheduleSave();
-  const total=S.sets.reduce((a,st)=>a+st.qs.length,0);
-  showToast(`Garden loaded — ${total} questions across ${S.sets.length} set${S.sets.length!==1?'s':''}!`);
+  showToast(`${S.sets.reduce((a,st)=>a+st.qs.length,0)} questions loaded ✿`);
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // HELPERS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
 function fmt(n){if(n>=1e12)return(n/1e12).toFixed(1)+'T';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n).toString();}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function calcPps(){
-  pps=UPGRADES.reduce((sum,u)=>{
-    const n=S.own[u.id]||0;
-    if(!n)return sum;
-    // Each owned copy contributes bpps * rebirthMult * slight efficiency bonus
-    return sum+(n*u.bpps*(1+Math.log1p(n)*.2)*S.rm);
-  },0);
-  S.lastPps=pps;
-}
+function calcPps(){pps=UPGRADES.reduce((sum,u)=>{const n=S.own[u.id]||0;if(!n)return sum;return sum+(n*u.bpps*(1+Math.log1p(n)*.2)*S.rm);},0);S.lastPps=pps;}
 function cost(u){return Math.floor(u.base*Math.pow(1.15,S.own[u.id]||0));}
+function getRarity(){const rolls={common:['common','common','common','rare','rare','rare','epic','legendary'],rare:['rare','rare','rare','epic','epic','legendary'],legendary:['epic','epic','epic','legendary','legendary']};return rolls[Math.random()<.001?'legendary':Math.random()<.07?'rare':'common'][Math.floor(Math.random()*8)];}
 
-// ═══════════════════════════════════════════════
-// COSMETICS APPLICATION
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// COSMETICS
+// ════════════════════════════════════════════════
 function applyCosmetics(){
   const skin=SKINS.find(s=>s.id===S.equippedSkin)||SKINS[0];
   const theme=THEMES.find(t=>t.id===S.equippedTheme)||THEMES[0];
   const icon=ICONS.find(i=>i.id===S.equippedIcon)||ICONS[0];
   const r=document.documentElement;
-  r.style.setProperty('--orb-a',skin.orb_a);
-  r.style.setProperty('--orb-b',skin.orb_b);
-  r.style.setProperty('--orb-c',skin.orb_c);
-  r.style.setProperty('--orb-glow',skin.glow);
-  r.style.setProperty('--theme-bg',theme.bg);
-  r.style.setProperty('--theme-panel',theme.panel);
+  r.style.setProperty('--orb-a',skin.orb_a);r.style.setProperty('--orb-b',skin.orb_b);
+  r.style.setProperty('--orb-c',skin.orb_c);r.style.setProperty('--orb-glow',skin.glow);
+  r.style.setProperty('--ring-color',skin.ring||'#f48fb1');
+  r.style.setProperty('--theme-bg',theme.bg);r.style.setProperty('--theme-panel',theme.panel);
   document.body.style.background=theme.bg;
-  const orbEl=document.getElementById('orb');
-  if(orbEl)orbEl.textContent=icon.e;
+  const orbEl=document.getElementById('orb');if(orbEl)orbEl.textContent=icon.e;
+}
+function equipItem(type,id){
+  if(type==='skin')S.equippedSkin=id;
+  else if(type==='theme')S.equippedTheme=id;
+  else if(type==='icon')S.equippedIcon=id;
+  else S.equippedTrail=id;
+  applyCosmetics();renderCollModal();scheduleSave();showToast('Equipped! ✿');
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // CLICK
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function doClick(e){
-  if(S.qa)return;
+  if(S.qa||document.getElementById('cov').classList.contains('show'))return;
   clearTimeout(S._ct);
-  S.combo=Math.min(S.combo+1,30);
-  if(S.combo>S.mc)S.mc=S.combo;
+  S.combo=Math.min(S.combo+1,30);if(S.combo>S.mc)S.mc=S.combo;
   S.cm=1+S.combo*.1;
   S._ct=setTimeout(()=>{S.combo=0;S.cm=1;renderCombo();},1800);
-
-  // Click value: base + fraction of pps
-  const base=Math.max(1,pps*.1+1);
-  const val=base*S.cm*S.rm;
-  S.pts+=val;S.te+=val;
-  S.tc++;S.csq++;S.lootProg++;
-
+  const val=Math.max(1,pps*.1+1)*S.cm*S.rm;
+  S.pts+=val;S.te+=val;S.tc++;S.csq++;S.lootProg++;
+  // Trail emojis
+  const trail=TRAILS.find(t=>t.id===S.equippedTrail)||TRAILS[0];
+  spawnClickParticles(e.clientX,e.clientY,S.combo);
   spawnFloat(e.clientX,e.clientY,val);
   popRing();renderCombo();renderStats();renderUpgs();
   checkQuiz();checkLoot();checkAchs();scheduleSave();
 }
-
-function popRing(){const r=document.getElementById('ring');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
-
+function popRing(){
+  const r=document.getElementById('ring'),r2=document.getElementById('ring2');
+  r.classList.remove('pop');r2.classList.remove('pop');void r.offsetWidth;
+  r.classList.add('pop');r2.classList.add('pop');
+}
 function spawnFloat(x,y,v){
   const el=document.createElement('div');el.className='fl';
-  el.style.cssText=`left:${x-14}px;top:${y-14}px;color:${S.combo>8?'var(--amber4)':S.combo>4?'var(--rose4)':'var(--lav4)'}`;
+  el.style.cssText=`left:${x-14}px;top:${y-14}px;color:${S.combo>12?'var(--amber4)':S.combo>6?'var(--rose4)':'var(--lav4)'}`;
   el.textContent=`+${fmt(v)}${S.combo>4?' ×'+S.combo:''}`;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1000);
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // QUIZ
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function checkQuiz(){
   const pct=S.csq/S.qth;
   document.getElementById('qtf').style.width=Math.min(pct*100,100)+'%';
   const rem=Math.max(0,S.qth-S.csq);
   document.getElementById('qtl').textContent=rem>0?`quiz in ${rem} blooms`:'quiz ready!';
-  if(S.csq>=S.qth&&!S.qa&&S.sets.length>0&&S.sets[S.activeSet]?.qs.length>0){
-    S.csq=0;setTimeout(openQuiz,300);
-  }
+  if(S.csq>=S.qth&&!S.qa&&S.sets.length>0&&S.sets[S.activeSet]?.qs.length>0){S.csq=0;setTimeout(openQuiz,300);}
 }
 function openQuiz(){
-  const set=S.sets[S.activeSet];
-  if(!set||!set.qs.length)return;
+  const set=S.sets[S.activeSet];if(!set||!set.qs.length)return;
   if(!set.queue.length)set.queue=shuffle([...set.qs]);
-  currentQ=set.wq.length>0&&Math.random()<.35?
-    set.wq.splice(Math.floor(Math.random()*set.wq.length),1)[0]:
-    set.queue.pop();
+  currentQ=set.wq.length>0&&Math.random()<.35?set.wq.splice(Math.floor(Math.random()*set.wq.length),1)[0]:set.queue.pop();
   S.qa=true;
   document.getElementById('q-set-tag').textContent=set.name;
   document.getElementById('q-text').textContent=currentQ.q;
@@ -917,6 +1139,12 @@ function openQuiz(){
   document.getElementById('q-skip').style.display='flex';
   const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
   document.getElementById('q-mult').innerHTML=`Correct earns <b>+${fmt(bonus*3)} petals</b>`;
+  // Show what crate they'll earn
+  const streakCrate=S.quizStreak>=4?'legendary':S.quizStreak>=1?'rare':'rare';
+  const crIcon=streakCrate==='legendary'?'⚜️':'💎';
+  document.getElementById('q-cr-ico').textContent=crIcon;
+  document.getElementById('q-cr-type').textContent=streakCrate==='legendary'?'Legendary':'Rare';
+  document.getElementById('q-crate-reward').classList.add('show');
   document.getElementById('qov').classList.add('show');
   setTimeout(()=>document.getElementById('q-inp').focus(),300);
 }
@@ -926,172 +1154,230 @@ function revealAns(){
   document.getElementById('q-skip').style.display='none';
 }
 function grade(g){
-  const set=S.sets[S.activeSet];
-  S.qt++;
+  const set=S.sets[S.activeSet];S.qt++;
   const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
   if(g===2){
-    S.qc++;
-    const earned=bonus*3;
-    S.pts+=earned;S.te+=earned;
-    // Correct answer = big loot progress boost (worth 10 clicks)
-    S.lootProg+=10;
-    activateQuizBonus();
-    showToast('✓ Correct! +'+fmt(earned)+' petals 🎉');
+    S.qc++;const earned=bonus*3;S.pts+=earned;S.te+=earned;
+    S.quizStreak++;
+    // Award crate based on streak
+    if(S.quizStreak>=5){S.cratesOwned.legendary++;showToast('✓ Correct! ⚜️ Legendary crate earned!');}
+    else if(S.quizStreak>=2){S.cratesOwned.rare++;showToast('✓ Correct! 💎 Rare crate earned!');}
+    else{S.cratesOwned.rare++;showToast('✓ Correct! 💎 Rare crate earned! +'+fmt(earned)+' petals');}
+    S.lootProg+=10;activateQuizBonus();
   } else if(g===1){
-    const earned=bonus;
-    S.pts+=earned;S.te+=earned;
-    // Almost = small loot boost (worth 3 clicks)
-    S.lootProg+=3;
-    if(set)set.wq.push(currentQ);
-    showToast('~ Almost! +'+fmt(earned)+' petals');
+    const earned=bonus;S.pts+=earned;S.te+=earned;
+    S.quizStreak=0;if(set)set.wq.push(currentQ);
+    S.lootProg+=3;showToast('~ Almost! +'+fmt(earned)+' petals');
   } else if(g===0){
-    if(set)set.wq.push(currentQ);
-    showToast('✗ Added to retry queue');
-  }
-  document.getElementById('qov').classList.remove('show');
+    S.quizStreak=0;if(set)set.wq.push(currentQ);showToast('✗ Added to retry queue');
+  } else {S.quizStreak=0;}
+  document.getElementById('qov').classList.remove('show');document.getElementById('q-crate-reward').classList.remove('show');
   S.qa=false;S.csq=0;S.qth=40+Math.floor(Math.random()*35);
   document.getElementById('qtf').style.width='0%';
-  renderStats();checkAchs();
-  // Check loot AFTER quiz closes (short delay so quiz overlay fully hides first)
-  setTimeout(()=>{checkLootFromQuiz();},350);
+  renderStats();renderCratePanel();checkAchs();
+  setTimeout(()=>checkLootFromQuiz(),350);
   scheduleSave();
 }
-
 function activateQuizBonus(){
   clearTimeout(quizBonusTimer);
   document.getElementById('d-quizbonus').style.display='inline-flex';
-  quizBonusTimer=setTimeout(()=>{
-    document.getElementById('d-quizbonus').style.display='none';
-  },30000);
+  quizBonusTimer=setTimeout(()=>document.getElementById('d-quizbonus').style.display='none',30000);
 }
 
-// ═══════════════════════════════════════════════
-// LOOT BOX
-// ═══════════════════════════════════════════════
-// Called every click — updates bar, fires if threshold hit
+// ════════════════════════════════════════════════
+// LOOT / CRATE PROGRESS
+// ════════════════════════════════════════════════
+function getLootThresh(){return Math.max(30,Math.floor(75*(1-Math.min(S.rb*.1,.5))));}
 function checkLoot(){
-  const thresh=getLootThresh();
-  const pct=Math.min(S.lootProg/thresh,1);
-  document.getElementById('ltf').style.width=(pct*100)+'%';
-  const rem=Math.max(0,thresh-S.lootProg);
-  document.getElementById('ltl').textContent=rem>0?`🌰 loot box in ${rem} actions`:'🌰 loot box ready!';
-  if(S.lootProg>=thresh&&!S.lootPending){
-    S.lootProg=0;
-    S.lootPending=true;
-    setTimeout(triggerLootBox,400);
-  }
-}
-// Called after quiz closes — same logic but with a delay already applied
-function checkLootFromQuiz(){
   const thresh=getLootThresh();
   document.getElementById('ltf').style.width=Math.min(S.lootProg/thresh,1)*100+'%';
   const rem=Math.max(0,thresh-S.lootProg);
-  document.getElementById('ltl').textContent=rem>0?`🌰 loot box in ${rem} actions`:'🌰 loot box ready!';
+  document.getElementById('ltl').textContent=rem>0?`🌰 crate in ${rem} actions`:'🌰 crate ready!';
   if(S.lootProg>=thresh&&!S.lootPending){
-    S.lootProg=0;
-    S.lootPending=true;
-    setTimeout(triggerLootBox,200);
+    S.lootProg=0;S.lootPending=true;
+    setTimeout(()=>{S.cratesOwned.common=Math.max(999,S.cratesOwned.common);S.lootPending=false;renderCratePanel();showToast('🌰 Common crate ready — check your crates!');},200);
   }
 }
-function getLootThresh(){
-  // Starts at 75, gets 10% cheaper per season, minimum 30
-  return Math.max(30,Math.floor(75*(1-Math.min(S.rb*.1,.5))));
+function checkLootFromQuiz(){
+  checkLoot();
 }
 
-function triggerLootBox(){
-  const pool=buildLootPool();
-  if(!pool.length){
-    // All cosmetics owned — give petal bonus instead
-    const bonus=Math.floor(S.te*.05+1000);
+// ════════════════════════════════════════════════
+// CRATE OPENING (CS:GO STYLE)
+// ════════════════════════════════════════════════
+function startCrateOpen(type){
+  if(S.sets.length===0||!S.sets[S.activeSet]?.qs.length){showToast('No questions loaded!');return;}
+  if(type!=='common'&&(S.cratesOwned[type]||0)<=0){showToast('No '+type+' crates!');return;}
+  activeCrateType=type;
+  activeCrateResult=null;
+  // Pick a question
+  const set=S.sets[S.activeSet];
+  if(!set.queue.length)set.queue=shuffle([...set.qs]);
+  activeCrateQ=set.queue[Math.floor(Math.random()*set.queue.length)];
+  // Reset overlay
+  document.getElementById('cov-title').textContent={common:'🌿 Common Crate',rare:'💎 Rare Crate',legendary:'⚜️ Legendary Crate'}[type];
+  document.getElementById('cov-sub').textContent='Answer the question to open';
+  document.getElementById('cov-question').classList.add('show');
+  document.getElementById('cov-q-text').textContent=activeCrateQ.q;
+  document.getElementById('cov-q-inp').value='';
+  document.getElementById('cov-q-ans').textContent=activeCrateQ.a;
+  document.getElementById('cov-q-ans').classList.remove('show');
+  document.getElementById('cov-q-grade').classList.remove('show');
+  document.getElementById('cov-q-initial-btns').style.display='flex';
+  document.getElementById('reel-wrap').style.display='none';
+  document.getElementById('cov-reward').classList.remove('show');
+  document.getElementById('cov-close').style.display='none';
+  document.getElementById('cov').classList.add('show');
+  setTimeout(()=>document.getElementById('cov-q-inp').focus(),300);
+}
+function covReveal(){
+  document.getElementById('cov-q-ans').classList.add('show');
+  document.getElementById('cov-q-grade').classList.add('show');
+  document.getElementById('cov-q-initial-btns').style.display='none';
+}
+function covGrade(correct){
+  // Always open crate regardless — but correct gives bonus
+  if(correct){
+    S.qc++;S.quizStreak++;
+    const bonus=Math.floor(Math.max(1,pps*.5+10)*S.rm);
     S.pts+=bonus;S.te+=bonus;
-    S.lootOpened++;
-    S.lootPending=false;
-    showToast('🌰 Loot box! All cosmetics owned — bonus +'+fmt(bonus)+' petals!');
-    renderStats();scheduleSave();return;
+    checkAchs();
+  } else {
+    S.quizStreak=0;
   }
-  // Weighted random pick
-  const total=pool.reduce((a,b)=>a+b.weight,0);
-  let r=Math.random()*total,chosen=pool[pool.length-1];
-  for(const item of pool){r-=item.weight;if(r<=0){chosen=item;break;}}
-  pendingLoot=chosen;
-
-  // Reset + show overlay
-  const iconEl=document.getElementById('lbox-icon');
-  iconEl.textContent='🌰';
-  iconEl.className='loot-box-icon';
-  document.getElementById('ltitle').textContent='A loot box bloomed!';
-  document.getElementById('lsub').textContent='Something is waiting inside…';
-  document.getElementById('reward-reveal').classList.remove('show');
-  document.getElementById('lopen-btn').style.display='block';
-  document.getElementById('lclose-btn').style.display='none';
-  document.getElementById('lov').classList.add('show');
+  // Consume crate (common is infinite)
+  if(activeCrateType!=='common')S.cratesOwned[activeCrateType]=Math.max(0,(S.cratesOwned[activeCrateType]||0)-1);
+  // Pick reward
+  activeCrateResult=pickCrateReward(activeCrateType);
+  document.getElementById('cov-question').classList.remove('show');
+  // Run the reel animation
+  runReel(activeCrateResult);
+  scheduleSave();
 }
-
-function buildLootPool(){
+function pickCrateReward(type){
+  const odds=CRATE_ODDS[type];
   const allItems=[
-    ...SKINS.map(s=>({type:'skin',ref:s.id,name:s.n,icon:s.e,rarity:s.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[s.rarity]||30})),
-    ...THEMES.map(t=>({type:'theme',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[t.rarity]||30})),
-    ...ICONS.map(i=>({type:'icon',ref:i.id,name:i.n,icon:i.e,rarity:i.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[i.rarity]||30})),
+    ...SKINS.map(s=>({type:'skin',ref:s.id,name:s.n,icon:s.e,rarity:s.rarity})),
+    ...THEMES.map(t=>({type:'theme',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity})),
+    ...ICONS.map(i=>({type:'icon',ref:i.id,name:i.n,icon:i.e,rarity:i.rarity})),
+    ...TRAILS.map(t=>({type:'trail',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity})),
   ];
-  return allItems.filter(it=>!S.ownedCosmetics.includes(it.ref));
+  // Weighted rarity pick
+  const rand=Math.random()*100;
+  let cum=0,chosenRarity='common';
+  for(const [rar,pct] of Object.entries(odds)){if(pct>0){cum+=pct;if(rand<=cum){chosenRarity=rar;break;}}}
+  // Filter items of that rarity (prefer unowned)
+  let pool=allItems.filter(it=>it.rarity===chosenRarity&&!S.ownedCosmetics.includes(it.ref));
+  if(!pool.length)pool=allItems.filter(it=>it.rarity===chosenRarity);
+  if(!pool.length)pool=allItems;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function runReel(finalItem){
+  const reel=document.getElementById('reel-track');
+  const wrap=document.getElementById('reel-wrap');
+  wrap.style.display='block';
+  // Build reel items: ~30 random + final at position ~26
+  const allItems=[
+    ...SKINS.map(s=>({icon:s.e,name:s.n,rarity:s.rarity})),
+    ...THEMES.map(t=>({icon:t.e,name:t.n,rarity:t.rarity})),
+    ...ICONS.map(i=>({icon:i.e,name:i.n,rarity:i.rarity})),
+    ...TRAILS.map(t=>({icon:t.e,name:t.n,rarity:t.rarity})),
+  ];
+  const items=[];for(let i=0;i<30;i++)items.push(allItems[Math.floor(Math.random()*allItems.length)]);
+  items[26]={icon:finalItem.icon,name:finalItem.name,rarity:finalItem.rarity};
+  reel.innerHTML=items.map((it,i)=>`<div class="reel-item r-${it.rarity}${i===26?' highlighted':''}"><span class="ri-ico">${it.icon}</span><span class="ri-name">${it.name}</span></div>`).join('');
+  // Animate: start at item 0, slow to land on item 26
+  const ITEM_W=96; // 90 + 6 gap
+  const targetX=-(26*ITEM_W)+10;
+  reel.style.transition='none';reel.style.transform='translateX(0)';
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      reel.style.transition='transform 4s cubic-bezier(.05,.8,.1,1)';
+      reel.style.transform=`translateX(${targetX}px)`;
+    });
+  });
+  setTimeout(()=>showReward(finalItem),4200);
+}
+function showReward(item){
+  const isNew=!S.ownedCosmetics.includes(item.ref);
+  if(isNew)S.ownedCosmetics.push(item.ref);
+  if(item.rarity==='legendary')S.legendaryFound++;
+  S.cratesOpened++;
+  // Add to history
+  S.crateHistory.unshift({icon:item.icon,name:item.name,rarity:item.rarity,type:item.type,crate:activeCrateType});
+  if(S.crateHistory.length>10)S.crateHistory.pop();
+  // Show reward card
+  document.getElementById('cr-ico').textContent=item.icon;
+  document.getElementById('cr-name').textContent=item.name+(isNew?'':' (duplicate)');
+  document.getElementById('cr-type').textContent={skin:'Orb Skin',theme:'Background Theme',icon:'Orb Icon',trail:'Click Trail'}[item.type]||item.type;
+  document.getElementById('cr-rarity').innerHTML=`<span class="r-${item.rarity}">${item.rarity.toUpperCase()}</span>`;
+  document.getElementById('cov-reward').classList.add('show');
+  document.getElementById('cov-sub').textContent=isNew?'New cosmetic unlocked!':'You already own this — collected duplicate.';
+  document.getElementById('cov-close').style.display='block';
+  renderCrateHistory();renderCollModal();checkAchs();scheduleSave();
+}
+function closeCrateOverlay(){
+  document.getElementById('cov').classList.remove('show');
+  renderCratePanel();
+}
+function renderCrateHistory(){
+  const el=document.getElementById('crate-history-list');if(!el)return;
+  if(!S.crateHistory.length){el.innerHTML='<div style="font-size:11px;color:var(--ink3)">No crates opened yet</div>';return;}
+  el.innerHTML=S.crateHistory.slice(0,5).map(h=>`<div class="ch-item"><span class="chi">${h.icon}</span><span style="flex:1;color:var(--ink)">${h.name}</span><span class="r-${h.rarity}" style="font-size:10px;font-weight:500">${h.rarity}</span></div>`).join('');
+}
+function renderCratePanel(){
+  document.getElementById('rare-crate-count').textContent=S.cratesOwned.rare||0;
+  document.getElementById('leg-crate-count').textContent=S.cratesOwned.legendary||0;
+  document.getElementById('rare-open-btn').disabled=(S.cratesOwned.rare||0)<=0;
+  document.getElementById('leg-open-btn').disabled=(S.cratesOwned.legendary||0)<=0;
+  renderCrateHistory();
 }
 
-function openLootBox(){
-  if(!pendingLoot)return;
-  const iconEl=document.getElementById('lbox-icon');
-  iconEl.className='loot-box-icon opening';
-  setTimeout(()=>{
-    const item=pendingLoot;
-    if(!S.ownedCosmetics.includes(item.ref))S.ownedCosmetics.push(item.ref);
-    S.lootOpened++;
-    if(item.rarity==='legendary')S.legendaryFound++;
-
-    document.getElementById('reward-icon').textContent=item.icon;
-    document.getElementById('reward-name').textContent=item.name;
-    document.getElementById('reward-type').innerHTML=
-      `<span class="rarity-${item.rarity}">${item.rarity.toUpperCase()}</span> · ${{skin:'Orb Skin',theme:'Background Theme',icon:'Orb Icon'}[item.type]||item.type}`;
-    document.getElementById('reward-reveal').classList.add('show');
-    document.getElementById('ltitle').textContent='You found…';
-    document.getElementById('lsub').textContent='Equip it from your Collection ✨';
-    document.getElementById('lopen-btn').style.display='none';
-    document.getElementById('lclose-btn').style.display='inline-block';
-    pendingLoot=null;
-    checkAchs();renderAchs();scheduleSave();
-  },650);
+// ════════════════════════════════════════════════
+// RIGHT PANEL TABS
+// ════════════════════════════════════════════════
+function swRp(i){
+  document.querySelectorAll('.rpt').forEach((b,j)=>b.classList.toggle('on',j===i));
+  ['rps-achs','rps-crates','rps-coll','rps-stats'].forEach((id,j)=>document.getElementById(id).classList.toggle('on',j===i));
+  if(i===1)renderCratePanel();
+  if(i===2)renderCollModal();
 }
-function closeLoot(){
-  document.getElementById('lov').classList.remove('show');
-  S.lootPending=false;
+function swCrate(i){
+  document.querySelectorAll('.cratet').forEach((b,j)=>b.classList.toggle('on',j===i));
+  ['cs-common','cs-rare','cs-legendary'].forEach((id,j)=>document.getElementById(id).classList.toggle('on',j===i));
+}
+function swColl(i){
+  document.querySelectorAll('.ctab').forEach((b,j)=>b.classList.toggle('on',j===i));
+  ['colls-skins','colls-themes','colls-icons','colls-trails'].forEach((id,j)=>document.getElementById(id).classList.toggle('on',j===i));
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // RENDER
-// ═══════════════════════════════════════════════
-function renderAll(){renderUpgs();renderAchs();renderStats();updateRbPill();updateActiveSetPill();applyCosmetics();}
-
+// ════════════════════════════════════════════════
+function renderAll(){renderUpgs();renderAchs();renderStats();renderCratePanel();updateRbPill();updateActiveSetPill();applyCosmetics();}
 function renderCombo(){
   document.getElementById('cbar').style.width=(S.combo/30*100)+'%';
   const lbl=document.getElementById('clabel');
   if(S.combo>1){lbl.textContent=`${S.combo}× combo! (${S.cm.toFixed(1)}×)`;lbl.classList.add('on');}
   else{lbl.textContent='click to bloom';lbl.classList.remove('on');}
 }
-
 function renderStats(){
   document.getElementById('d-pts').textContent=fmt(S.pts);
   document.getElementById('d-pps').textContent=pps>=1?fmt(pps):pps.toFixed(2);
   document.getElementById('stat-list').innerHTML=
     [['Total petals',fmt(S.te)],['Per second',pps>=1?fmt(pps):pps.toFixed(2)],
-     ['Blooms',S.tc],['Quiz',S.qc+'/'+S.qt],
+     ['Blooms',S.tc],['Quiz',S.qc+'/'+S.qt],['Streak',S.quizStreak+'🔥'],
      ['Best combo',S.mc+'×'],['Season',S.rb+1],
-     ['Loot opened',S.lootOpened],['Questions',S.sets.reduce((a,st)=>a+st.qs.length,0)]]
+     ['Crates opened',S.cratesOpened],['Legendaries',S.legendaryFound],
+     ['Cosmetics',S.ownedCosmetics.length],
+     ['Questions',S.sets.reduce((a,st)=>a+st.qs.length,0)]]
     .map(([k,v])=>`<div class="srow"><span>${k}</span><b>${v}</b></div>`).join('');
 }
-
 function renderUpgs(){
   const season=S.rb;
   const list=document.getElementById('upg-list');
-  let html='';
   const tiers=[[1,'🌱 Sprouts'],[2,'🌸 Bloomers'],[3,'🌳 Trees'],[4,'🦋 Creatures'],[5,'🌈 Phenomena'],[6,'🌌 Cosmic']];
+  let html='';
   tiers.forEach(([tier,label])=>{
     const items=UPGRADES.filter(u=>u.tier===tier&&(!u.minSeason||season>=u.minSeason-1));
     if(!items.length)return;
@@ -1109,82 +1395,70 @@ function renderUpgs(){
   list.querySelectorAll('.ui:not(.ul)').forEach(el=>{
     el.addEventListener('click',()=>{
       const u=UPGRADES.find(x=>x.id===el.dataset.id),c=cost(u);
-      if(S.pts>=c){
-        S.pts-=c;S.own[u.id]=(S.own[u.id]||0)+1;
-        calcPps();renderUpgs();renderStats();checkAchs();
-        showMilestone(u.e+' '+u.n,'Added to your garden!');scheduleSave();
-      }
+      if(S.pts>=c){S.pts-=c;S.own[u.id]=(S.own[u.id]||0)+1;calcPps();renderUpgs();renderStats();checkAchs();showMilestone(u.e+' '+u.n,'Added to your garden!');scheduleSave();}
     });
   });
 }
-
 function renderAchs(){
-  document.getElementById('ach-list').innerHTML=ACHS.map(a=>`
-    <div class="ai${S.ul.has(a.id)?' done':''}">
-      <div class="aico">${a.e}</div>
-      <div class="at"><b>${a.n}</b><span>${a.d}</span></div>
-    </div>`).join('');
+  document.getElementById('ach-list').innerHTML=ACHS.map(a=>`<div class="ai${S.ul.has(a.id)?' done':''}"><div class="aico">${a.e}</div><div class="at"><b>${a.n}</b><span>${a.d}</span></div></div>`).join('');
 }
-
+function renderCollModal(){
+  const mkGrid=(items,type)=>items.map(item=>{
+    const owned=S.ownedCosmetics.includes(item.id);
+    const equipped=[S.equippedSkin,S.equippedTheme,S.equippedIcon,S.equippedTrail].includes(item.id);
+    return`<div class="ci${owned?' unlocked':''}${equipped?' equipped':''}" onclick="${owned?`equipItem('${type}','${item.id}')`:''}" title="${owned?'Click to equip':'Locked'}">
+      ${equipped?'<div class="ci-badge eq">on</div>':''}
+      <span class="ci-ico">${item.e}</span>
+      <div class="ci-name">${item.n}</div>
+      <div class="ci-rarity r-${item.rarity}">${item.rarity}</div>
+      ${!owned?'<div class="ci-lock">🔒 locked</div>':''}
+    </div>`;
+  }).join('');
+  document.getElementById('coll-skins').innerHTML=mkGrid(SKINS,'skin');
+  document.getElementById('coll-themes').innerHTML=mkGrid(THEMES,'theme');
+  document.getElementById('coll-icons').innerHTML=mkGrid(ICONS,'icon');
+  document.getElementById('coll-trails').innerHTML=mkGrid(TRAILS,'trail');
+}
 function updateRbPill(){
   const p=document.getElementById('d-rbpill');
-  const seasonEl=document.getElementById('d-rbnum');
-  const multEl=document.getElementById('d-rbmult');
-  if(S.rb>0){
-    p.style.display='inline-flex';
-    if(seasonEl)seasonEl.textContent=S.rb+1;
-    if(multEl)multEl.textContent=S.rm.toFixed(2);
-  } else p.style.display='none';
+  if(S.rb>0){p.style.display='inline-flex';document.getElementById('d-rbnum').textContent=S.rb+1;document.getElementById('d-rbmult').textContent=S.rm.toFixed(2);}
+  else p.style.display='none';
   document.getElementById('rb-cur-season').textContent=S.rb+1;
 }
-
 function updateActiveSetPill(){
   const set=S.sets[S.activeSet];
-  document.getElementById('active-set-name').textContent=set?set.name:'No questions';
+  document.getElementById('active-set-name').textContent=set?set.name:'No Qs';
 }
-
 function checkAchs(){
   let changed=false;
   ACHS.forEach(a=>{if(!S.ul.has(a.id)&&a.f(S)){S.ul.add(a.id);changed=true;showMilestone(a.e+' '+a.n,a.d);}});
   if(changed)renderAchs();
 }
 
-// ═══════════════════════════════════════════════
-// QUESTION EDITOR
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════════════
 function openMod(id){
   if(id==='mod-editor'){
-    const set=S.sets[S.activeSet];
-    const qs=set?set.qs:[];
-    const list=document.getElementById('ed-list');
-    list.innerHTML=(qs.length===0?`<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No questions in this set.</p>`:
-      qs.map((q,i)=>`<div class="erow" id="er${i}">
-        <div class="efields">
-          <input class="ei" id="eq${i}" value="${esc(q.q)}" placeholder="Question…">
-          <input class="ei" id="ea${i}" value="${esc(q.a)}" placeholder="Answer…">
-        </div>
-        <button class="edel" onclick="this.closest('.erow').remove()">×</button>
-      </div>`).join(''))+
+    const set=S.sets[S.activeSet],qs=set?set.qs:[];
+    document.getElementById('ed-list').innerHTML=
+      (qs.length===0?'<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No questions in this set.</p>':
+      qs.map((q,i)=>`<div class="erow" id="er${i}"><div class="efields"><input class="ei" id="eq${i}" value="${esc(q.q)}" placeholder="Question…"><input class="ei" id="ea${i}" value="${esc(q.a)}" placeholder="Answer…"></div><button class="edel" onclick="this.closest('.erow').remove()">×</button></div>`).join(''))+
       `<button class="eadd" onclick="addEdRow()">+ Add question</button>`;
   }
-  if(id==='mod-sets') renderSetsModal();
-  if(id==='mod-coll') renderCollModal();
+  if(id==='mod-sets')renderSetsModal();
   document.getElementById(id).classList.add('show');
 }
 function closeMod(id){document.getElementById(id).classList.remove('show');}
-
 function addEdRow(){
-  const i=Date.now();
-  const add=document.querySelector('.eadd');
+  const i=Date.now();const add=document.querySelector('.eadd');
   const row=document.createElement('div');row.className='erow';
   row.innerHTML=`<div class="efields"><input class="ei" id="eq${i}" placeholder="Question…"><input class="ei" id="ea${i}" placeholder="Answer…"></div><button class="edel" onclick="this.closest('.erow').remove()">×</button>`;
   add.parentNode.insertBefore(row,add);
 }
-
 function saveEditor(){
-  const rows=document.querySelectorAll('#ed-list .erow');
   const qs=[];
-  rows.forEach(row=>{
+  document.querySelectorAll('#ed-list .erow').forEach(row=>{
     const inputs=row.querySelectorAll('.ei');
     const q=inputs[0]?.value.trim(),a=inputs[1]?.value.trim();
     if(q&&a)qs.push({q,a});
@@ -1192,17 +1466,11 @@ function saveEditor(){
   if(!qs.length){showToast('Add at least one question!');return;}
   const set=S.sets[S.activeSet];
   if(set){set.qs=qs;set.queue=shuffle([...qs]);set.wq=[];}
-  else{S.sets.push({name:'Edited Set',qs,queue:shuffle([...qs]),wq:[]});S.activeSet=0;}
-  closeMod('mod-editor');renderStats();updateActiveSetPill();scheduleSave();
-  showToast(`${qs.length} questions saved ✿`);
+  else{S.sets.push({name:'Edited',qs,queue:shuffle([...qs]),wq:[]});S.activeSet=0;}
+  closeMod('mod-editor');renderStats();updateActiveSetPill();scheduleSave();showToast(`${qs.length} questions saved ✿`);
 }
-
-// ═══════════════════════════════════════════════
-// SETS MODAL
-// ═══════════════════════════════════════════════
 function renderSetsModal(){
-  const el=document.getElementById('sets-list');
-  el.innerHTML=S.sets.length===0?
+  document.getElementById('sets-list').innerHTML=S.sets.length===0?
     '<p style="font-size:12px;color:var(--ink3)">No question sets loaded.</p>':
     S.sets.map((st,i)=>`<div class="set-entry${i===S.activeSet?' active':''}" onclick="switchSet(${i})">
       <span style="font-size:18px">${['📚','📖','📝','📄','📃'][i%5]}</span>
@@ -1211,108 +1479,63 @@ function renderSetsModal(){
       <button class="set-entry-del" onclick="event.stopPropagation();deleteSet(${i})">×</button>
     </div>`).join('');
 }
-function switchSet(i){
-  S.activeSet=i;updateActiveSetPill();renderSetsModal();
-  showToast('Switched to "'+S.sets[i].name+'"');scheduleSave();
-}
-function deleteSet(i){
-  if(S.sets.length<=1){showToast("Can't delete the last set!");return;}
-  S.sets.splice(i,1);
-  if(S.activeSet>=S.sets.length)S.activeSet=S.sets.length-1;
-  renderSetsModal();updateActiveSetPill();scheduleSave();
-}
-function handleJsonMid(input){
-  handleJsonUpload(input);
-  setTimeout(()=>renderSetsModal(),300);
-}
+function switchSet(i){S.activeSet=i;updateActiveSetPill();renderSetsModal();showToast('Switched to "'+S.sets[i].name+'"');scheduleSave();}
+function deleteSet(i){if(S.sets.length<=1){showToast("Can't delete last set!");return;}S.sets.splice(i,1);if(S.activeSet>=S.sets.length)S.activeSet=S.sets.length-1;renderSetsModal();updateActiveSetPill();scheduleSave();}
+function handleJsonMid(input){handleJsonUpload(input);setTimeout(()=>renderSetsModal(),300);}
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // REBIRTH / SEASON
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function openRebirth(){
-  const rb=S.rb;
-  const nm=parseFloat((1+(rb+1)*.25).toFixed(2));
+  const rb=S.rb,nm=parseFloat((1+(rb+1)*.25).toFixed(2));
   const next=SEASONS[(rb+1)%SEASONS.length];
   document.getElementById('rb-info').innerHTML=`
     <div class="rstat"><span>Current Season</span><b>${SEASONS[rb%SEASONS.length].n} ${SEASONS[rb%SEASONS.length].e}</b></div>
     <div class="rstat"><span>Next Season</span><b>${next.n} ${next.e}</b></div>
     <div class="rstat"><span>Current multiplier</span><b>${S.rm.toFixed(2)}×</b></div>
     <div class="rstat"><span>After Season change</span><b>${nm}× (+25%)</b></div>
-    <div class="rstat"><span>Petals lost</span><b>${fmt(S.pts)}</b></div>
-    <div class="rstat"><span>Garden items lost</span><b>${Object.values(S.own).reduce((a,b)=>a+b,0)}</b></div>`;
+    <div class="rstat"><span>Petals lost</span><b>${fmt(S.pts)}</b></div>`;
   const need=10000*Math.pow(10,rb);
   const btn=document.getElementById('rb-btn');
   btn.disabled=S.te<need;
   btn.textContent=btn.disabled?`Need ${fmt(need)} total petals`:'🌸 Begin new Season';
   openMod('mod-rebirth');
 }
-
 function doRebirth(){
-  S.rb++;
-  S.rm=parseFloat((1+S.rb*.25).toFixed(2));
-  S.pts=0;S.own={};S.combo=0;S.cm=1;
-  calcPps();
-  // Apply season theme
+  S.rb++;S.rm=parseFloat((1+S.rb*.25).toFixed(2));S.pts=0;S.own={};S.combo=0;S.cm=1;
   const season=SEASONS[S.rb%SEASONS.length];
   document.documentElement.style.setProperty('--theme-bg',season.bg);
   document.documentElement.style.setProperty('--theme-panel',season.panel);
   document.getElementById('orb').textContent=season.orb;
-  closeMod('mod-rebirth');
-  updateRbPill();renderAll();checkAchs();scheduleSave();
-  showMilestone(`${season.e} Season ${S.rb+1}: ${season.n}!`,`${S.rm}× permanent multiplier`);
+  document.documentElement.style.setProperty('--ring-color',season.ring||'#f48fb1');
+  calcPps();closeMod('mod-rebirth');updateRbPill();renderAll();checkAchs();scheduleSave();
+  showMilestone(`${season.e} Season ${S.rb+1}: ${season.n}!`,`${S.rm}× permanent multiplier active`);
 }
 
-// ═══════════════════════════════════════════════
-// COLLECTION MODAL
-// ═══════════════════════════════════════════════
-function renderCollModal(){
-  const mkGrid=(items,type)=>items.map(item=>{
-    const owned=S.ownedCosmetics.includes(item.id);
-    const equipped=type==='skin'?S.equippedSkin===item.id:type==='theme'?S.equippedTheme===item.id:S.equippedIcon===item.id;
-    return`<div class="coll-item${owned?' owned':''}${equipped?' equipped':''}" onclick="${owned?`equipItem('${type}','${item.id}')`:''}" style="${!owned?'cursor:default':'cursor:pointer'}">
-      <span class="coll-ico">${item.e}</span>
-      <div class="coll-name">${item.n}</div>
-      ${!owned?`<div style="font-size:9px;color:var(--ink3);margin-top:2px" class="rarity-${item.rarity}">${item.rarity}</div>`:''}
-      ${equipped?'<div style="font-size:9px;color:var(--amber4);font-weight:500;margin-top:2px">equipped</div>':''}
-    </div>`;
-  }).join('');
-  document.getElementById('coll-skins').innerHTML=mkGrid(SKINS,'skin');
-  document.getElementById('coll-themes').innerHTML=mkGrid(THEMES,'theme');
-  document.getElementById('coll-icons').innerHTML=mkGrid(ICONS,'icon');
-}
-function equipItem(type,id){
-  if(type==='skin')S.equippedSkin=id;
-  else if(type==='theme')S.equippedTheme=id;
-  else S.equippedIcon=id;
-  applyCosmetics();renderCollModal();scheduleSave();
-  showToast('Equipped!');
-}
-
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // SAVE MODAL
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function openSave(){
   document.getElementById('save-status').innerHTML=
-    [['Petals earned',fmt(S.te)],['Season',S.rb+1],['Cosmetics owned',S.ownedCosmetics.length],
-     ['Loot boxes opened',S.lootOpened],['Question sets',S.sets.length],
+    [['Petals earned',fmt(S.te)],['Season',S.rb+1],['Cosmetics',S.ownedCosmetics.length],
+     ['Crates opened',S.cratesOpened],['Question sets',S.sets.length],
      ['Total questions',S.sets.reduce((a,st)=>a+st.qs.length,0)],
-     ['Save method','Auto · every 4 seconds']]
+     ['Auto-save','every 4 seconds']]
     .map(([k,v])=>`<div style="display:flex;justify-content:space-between"><span>${k}</span><b style="color:var(--ink)">${v}</b></div>`).join('');
   openMod('mod-save');
 }
 function exportSave(){
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([serial()],{type:'application/json'}));a.download='bloom-garden-save.json';a.click();showToast('Save exported!');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([serial()],{type:'application/json'}));a.download='bloom-save.json';a.click();showToast('Save exported!');
 }
 function importSave(input){
   const f=input.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{if(deserial(e.target.result)){closeMod('mod-save');launchGame();showToast('Save imported ✿');}else showToast('Invalid save file');};
+  const r=new FileReader();r.onload=e=>{if(deserial(e.target.result)){closeMod('mod-save');launchGame();showToast('Save imported ✿');}else showToast('Invalid save file');};
   r.readAsText(f);input.value='';
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // RESET
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function doReset(){
   localStorage.removeItem(SAVE_KEY);S=freshState();pps=0;
   closeMod('mod-reset');
@@ -1323,35 +1546,26 @@ function doReset(){
   showToast('Garden reset. Fresh start!');
 }
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // MILESTONE / TOAST
-// ═══════════════════════════════════════════════
-function showMilestone(t,s){const el=document.createElement('div');el.className='mpop';el.innerHTML=`<div class="mpt">${t}</div><div class="mps">${s}</div>`;document.body.appendChild(el);setTimeout(()=>el.remove(),2900);}
-let tT;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
+// ════════════════════════════════════════════════
+function showMilestone(t,s){
+  const el=document.createElement('div');el.className='mpop';
+  el.innerHTML=`<div class="mpt">${t}</div><div class="mps">${s}</div>`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),3100);
+}
+let tT;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
 
-// ═══════════════════════════════════════════════
-// GAME LOOP — THE CRITICAL BIT
-// pps is petals per second. Each frame we add pps * (dt / 1000).
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// GAME LOOP
+// ════════════════════════════════════════════════
 let lastTs=0;
 function gameLoop(ts){
-  const dt=Math.min(ts-lastTs,100); // cap at 100ms to avoid huge jumps
-  lastTs=ts;
-
-  // PASSIVE INCOME — this is what was broken before
-  if(pps>0){
-    const earned=pps*(dt/1000);
-    S.pts+=earned;
-    S.te+=earned;
-  }
-
+  const dt=Math.min(ts-lastTs,100);lastTs=ts;
+  if(pps>0){const e=pps*(dt/1000);S.pts+=e;S.te+=e;}
   tickAcc+=dt;
-  if(tickAcc>250){
-    tickAcc=0;
-    renderStats();
-    renderUpgs(); // re-check which upgrades are affordable
-  }
-
+  if(tickAcc>250){tickAcc=0;renderStats();renderUpgs();}
   requestAnimationFrame(gameLoop);
 }
 </script>
