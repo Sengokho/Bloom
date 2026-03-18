@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bloom ✿</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fdfaf6;--bg2:#f5efe8;--bg3:#ede4d8;
+  --rose:#fce4ec;--rose2:#f8bbd0;--rose3:#f48fb1;--rose4:#e91e63;
+  --sky:#e3f2fd;--sky2:#bbdefb;--sky3:#90caf9;--sky4:#1e88e5;
+  --mint:#e8f5e9;--mint2:#c8e6c9;--mint3:#a5d6a7;--mint4:#43a047;
+  --peach:#fff3e0;--peach2:#ffe0b2;--peach3:#ffcc80;--peach4:#fb8c00;
+  --lav:#ede7f6;--lav2:#d1c4e9;--lav3:#b39ddb;--lav4:#7e57c2;
+  --amber:#fff8e1;--amber2:#ffecb3;--amber3:#ffd54f;--amber4:#f9a825;
+  --ink:#3d2c2c;--ink2:#7a6060;--ink3:#b09898;
+  --card:#fff;--sh:0 2px 20px rgba(61,44,44,.07);--sh2:0 8px 40px rgba(61,44,44,.13);
+  --orb-a:#fce4ec;--orb-b:#e3f2fd;--orb-c:#ede7f6;
+  --orb-glow:rgba(244,143,177,.3);
+  --theme-bg:#fdfaf6;--theme-panel:rgba(255,255,255,.83);
+}
+html,body{height:100%;background:var(--theme-bg);color:var(--ink);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background .8s}
+canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ═══ SCREENS ═══ */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .4s,transform .4s}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(14px)}
+
+/* ═══ IMPORT ═══ */
+#scr-import{background:var(--theme-bg);padding:28px 18px;gap:12px;overflow-y:auto}
+.imp-card{background:var(--card);border-radius:22px;padding:24px;box-shadow:var(--sh2);width:100%;max-width:560px}
+.tab-row{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.tb{flex:1;min-width:60px;padding:8px 4px;border-radius:11px;border:1.5px solid var(--bg3);background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--ink2);cursor:pointer;transition:all .2s;text-align:center}
+.tb.on{background:var(--rose);border-color:var(--rose3);color:var(--ink)}
+.tc{display:none}.tc.on{display:block}
+textarea.ni{width:100%;height:130px;border:1.5px solid var(--bg3);border-radius:13px;padding:11px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);resize:none;outline:none;line-height:1.7;transition:border .2s}
+textarea.ni:focus{border-color:var(--rose3);background:#fff}
+.hint{font-size:11px;color:var(--ink3);margin-top:5px;line-height:1.5}
+.qa-row{display:flex;gap:5px;margin-bottom:6px}
+.qa-row input{flex:1;padding:8px 10px;border:1.5px solid var(--bg3);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--bg2);outline:none;min-width:0;transition:border .2s}
+.qa-row input:focus{border-color:var(--sky3);background:#fff}
+.qa-row input::placeholder{color:var(--ink3)}
+.add-qa{padding:8px;border-radius:10px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-bottom:8px;transition:all .2s}
+.add-qa:hover{background:var(--sky2)}
+.rm-qa{width:28px;height:28px;border-radius:7px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:14px;flex-shrink:0}
+
+/* JSON sets list */
+.json-set{display:flex;align-items:center;gap:7px;background:var(--bg2);border-radius:10px;padding:8px 10px;margin-bottom:6px;border:1px solid var(--bg3)}
+.json-set-name{flex:1;font-size:12px;color:var(--ink);font-weight:500}
+.json-set-cnt{font-size:11px;color:var(--ink3)}
+.json-set-rm{width:24px;height:24px;border-radius:6px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:13px;flex-shrink:0}
+.upload-json-btn{padding:9px;border-radius:10px;border:1.5px dashed var(--lav3);background:var(--lav);color:var(--lav4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-bottom:8px;transition:all .2s}
+.upload-json-btn:hover{background:var(--lav2)}
+
+.go-btn{width:100%;padding:14px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;font-family:'Fraunces',serif;font-size:17px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:12px;letter-spacing:.3px}
+.go-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,143,177,.4)}
+.go-btn:active{transform:translateY(0)}
+.demo-btn{font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;margin-top:5px;padding:3px 7px;font-family:'DM Sans',sans-serif}
+.demo-btn:hover{color:var(--ink2)}
+.cont-btn{padding:12px 26px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--mint3),var(--sky3));color:#fff;font-family:'Fraunces',serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.3px;box-shadow:0 4px 16px rgba(165,214,167,.4)}
+.cont-btn:hover{transform:translateY(-2px)}
+.save-badge{display:inline-flex;align-items:center;gap:7px;background:var(--mint);border:1px solid var(--mint2);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--mint4)}
+
+/* ═══ GAME ═══ */
+#scr-game{background:transparent;padding:0;flex-direction:row;align-items:stretch;justify-content:stretch}
+.gp{background:var(--theme-panel);backdrop-filter:blur(14px);display:flex;flex-direction:column;padding:13px 11px;overflow-y:auto;flex-shrink:0;transition:background .8s}
+.gp::-webkit-scrollbar{width:3px}.gp::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
+#lp{width:220px;border-right:1px solid rgba(237,228,216,.8);border-radius:20px 0 0 20px}
+#rp{width:210px;border-left:1px solid rgba(237,228,216,.8);border-radius:0 20px 20px 0}
+#cp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:13px 8px}
+.plabel{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--bg3)}
+
+/* Stats */
+.snum{font-family:'Fraunces',serif;font-size:32px;font-weight:500;color:var(--ink);line-height:1;letter-spacing:-1px}
+.slabel{font-size:11px;color:var(--ink3);margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:500;margin-top:3px}
+.pill-mint{background:var(--mint);color:var(--mint4)}
+.pill-amber{background:var(--amber);color:var(--amber4)}
+.pill-lav{background:var(--lav);color:var(--lav4)}
+.pill-rose{background:var(--rose);color:var(--rose4)}
+
+/* ORB */
+#clkwrap{position:relative;display:flex;align-items:center;justify-content:center}
+#clkbtn{width:140px;height:140px;border-radius:50%;border:none;cursor:pointer;background:transparent;transition:transform .1s;position:relative}
+#clkbtn:active{transform:scale(.91)}
+.orb{width:140px;height:140px;border-radius:50%;background:linear-gradient(145deg,var(--orb-a),var(--orb-b),var(--orb-c));box-shadow:0 4px 22px var(--orb-glow),inset 0 2px 8px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:54px;position:relative;overflow:hidden;transition:background .8s,box-shadow .8s}
+.orb::before{content:'';position:absolute;top:7px;left:16px;width:32px;height:16px;background:rgba(255,255,255,.5);border-radius:50%;filter:blur(4px)}
+#clkbtn:active .orb{box-shadow:0 1px 8px var(--orb-glow),inset 0 4px 12px rgba(0,0,0,.07)}
+.ring{position:absolute;border-radius:50%;border:1.5px solid var(--rose3);width:140px;height:140px;opacity:0;pointer-events:none}
+.ring.pop{animation:rp .5s ease-out forwards}
+@keyframes rp{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.65);opacity:0}}
+
+/* Combo */
+.ctrack{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:3px;width:100%;max-width:180px}
+.cbar{height:100%;background:linear-gradient(90deg,var(--rose3),var(--lav3));border-radius:99px;transition:width .15s;width:0%}
+.clabel{font-size:11px;color:var(--ink3)}
+.clabel.on{color:var(--rose4);font-weight:500}
+
+/* Quiz trigger */
+.qtbar{width:100%;max-width:180px}
+.qtt{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.qtf{height:100%;background:linear-gradient(90deg,var(--sky3),var(--lav3));border-radius:99px;transition:width .3s}
+.qtl{font-size:10px;color:var(--ink3);margin-top:3px;text-align:center}
+
+/* Loot bar */
+.loot-bar{width:100%;max-width:180px;margin-top:4px}
+.loot-track{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.loot-fill{height:100%;background:linear-gradient(90deg,var(--amber3),var(--peach3));border-radius:99px;transition:width .3s}
+.loot-label{font-size:10px;color:var(--amber4);margin-top:3px;text-align:center;font-weight:500}
+
+/* Active set pill */
+.set-pill{display:flex;align-items:center;gap:5px;background:var(--sky);border:1px solid var(--sky2);border-radius:10px;padding:5px 9px;font-size:11px;color:var(--sky4);cursor:pointer;transition:all .2s;width:100%;max-width:180px;justify-content:center}
+.set-pill:hover{background:var(--sky2)}
+
+/* UPGRADES */
+.ui{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:12px;border:1.5px solid transparent;margin-bottom:4px;cursor:pointer;transition:all .15s}
+.ui:hover:not(.ul){background:var(--bg2);border-color:var(--bg3)}
+.ul{opacity:.32;cursor:not-allowed}
+.uo{border-color:var(--mint2);background:var(--mint)}
+.ue{font-size:19px;flex-shrink:0;line-height:1}
+.ut{flex:1;min-width:0}
+.un{font-size:11px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ud{font-size:10px;color:var(--ink3);margin-top:1px}
+.ur{text-align:right;flex-shrink:0}
+.uc{font-size:10px;font-weight:500;color:var(--peach4)}
+.uk{font-size:10px;color:var(--mint4);margin-top:1px}
+.upg-section{margin-bottom:3px}
+.upg-sec-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin:8px 0 4px;font-weight:500}
+
+/* ACHIEVEMENTS */
+.ai{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:4px;opacity:.27;transition:opacity .4s,background .3s}
+.ai.done{opacity:1;background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2)}
+.aico{font-size:15px}
+.at{flex:1}.at b{display:block;font-size:11px;color:var(--ink)}
+.at span{font-size:10px;color:var(--ink3)}
+
+/* ICON BTNS */
+.ibtns{display:flex;gap:3px;margin-top:auto;padding-top:10px;border-top:1px solid var(--bg3);flex-wrap:wrap}
+.ibtn{flex:1;min-width:30px;padding:6px 2px;border-radius:9px;border:1px solid var(--bg3);background:#fff;font-size:9px;color:var(--ink2);cursor:pointer;text-align:center;transition:all .2s;line-height:1.4}
+.ibtn:hover{background:var(--bg2);border-color:var(--rose3);color:var(--ink)}
+.ibtn.red:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
+.ibtn span{display:block;font-size:12px;margin-bottom:1px}
+
+/* ═══ QUIZ OVERLAY ═══ */
+#qov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.78);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
+#qov.show{opacity:1;pointer-events:all}
+.qcard{background:#fff;border-radius:24px;padding:26px;max-width:430px;width:90%;box-shadow:var(--sh2);transform:translateY(20px);transition:transform .3s}
+#qov.show .qcard{transform:translateY(0)}
+.qtag{display:inline-block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--rose4);background:var(--rose);padding:3px 11px;border-radius:99px;margin-bottom:11px;font-weight:500}
+.qq{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink);line-height:1.4;margin-bottom:15px}
+.qi2{width:100%;padding:11px 13px;border:1.5px solid var(--bg3);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--bg2);outline:none;transition:border .2s;margin-bottom:11px}
+.qi2:focus{border-color:var(--sky3);background:#fff}
+.qrv{width:100%;padding:11px;border-radius:14px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink2);cursor:pointer;transition:all .2s;margin-bottom:8px}
+.qrv:hover{background:var(--bg2)}
+.qans{background:var(--mint);border-radius:12px;padding:11px 13px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:12px;display:none;border:1px solid var(--mint2)}
+.qans.show{display:block}
+.qbtns{display:flex;gap:5px}.qbtns.hid{display:none}
+.qb{flex:1;padding:10px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s}
+.qb.w{background:var(--rose);color:var(--rose4)}.qb.w:hover{background:var(--rose2)}
+.qb.a{background:var(--peach);color:var(--peach4)}.qb.a:hover{background:var(--peach2)}
+.qb.c{background:var(--mint);color:var(--mint4)}.qb.c:hover{background:var(--mint2)}
+.qb.s{background:var(--bg2);color:var(--ink3)}.qb.s:hover{background:var(--bg3)}
+.qmult{font-size:11px;color:var(--ink3);text-align:center;margin-top:8px}
+.qmult b{color:var(--mint4)}
+.qset-tag{font-size:10px;color:var(--sky4);background:var(--sky);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px}
+
+/* ═══ LOOT BOX OVERLAY ═══ */
+#lov{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
+#lov.show{opacity:1;pointer-events:all}
+.lcard{background:#fff;border-radius:28px;padding:32px;max-width:400px;width:90%;box-shadow:var(--sh2);text-align:center;transform:scale(.85);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+#lov.show .lcard{transform:scale(1)}
+.loot-box-icon{font-size:72px;display:block;margin-bottom:8px;animation:lbob 1.5s ease-in-out infinite}
+@keyframes lbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.loot-box-icon.opening{animation:lopen .6s ease-out forwards}
+@keyframes lopen{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.3) rotate(-10deg)}60%{transform:scale(.8) rotate(15deg)}100%{transform:scale(0) rotate(30deg);opacity:0}}
+.ltitle{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.lsub{font-size:12px;color:var(--ink3);margin-bottom:20px}
+.reward-reveal{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:18px;padding:20px;margin-bottom:18px;display:none;border:2px solid var(--amber3)}
+.reward-reveal.show{display:block;animation:rreveal .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rreveal{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.reward-icon{font-size:48px;display:block;margin-bottom:6px}
+.reward-name{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink)}
+.reward-type{font-size:11px;color:var(--ink2);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.rarity-common{color:var(--ink3)}.rarity-rare{color:var(--sky4)}.rarity-epic{color:var(--lav4)}.rarity-legendary{color:var(--amber4)}
+.lopen-btn{padding:13px 28px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--amber3),var(--peach3));color:var(--ink);font-family:'Fraunces',serif;font-size:17px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(255,213,79,.4)}
+.lopen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,213,79,.5)}
+.lclose-btn{padding:10px 22px;border-radius:12px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink2);cursor:pointer;margin-top:10px;transition:all .2s}
+.lclose-btn:hover{background:var(--bg2)}
+
+/* ═══ MODALS ═══ */
+.mbk{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(253,250,246,.84);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s}
+.mbk.show{opacity:1;pointer-events:all}
+.md{background:#fff;border-radius:24px;padding:24px;max-width:500px;width:92%;box-shadow:var(--sh2);transform:translateY(18px);transition:transform .3s;max-height:84vh;display:flex;flex-direction:column}
+.mbk.show .md{transform:translateY(0)}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
+.mt{font-family:'Fraunces',serif;font-size:20px;font-weight:500;color:var(--ink)}
+.mx{width:28px;height:28px;border-radius:99px;border:1px solid var(--bg3);background:var(--bg2);color:var(--ink2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mx:hover{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
+.mb{overflow-y:auto;flex:1}.mb::-webkit-scrollbar{width:3px}.mb::-webkit-scrollbar-thumb{background:var(--bg3)}
+.mf{flex-shrink:0;margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+.mbtn{flex:1;min-width:90px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--bg3);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .2s;text-align:center}
+.mbtn:hover{background:var(--bg2)}
+.mbtn.pri{background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;border-color:transparent}
+.mbtn.pri:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(244,143,177,.35)}
+.mbtn.amb{background:var(--amber);border-color:var(--amber3);color:var(--amber4)}
+.mbtn.amb:hover{background:var(--amber2)}
+.mbtn.dan{background:var(--rose);border-color:var(--rose3);color:var(--rose4)}
+.mbtn.dan:hover{background:var(--rose2)}
+.mbtn.grn{background:var(--mint);border-color:var(--mint3);color:var(--mint4)}
+.mbtn.grn:hover{background:var(--mint2)}
+/* editor */
+.erow{display:flex;align-items:flex-start;gap:5px;margin-bottom:5px;padding:7px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3)}
+.efields{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ei{width:100%;padding:6px 8px;border:1px solid var(--bg3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:#fff;outline:none}
+.ei:focus{border-color:var(--lav3)}
+.ei::placeholder{color:var(--ink3)}
+.edel{width:22px;height:22px;border-radius:5px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;flex-shrink:0;margin-top:2px}
+.edel:hover{background:var(--rose2);color:var(--rose4)}
+.eadd{padding:7px;border-radius:9px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-top:3px}
+.eadd:hover{background:var(--sky2)}
+/* rebirth */
+.rinfo{background:linear-gradient(135deg,var(--amber),var(--peach));border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid var(--amber3)}
+.rstat{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.rstat:last-child{margin-bottom:0}
+.rstat b{color:var(--amber4)}
+.rperk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid var(--bg3);margin-bottom:5px}
+.rpico{font-size:18px;flex-shrink:0}
+.rptxt{font-size:12px;color:var(--ink)}
+.rptxt b{display:block;font-size:12px;margin-bottom:1px}
+/* season preview */
+.season-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.season-card{border-radius:12px;padding:12px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.season-card.active{border-color:var(--rose3)}
+.season-card:hover{transform:translateY(-2px)}
+/* collection */
+.coll-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.coll-item{background:var(--bg2);border-radius:12px;padding:10px;text-align:center;border:1px solid var(--bg3);transition:all .2s}
+.coll-item.owned{background:linear-gradient(135deg,var(--lav),var(--rose));border-color:var(--rose2)}
+.coll-item.equipped{border:2px solid var(--amber3);background:var(--amber)}
+.coll-ico{font-size:24px;display:block;margin-bottom:3px}
+.coll-name{font-size:10px;color:var(--ink2);line-height:1.2}
+.coll-item.owned .coll-name{color:var(--ink)}
+/* sets panel */
+.set-entry{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:6px;cursor:pointer;transition:all .2s}
+.set-entry.active{background:var(--sky);border-color:var(--sky3)}
+.set-entry:hover:not(.active){background:var(--lav);border-color:var(--lav3)}
+.set-entry-name{flex:1;font-size:12px;font-weight:500;color:var(--ink)}
+.set-entry-cnt{font-size:11px;color:var(--ink3)}
+.set-entry-del{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px}
+.set-entry-del:hover{background:var(--rose2);color:var(--rose4)}
+/* stat rows */
+.srow{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);padding:3px 0;border-bottom:1px solid var(--bg3)}
+.srow:last-child{border:none}
+.srow b{color:var(--ink);font-weight:500}
+
+/* ═══ FLOATS / TOAST / MILESTONE ═══ */
+.fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:14px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
+@keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(.85)}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(38px);background:#fff;border-radius:13px;padding:10px 17px;box-shadow:var(--sh2);font-size:13px;color:var(--ink);z-index:999;opacity:0;transition:all .3s;border:1px solid var(--bg3);max-width:88vw;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mpop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:#fff;border-radius:20px;padding:20px 26px;box-shadow:var(--sh2);text-align:center;z-index:300;animation:mp 2.8s ease forwards;border:2px solid var(--rose2)}
+@keyframes mp{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}20%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.95)}}
+.mpt{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.mps{font-size:12px;color:var(--ink3)}
+.gwrap{display:flex;width:100%;height:100%;z-index:10;padding:12px}
+.ig{display:flex;flex:1;height:100%;border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<!-- ═══ IMPORT SCREEN ═══ -->
+<div class="screen" id="scr-import">
+  <div style="font-family:'Fraunces',serif;font-size:42px;font-weight:300;color:var(--ink);letter-spacing:-1.5px;margin-bottom:2px">bloom <em style="color:var(--rose4)">✿</em></div>
+  <div style="font-size:13px;color:var(--ink3);margin-bottom:14px">grow your garden of knowledge</div>
+  <div id="save-badge" style="display:none;margin-bottom:10px"></div>
+  <div id="cont-wrap" style="margin-bottom:10px;display:none">
+    <button class="cont-btn" onclick="continueGame()">Continue saved garden ✓</button>
+  </div>
+  <div class="imp-card">
+    <div class="tab-row">
+      <button class="tb on"  onclick="swTab('notes',0)">📄 Notes</button>
+      <button class="tb"     onclick="swTab('qa',1)">❓ Q&amp;A</button>
+      <button class="tb"     onclick="swTab('json',2)">{ } JSON Sets</button>
+    </div>
+
+    <div class="tc on" id="tc-notes">
+      <textarea class="ni" id="t-notes" placeholder="Paste revision notes here…
+
+Newton's First Law — an object at rest stays at rest unless acted upon by a force.
+Momentum — mass × velocity, symbol p, unit kg·m/s."></textarea>
+      <div class="hint">Use "Term — Definition" format for best results.</div>
+    </div>
+
+    <div class="tc" id="tc-qa">
+      <div id="qa-list">
+        <div class="qa-row"><input placeholder="Question…" class="qi-q"><input placeholder="Answer…" class="qi-a"><button class="rm-qa" onclick="rmQA(this)">×</button></div>
+      </div>
+      <button class="add-qa" onclick="addQA()">+ Add question</button>
+    </div>
+
+    <div class="tc" id="tc-json">
+      <p style="font-size:12px;color:var(--ink2);margin-bottom:10px;line-height:1.6">Upload multiple JSON question sets. Switch between them mid-game from the left panel.</p>
+      <div id="json-sets-list"></div>
+      <button class="upload-json-btn" onclick="document.getElementById('json-file-input').click()">⬆ Upload JSON file(s)</button>
+      <input type="file" id="json-file-input" accept=".json" multiple style="display:none" onchange="handleJsonUpload(this)">
+      <div class="hint">Format: [{"q":"…","a":"…"}] — one file per topic.</div>
+    </div>
+
+    <button class="go-btn" onclick="startGame()">Begin Blooming ✿</button>
+    <div style="text-align:center"><button class="demo-btn" onclick="demoGame()">Try with demo questions →</button></div>
+  </div>
+</div>
+
+<!-- ═══ GAME SCREEN ═══ -->
+<div class="screen hidden" id="scr-game">
+  <div class="gwrap"><div class="ig">
+
+    <!-- LEFT -->
+    <div class="gp" id="lp">
+      <div class="plabel">Garden</div>
+      <div id="upg-list"></div>
+      <div class="ibtns">
+        <button class="ibtn" onclick="openMod('mod-editor')"><span>✏️</span>Edit Qs</button>
+        <button class="ibtn" onclick="openMod('mod-sets')"><span>📚</span>Sets</button>
+        <button class="ibtn" onclick="openRebirth()"><span>🌸</span>Season</button>
+        <button class="ibtn" onclick="openMod('mod-coll')"><span>✨</span>Cosmetics</button>
+        <button class="ibtn" onclick="openSave()"><span>💾</span>Save</button>
+        <button class="ibtn red" onclick="openMod('mod-reset')"><span>↺</span>Reset</button>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div id="cp">
+      <div style="text-align:center">
+        <div class="snum" id="d-pts">0</div>
+        <div class="slabel">petals</div>
+        <div class="pill pill-mint" style="margin-top:4px"><svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="#43a047"/></svg><span id="d-pps">0</span>/sec</div>
+        <div class="pill pill-amber" id="d-rbpill" style="display:none;margin-top:2px">✨ Season <span id="d-rbnum">1</span> · <span id="d-rbmult">1.25</span>×</div>
+        <div class="pill pill-lav" id="d-quizbonus" style="display:none;margin-top:2px">🎯 Quiz bonus active!</div>
+      </div>
+
+      <div id="clkwrap">
+        <div class="ring" id="ring"></div>
+        <button id="clkbtn" onclick="doClick(event)"><div class="orb" id="orb">✿</div></button>
+      </div>
+
+      <div style="width:100%;max-width:180px;text-align:center">
+        <div class="ctrack"><div class="cbar" id="cbar"></div></div>
+        <div class="clabel" id="clabel">click to bloom</div>
+      </div>
+
+      <button class="set-pill" onclick="openMod('mod-sets')" id="active-set-pill">
+        📚 <span id="active-set-name">Demo Questions</span>
+      </button>
+
+      <div class="qtbar">
+        <div class="qtt"><div class="qtf" id="qtf" style="width:0%"></div></div>
+        <div class="qtl" id="qtl">quiz in 50 blooms</div>
+      </div>
+
+      <div class="loot-bar">
+        <div class="loot-track"><div class="loot-fill" id="ltf" style="width:0%"></div></div>
+        <div class="loot-label" id="ltl">🌰 loot box progress</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="gp" id="rp">
+      <div class="plabel">Achievements</div>
+      <div id="ach-list"></div>
+      <div class="plabel" style="margin-top:12px">Stats</div>
+      <div id="stat-list"></div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ═══ QUIZ OVERLAY ═══ -->
+<div id="qov">
+  <div class="qcard">
+    <div class="qset-tag" id="q-set-tag"></div>
+    <div class="qtag">✿ quiz time</div>
+    <div class="qq" id="q-text"></div>
+    <input class="qi2" id="q-inp" placeholder="Type your answer… (or reveal below)" onkeydown="if(event.key==='Enter')revealAns()">
+    <button class="qrv" onclick="revealAns()">Reveal answer</button>
+    <div class="qans" id="q-ans"></div>
+    <div class="qbtns hid" id="q-btns">
+      <button class="qb w" onclick="grade(0)">✗ Wrong</button>
+      <button class="qb a" onclick="grade(1)">~ Almost</button>
+      <button class="qb c" onclick="grade(2)">✓ Got it!</button>
+    </div>
+    <div class="qbtns" id="q-skip"><button class="qb s" onclick="grade(-1)">Skip</button></div>
+    <div class="qmult" id="q-mult"></div>
+  </div>
+</div>
+
+<!-- ═══ LOOT BOX OVERLAY ═══ -->
+<div id="lov">
+  <div class="lcard" id="lcard">
+    <span class="loot-box-icon" id="lbox-icon">🌰</span>
+    <div class="ltitle" id="ltitle">Loot Box Ready!</div>
+    <div class="lsub" id="lsub">A mystery reward awaits</div>
+    <div class="reward-reveal" id="reward-reveal">
+      <span class="reward-icon" id="reward-icon">✿</span>
+      <div class="reward-name" id="reward-name"></div>
+      <div class="reward-type" id="reward-type"></div>
+    </div>
+    <button class="lopen-btn" id="lopen-btn" onclick="openLootBox()">🌰 Open!</button>
+    <br>
+    <button class="lclose-btn" id="lclose-btn" style="display:none" onclick="closeLoot()">Continue blooming</button>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Question editor -->
+<div class="mbk" id="mod-editor">
+  <div class="md">
+    <div class="mh"><div class="mt">✏️ Edit Questions</div><button class="mx" onclick="closeMod('mod-editor')">×</button></div>
+    <div class="mb" id="ed-list"></div>
+    <div class="mf">
+      <button class="mbtn" onclick="closeMod('mod-editor')">Cancel</button>
+      <button class="mbtn pri" onclick="saveEditor()">Save ✿</button>
+    </div>
+  </div>
+</div>
+
+<!-- Question sets -->
+<div class="mbk" id="mod-sets">
+  <div class="md">
+    <div class="mh"><div class="mt">📚 Question Sets</div><button class="mx" onclick="closeMod('mod-sets')">×</button></div>
+    <div class="mb" id="sets-list"></div>
+    <div class="mf">
+      <button class="mbtn" onclick="document.getElementById('json-mid-input').click()">⬆ Upload more JSON</button>
+      <input type="file" id="json-mid-input" accept=".json" multiple style="display:none" onchange="handleJsonMid(this)">
+      <button class="mbtn" onclick="closeMod('mod-sets')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rebirth / Season -->
+<div class="mbk" id="mod-rebirth">
+  <div class="md">
+    <div class="mh"><div class="mt">🌸 Change Season</div><button class="mx" onclick="closeMod('mod-rebirth')">×</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Each new Season resets your petals &amp; garden, but grants a permanent multiplier and unlocks exclusive perks. Your questions, achievements, and collection are kept.</p>
+      <div class="rinfo" id="rb-info"></div>
+      <div class="rperk"><div class="rpico">⚡</div><div class="rptxt"><b>+25% permanent multiplier per Season</b>Stacks on all petal gains forever.</div></div>
+      <div class="rperk"><div class="rpico">🌰</div><div class="rptxt"><b>Loot boxes spawn faster</b>Each Season reduces loot box click cost by 10%.</div></div>
+      <div class="rperk"><div class="rpico">🎨</div><div class="rptxt"><b>Season theme unlocked</b>Garden changes colour and the orb gets a new skin.</div></div>
+      <div class="rperk"><div class="rpico">🚀</div><div class="rptxt"><b>Prestige upgrades unlock</b>Higher Seasons unlock more powerful garden items.</div></div>
+    </div>
+    <div class="mf">
+      <button class="mbtn" onclick="closeMod('mod-rebirth')">Stay in Season <span id="rb-cur-season">1</span></button>
+      <button class="mbtn amb" id="rb-btn" onclick="doRebirth()">🌸 Begin new Season</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cosmetics collection -->
+<div class="mbk" id="mod-coll">
+  <div class="md" style="max-width:560px">
+    <div class="mh"><div class="mt">✨ Collection</div><button class="mx" onclick="closeMod('mod-coll')">×</button></div>
+    <div class="mb">
+      <div class="plabel" style="margin-bottom:8px">Orb Skins</div>
+      <div class="coll-grid" id="coll-skins"></div>
+      <div class="plabel" style="margin:14px 0 8px">Background Themes</div>
+      <div class="coll-grid" id="coll-themes"></div>
+      <div class="plabel" style="margin:14px 0 8px">Icons</div>
+      <div class="coll-grid" id="coll-icons"></div>
+    </div>
+    <div class="mf"><button class="mbtn" onclick="closeMod('mod-coll')">Close</button></div>
+  </div>
+</div>
+
+<!-- Save -->
+<div class="mbk" id="mod-save">
+  <div class="md">
+    <div class="mh"><div class="mt">💾 Save &amp; Export</div><button class="mx" onclick="closeMod('mod-save')">×</button></div>
+    <div class="mb"><div id="save-status" style="font-size:12px;color:var(--ink3);background:var(--bg2);border-radius:11px;padding:11px 13px;line-height:1.9"></div></div>
+    <div class="mf">
+      <button class="mbtn grn" onclick="exportSave()">⬇ Export save</button>
+      <button class="mbtn" onclick="document.getElementById('imp-file').click()">⬆ Import save</button>
+      <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importSave(this)">
+    </div>
+  </div>
+</div>
+
+<!-- Reset -->
+<div class="mbk" id="mod-reset">
+  <div class="md">
+    <div class="mh"><div class="mt">↺ Reset Garden</div><button class="mx" onclick="closeMod('mod-reset')">×</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:12px;line-height:1.6">Wipes all progress, Seasons, and cosmetics. Back to the start screen.</p>
+      <div style="background:var(--rose);border-radius:11px;padding:12px;font-size:12px;color:var(--rose4);border:1px solid var(--rose3)">⚠️ Export your save first if you want a backup.</div>
+    </div>
+    <div class="mf">
+      <button class="mbtn" onclick="closeMod('mod-reset')">Cancel</button>
+      <button class="mbtn dan" onclick="doReset()">Delete everything</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// PARTICLES
+// ═══════════════════════════════════════════════
+const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+let W,H;
+const PC=['#fce4ec','#e3f2fd','#ede7f6','#e8f5e9','#fff3e0'];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}rsz();
+window.addEventListener('resize',rsz);
+const PARTS=Array.from({length:55},()=>({x:Math.random()*2000,y:Math.random()*1000,r:Math.random()*3.5+1.5,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.1),a:Math.random()*.55+.18,c:PC[Math.floor(Math.random()*5)],w:Math.random()*Math.PI*2,ws:Math.random()*.018}));
+(function ploop(){cx.clearRect(0,0,W,H);PARTS.forEach(p=>{p.y+=p.vy;p.x+=p.vx+Math.sin(p.w)*.28;p.w+=p.ws;if(p.y<-20){p.x=Math.random()*W;p.y=H+20;}cx.save();cx.globalAlpha=p.a;cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();});requestAnimationFrame(ploop);})();
+
+// ═══════════════════════════════════════════════
+// CONSTANTS — UPGRADES (30+)
+// ═══════════════════════════════════════════════
+const UPGRADES=[
+  // Tier 1 — Sprouts (base 10–500)
+  {id:'u0', e:'🌱',n:'Seedling',       d:'A tiny sprout catches the light',       base:10,    bpps:.1,  tier:1},
+  {id:'u1', e:'🌿',n:'Wild Grass',     d:'Rustles in an invisible breeze',        base:40,    bpps:.4,  tier:1},
+  {id:'u2', e:'🍀',n:'Clover Patch',   d:'Lucky three-leaf clusters',             base:100,   bpps:1,   tier:1},
+  {id:'u3', e:'🌸',n:'Cherry Blossom', d:'Petals drift on a warm wind',          base:280,   bpps:2.5, tier:1},
+  {id:'u4', e:'🌻',n:'Sunflower',      d:'Turns its face toward the light',       base:600,   bpps:5,   tier:1},
+  // Tier 2 — Bloomers (base 1k–20k)
+  {id:'u5', e:'🌷',n:'Tulip Row',      d:'Neat lines of spring colour',           base:1200,  bpps:10,  tier:2},
+  {id:'u6', e:'🌺',n:'Hibiscus',       d:'Vibrant petals, tropical flair',        base:2800,  bpps:22,  tier:2},
+  {id:'u7', e:'🌹',n:'Rose Arbour',    d:'Thorns guard a sweet perfume',          base:5500,  bpps:42,  tier:2},
+  {id:'u8', e:'💐',n:'Bouquet',        d:'A gathered celebration of blooms',      base:9000,  bpps:68,  tier:2},
+  {id:'u9', e:'🌼',n:'Chamomile Field',d:'Calming waves of white and gold',       base:14000, bpps:100, tier:2},
+  // Tier 3 — Trees (base 20k–200k)
+  {id:'u10',e:'🎋',n:'Bamboo Grove',   d:'Rapid growth, quiet strength',          base:22000, bpps:160, tier:3},
+  {id:'u11',e:'🌴',n:'Palm Tree',      d:'Sways gracefully in the cosmos',        base:38000, bpps:240, tier:3},
+  {id:'u12',e:'🌲',n:'Ancient Pine',   d:'Holds centuries of memory',             base:65000, bpps:380, tier:3},
+  {id:'u13',e:'🍁',n:'Maple Spirit',   d:'Autumn wisdom crystallised in red',     base:100000,bpps:560, tier:3},
+  {id:'u14',e:'🌳',n:'World Tree',     d:'Roots reach every corner of the garden',base:160000,bpps:800, tier:3},
+  // Tier 4 — Creatures (base 250k–2M)
+  {id:'u15',e:'🦋',n:'Butterfly Cloud',d:'Carries pollen between universes',      base:250000,bpps:1200,tier:4},
+  {id:'u16',e:'🐝',n:'Cosmic Hive',    d:'A thousand bees, a thousand blooms',    base:400000,bpps:1800,tier:4},
+  {id:'u17',e:'🦜',n:'Parrot Flock',   d:'Repeats your knowledge endlessly',      base:650000,bpps:2600,tier:4},
+  {id:'u18',e:'🦚',n:'Peacock Display',d:'Shows off every colour at once',        base:1000000,bpps:3800,tier:4},
+  {id:'u19',e:'🐉',n:'Garden Dragon',  d:'Breathes life into every petal',        base:1600000,bpps:5500,tier:4},
+  // Tier 5 — Phenomena (base 3M+)
+  {id:'u20',e:'☁️',n:'Rain Cloud',     d:'Nourishes the entire garden at once',   base:3000000,bpps:8000,tier:5},
+  {id:'u21',e:'🌈',n:'Rainbow Arc',    d:'Spans the whole sky with light',        base:5000000,bpps:12000,tier:5},
+  {id:'u22',e:'⭐',n:'Falling Star',   d:'Each wish plants a new seed',           base:8000000,bpps:18000,tier:5},
+  {id:'u23',e:'🌙',n:'Moon Garden',    d:'Blooms only in silver light',           base:12000000,bpps:27000,tier:5},
+  {id:'u24',e:'☀️',n:'Sun Forge',      d:'Pure stellar energy poured into petals',base:20000000,bpps:40000,tier:5},
+  // Tier 6 — Cosmic (season 2+ required)
+  {id:'u25',e:'🌌',n:'Nebula Garden',  d:'Flowers made of stardust',              base:35000000,bpps:60000,tier:6,minSeason:2},
+  {id:'u26',e:'🪐',n:'Petal Planet',   d:'A whole world blanketed in blooms',     base:60000000,bpps:90000,tier:6,minSeason:2},
+  {id:'u27',e:'✨',n:'Quantum Bloom',  d:'Exists in all gardens simultaneously',  base:100000000,bpps:135000,tier:6,minSeason:2},
+  {id:'u28',e:'🌀',n:'Time Garden',    d:'Petals from every past and future',     base:175000000,bpps:200000,tier:6,minSeason:3},
+  {id:'u29',e:'💫',n:'Eternal Bloom',  d:'The garden that never fades',           base:300000000,bpps:300000,tier:6,minSeason:3},
+];
+
+// ═══════════════════════════════════════════════
+// COSMETICS
+// ═══════════════════════════════════════════════
+const SKINS=[
+  {id:'s0',e:'✿',  n:'Classic Bloom',   rarity:'common',    owned:true, equipped:true,
+   orb_a:'#fce4ec',orb_b:'#e3f2fd',orb_c:'#ede7f6',glow:'rgba(244,143,177,.3)'},
+  {id:'s1',e:'🌙', n:'Moonflower',      rarity:'rare',
+   orb_a:'#e8eaf6',orb_b:'#c5cae9',orb_c:'#9fa8da',glow:'rgba(121,134,203,.4)'},
+  {id:'s2',e:'🔥', n:'Ember Rose',      rarity:'rare',
+   orb_a:'#fff3e0',orb_b:'#ffe0b2',orb_c:'#ffcc80',glow:'rgba(255,167,38,.35)'},
+  {id:'s3',e:'🌊', n:'Ocean Drift',     rarity:'epic',
+   orb_a:'#e0f7fa',orb_b:'#b2ebf2',orb_c:'#80deea',glow:'rgba(0,188,212,.3)'},
+  {id:'s4',e:'💜', n:'Amethyst Garden', rarity:'epic',
+   orb_a:'#f3e5f5',orb_b:'#e1bee7',orb_c:'#ce93d8',glow:'rgba(171,71,188,.35)'},
+  {id:'s5',e:'⚡', n:'Storm Petal',     rarity:'epic',
+   orb_a:'#fffde7',orb_b:'#fff176',orb_c:'#ffee58',glow:'rgba(253,216,53,.4)'},
+  {id:'s6',e:'❄️', n:'Frost Bloom',    rarity:'legendary',
+   orb_a:'#e0f2f1',orb_b:'#b2dfdb',orb_c:'#4db6ac',glow:'rgba(0,150,136,.3)'},
+  {id:'s7',e:'🌟', n:'Celestial',       rarity:'legendary',
+   orb_a:'#fce4ec',orb_b:'#fff8e1',orb_c:'#e8eaf6',glow:'rgba(255,213,79,.5)'},
+];
+const THEMES=[
+  {id:'t0',n:'Spring Garden', e:'🌸',rarity:'common', owned:true,equipped:true,bg:'#fdfaf6',panel:'rgba(255,255,255,.83)'},
+  {id:'t1',n:'Autumn Leaves', e:'🍂',rarity:'rare',   bg:'#fdf6ec',panel:'rgba(255,248,235,.9)'},
+  {id:'t2',n:'Night Garden',  e:'🌙',rarity:'epic',   bg:'#f0edf7',panel:'rgba(237,231,246,.9)'},
+  {id:'t3',n:'Ocean Mist',    e:'🌊',rarity:'epic',   bg:'#edf7f9',panel:'rgba(224,247,250,.9)'},
+  {id:'t4',n:'Golden Hour',   e:'✨',rarity:'legendary',bg:'#fdf8ed',panel:'rgba(255,248,225,.9)'},
+];
+const ICONS=[
+  {id:'i0',e:'✿', n:'Classic',     rarity:'common',  owned:true, equipped:true},
+  {id:'i1',e:'🌸',n:'Cherry',      rarity:'common'},
+  {id:'i2',e:'🌺',n:'Hibiscus',    rarity:'rare'},
+  {id:'i3',e:'🌻',n:'Sunflower',   rarity:'rare'},
+  {id:'i4',e:'🌹',n:'Rose',        rarity:'epic'},
+  {id:'i5',e:'🦋',n:'Butterfly',   rarity:'epic'},
+  {id:'i6',e:'🌈',n:'Rainbow',     rarity:'legendary'},
+  {id:'i7',e:'💫',n:'Cosmic',      rarity:'legendary'},
+];
+
+// Loot box reward pool
+const LOOT_POOL=[
+  ...SKINS.filter(s=>!s.owned).map(s=>({type:'skin',ref:s.id,weight:{rare:40,epic:15,legendary:5}[s.rarity]||60})),
+  ...THEMES.filter(t=>!t.owned).map(t=>({type:'theme',ref:t.id,weight:{rare:40,epic:15,legendary:5}[t.rarity]||60})),
+  ...ICONS.filter(i=>!i.owned).map(i=>({type:'icon',ref:i.id,weight:{rare:40,epic:15,legendary:5}[i.rarity]||60})),
+];
+
+// ═══════════════════════════════════════════════
+// ACHIEVEMENTS
+// ═══════════════════════════════════════════════
+const ACHS=[
+  {id:'a0', e:'🌱',n:'First Petal',      d:'Earn your first petal',              f:s=>s.te>=1},
+  {id:'a1', e:'🌸',n:'Blooming',         d:'Reach 1,000 petals',                 f:s=>s.te>=1000},
+  {id:'a2', e:'⚡',n:'Storm Front',      d:'Hit a 10× combo',                    f:s=>s.mc>=10},
+  {id:'a3', e:'🌻',n:'Sunseeker',        d:'Reach 50,000 petals',                f:s=>s.te>=50000},
+  {id:'a4', e:'🎯',n:'Scholar',          d:'Answer 10 quiz questions correctly', f:s=>s.qc>=10},
+  {id:'a5', e:'💎',n:'Deep Roots',       d:'Own 30 garden items',                f:s=>Object.values(s.own).reduce((a,b)=>a+b,0)>=30},
+  {id:'a6', e:'🌺',n:'Full Bloom',       d:'Reach 1,000,000 petals',             f:s=>s.te>=1e6},
+  {id:'a7', e:'🔥',n:'Relentless',       d:'Click 1,000 times',                  f:s=>s.tc>=1000},
+  {id:'a8', e:'🌸',n:'New Season',       d:'Complete your first Season change',  f:s=>s.rb>=1},
+  {id:'a9', e:'🌀',n:'Cycle Keeper',     d:'Complete 3 Season changes',          f:s=>s.rb>=3},
+  {id:'a10',e:'🌰',n:'Treasure Finder',  d:'Open your first loot box',           f:s=>s.lootOpened>=1},
+  {id:'a11',e:'✨',n:'Collector',        d:'Own 5 cosmetics',                    f:s=>s.lootOpened>=5},
+  {id:'a12',e:'💫',n:'Legendary',        d:'Find a Legendary item',              f:s=>s.legendaryFound>=1},
+  {id:'a13',e:'🎓',n:'Quiz Master',      d:'Answer 50 correctly',                f:s=>s.qc>=50},
+  {id:'a14',e:'🌈',n:'Rainbow Garden',   d:'Own all background themes',          f:s=>THEMES.every(t=>s.ownedCosmetics.includes(t.id))},
+  {id:'a15',e:'🌙',n:'Night Owl',        d:'Reach 100 petals/sec',               f:s=>s.lastPps>=100},
+  {id:'a16',e:'☀️',n:'Sun God',          d:'Reach 10,000 petals/sec',            f:s=>s.lastPps>=10000},
+];
+
+// ═══════════════════════════════════════════════
+// SEASONS (rebirth themes)
+// ═══════════════════════════════════════════════
+const SEASONS=[
+  {n:'Spring', e:'🌸', bg:'#fdfaf6', panel:'rgba(255,255,255,.83)', orb:'✿'},
+  {n:'Summer', e:'🌻', bg:'#fffef5', panel:'rgba(255,254,240,.9)',  orb:'☀️'},
+  {n:'Autumn', e:'🍁', bg:'#fdf9f3', panel:'rgba(255,248,235,.9)',  orb:'🍂'},
+  {n:'Winter', e:'❄️', bg:'#f5f7fd', panel:'rgba(240,243,255,.9)',  orb:'❄️'},
+  {n:'Cosmic', e:'🌌', bg:'#f7f5fd', panel:'rgba(243,240,255,.9)',  orb:'✨'},
+];
+
+// ═══════════════════════════════════════════════
+// DEMO QUESTIONS
+// ═══════════════════════════════════════════════
+const DEMO_QS=[
+  {q:"What is photosynthesis?",a:"The process by which plants convert sunlight, water, and CO₂ into glucose and oxygen."},
+  {q:"Define Newton's First Law.",a:"An object stays at rest or in uniform motion unless acted on by a net external force."},
+  {q:"What is momentum?",a:"Mass × velocity (p = mv). It is conserved in closed systems."},
+  {q:"What is the speed of light?",a:"Approximately 3 × 10⁸ m/s in a vacuum."},
+  {q:"Define osmosis.",a:"The movement of water molecules through a semi-permeable membrane from high to low concentration."},
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const SAVE_KEY='bloom_v5';
+function freshState(){
+  return{
+    pts:0, te:0, tc:0, qc:0, qt:0,
+    own:{}, combo:0, mc:0, cm:1,
+    csq:0, qth:50, qa:false,
+    ul:new Set(), rb:0, rm:1,
+    sets:[], activeSet:0,
+    lootProg:0, lootThresh:75, lootPending:false,
+    lootOpened:0, legendaryFound:0,
+    ownedCosmetics:['s0','t0','i0'],
+    equippedSkin:'s0', equippedTheme:'t0', equippedIcon:'i0',
+    lastPps:0,
+  };
+}
+let S=freshState();
+let pps=0, tickAcc=0, saveTimer=null, currentQ=null, loopStarted=false;
+let pendingLoot=null;
+let quizBonusTimer=null;
+
+// ═══════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════
+function serial(){
+  const d={...S,ul:[...S.ul]};
+  // Serialise sets (just names + questions, not queue)
+  d.sets=S.sets.map(st=>({name:st.name,qs:st.qs}));
+  return JSON.stringify(d);
+}
+function deserial(raw){
+  try{
+    const d=JSON.parse(raw);
+    S=freshState();
+    ['pts','te','tc','qc','qt','own','mc','csq','qth','rb','rm',
+     'lootProg','lootThresh','lootOpened','legendaryFound',
+     'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','lastPps'].forEach(k=>{
+      if(d[k]!==undefined)S[k]=d[k];
+    });
+    S.lootPending=false; // always reset pending on load
+    S.ul=new Set(d.ul||[]);
+    // Restore sets
+    if(d.sets&&Array.isArray(d.sets)){
+      S.sets=d.sets.map(st=>({name:st.name,qs:st.qs,queue:shuffle([...st.qs]),wq:[]}));
+    }
+    S.activeSet=Math.min(d.activeSet||0,Math.max(0,S.sets.length-1));
+    return true;
+  }catch(e){return false;}
+}
+function saveLocal(){try{localStorage.setItem(SAVE_KEY,serial());}catch(e){}}
+function loadLocal(){const r=localStorage.getItem(SAVE_KEY);return r?deserial(r):false;}
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveLocal,4000);}
+
+// ═══════════════════════════════════════════════
+// STARTUP
+// ═══════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  if(loadLocal()&&S.sets.length>0){
+    const badge=document.getElementById('save-badge');
+    badge.style.display='inline-flex';
+    badge.className='save-badge';
+    const total=S.sets.reduce((a,st)=>a+st.qs.length,0);
+    badge.innerHTML=`<span style="width:7px;height:7px;border-radius:50%;background:var(--mint4);display:inline-block"></span> Saved garden — ${total} questions, ${fmt(S.te)} petals`;
+    document.getElementById('cont-wrap').style.display='block';
+    renderJsonSetsList();
+  }
+});
+function continueGame(){launchGame();}
+
+// ═══════════════════════════════════════════════
+// IMPORT SCREEN
+// ═══════════════════════════════════════════════
+function swTab(id,i){
+  document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  ['notes','qa','json'].forEach(t=>document.getElementById('tc-'+t).classList.toggle('on',t===id));
+}
+function addQA(){
+  const list=document.getElementById('qa-list');
+  const row=document.createElement('div');row.className='qa-row';
+  row.innerHTML=`<input placeholder="Question…" class="qi-q"><input placeholder="Answer…" class="qi-a"><button class="rm-qa" onclick="rmQA(this)">×</button>`;
+  list.appendChild(row);
+}
+function rmQA(btn){const r=btn.closest('.qa-row');if(document.querySelectorAll('.qa-row').length>1)r.remove();}
+
+function handleJsonUpload(input){
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const parsed=JSON.parse(e.target.result);
+        // Accept array of {q,a} or {question,answer} or {front,back}
+        let arr=Array.isArray(parsed)?parsed:parsed.questions||parsed.cards||[];
+        arr=arr.map(o=>({
+          q:o.q||o.question||o.front||o.prompt||'',
+          a:o.a||o.answer||o.back||o.response||''
+        })).filter(o=>o.q&&o.a);
+        if(arr.length===0){showToast('No valid Q&A found in '+f.name);return;}
+        const name=f.name.replace(/\.json$/i,'').replace(/[_-]/g,' ');
+        S.sets.push({name,qs:arr,queue:shuffle([...arr]),wq:[]});
+        renderJsonSetsList();
+        showToast(`✓ "${name}" loaded — ${arr.length} questions`);
+      }catch(err){showToast('Invalid JSON in '+f.name+': '+err.message);}
+    };
+    reader.readAsText(f);
+  });
+  input.value='';
+}
+
+function renderJsonSetsList(){
+  const el=document.getElementById('json-sets-list');
+  if(!el)return;
+  el.innerHTML=S.sets.length===0?
+    '<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No sets uploaded yet.</p>':
+    S.sets.map((st,i)=>`<div class="json-set">
+      <div class="json-set-name">${st.name}</div>
+      <div class="json-set-cnt">${st.qs.length}q</div>
+      <button class="json-set-rm" onclick="removeSet(${i})">×</button>
+    </div>`).join('');
+}
+function removeSet(i){S.sets.splice(i,1);renderJsonSetsList();if(S.activeSet>=S.sets.length)S.activeSet=Math.max(0,S.sets.length-1);}
+
+function parseNotes(txt){
+  const qs=[];
+  txt.trim().split('\n').filter(l=>l.trim()).forEach(l=>{
+    const m=l.match(/^(.+?)[\s:–—-]+(.+)$/);
+    if(m&&m[1].length<60&&m[2].length>3){
+      qs.push({q:`What is ${m[1].trim()}?`,a:m[2].trim()});
+      qs.push({q:`Define: "${m[1].trim()}"`,a:m[2].trim()});
+    }
+  });
+  const sents=(txt.match(/[^.!?]+[.!?]+/g)||[]);
+  sents.forEach(s=>{s=s.trim();if(s.length>30&&s.length<200){const ws=s.split(' ');if(ws.length>5){const ki=Math.floor(ws.length*.4+Math.random()*ws.length*.3);const k=ws[ki].replace(/[,;:]/g,'');if(k.length>3)qs.push({q:`Complete: "${ws.slice(0,ki).join(' ')} ___ ${ws.slice(ki+1).join(' ')}"`,a:k});}}});
+  return qs;
+}
+
+function startGame(){
+  const qs=[];
+  const n=document.getElementById('t-notes').value.trim();
+  if(n)qs.push(...parseNotes(n));
+  document.querySelectorAll('.qa-row').forEach(r=>{const q=r.querySelector('.qi-q').value.trim(),a=r.querySelector('.qi-a').value.trim();if(q&&a)qs.push({q,a});});
+  if(qs.length>0){
+    // Prepend notes as a set
+    S.sets.unshift({name:'My Notes',qs,queue:shuffle([...qs]),wq:[]});
+    S.activeSet=0;
+  }
+  // Allow start if there are any sets at all (could be JSON-only)
+  if(S.sets.length===0){showToast('Add some questions first — paste notes, type Q&A, or upload JSON!');return;}
+  if(S.activeSet>=S.sets.length)S.activeSet=0;
+  launchGame();
+}
+function demoGame(){
+  S.sets=[{name:'Demo Questions',qs:DEMO_QS,queue:shuffle([...DEMO_QS]),wq:[]}];
+  S.activeSet=0;launchGame();
+}
+
+function launchGame(){
+  applyCosmetics();
+  document.getElementById('scr-import').classList.add('hidden');
+  document.getElementById('scr-game').classList.remove('hidden');
+  calcPps();renderAll();
+  if(!loopStarted){loopStarted=true;requestAnimationFrame(gameLoop);}
+  scheduleSave();
+  const total=S.sets.reduce((a,st)=>a+st.qs.length,0);
+  showToast(`Garden loaded — ${total} questions across ${S.sets.length} set${S.sets.length!==1?'s':''}!`);
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function fmt(n){if(n>=1e12)return(n/1e12).toFixed(1)+'T';if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n).toString();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function calcPps(){
+  pps=UPGRADES.reduce((sum,u)=>{
+    const n=S.own[u.id]||0;
+    if(!n)return sum;
+    // Each owned copy contributes bpps * rebirthMult * slight efficiency bonus
+    return sum+(n*u.bpps*(1+Math.log1p(n)*.2)*S.rm);
+  },0);
+  S.lastPps=pps;
+}
+function cost(u){return Math.floor(u.base*Math.pow(1.15,S.own[u.id]||0));}
+
+// ═══════════════════════════════════════════════
+// COSMETICS APPLICATION
+// ═══════════════════════════════════════════════
+function applyCosmetics(){
+  const skin=SKINS.find(s=>s.id===S.equippedSkin)||SKINS[0];
+  const theme=THEMES.find(t=>t.id===S.equippedTheme)||THEMES[0];
+  const icon=ICONS.find(i=>i.id===S.equippedIcon)||ICONS[0];
+  const r=document.documentElement;
+  r.style.setProperty('--orb-a',skin.orb_a);
+  r.style.setProperty('--orb-b',skin.orb_b);
+  r.style.setProperty('--orb-c',skin.orb_c);
+  r.style.setProperty('--orb-glow',skin.glow);
+  r.style.setProperty('--theme-bg',theme.bg);
+  r.style.setProperty('--theme-panel',theme.panel);
+  document.body.style.background=theme.bg;
+  const orbEl=document.getElementById('orb');
+  if(orbEl)orbEl.textContent=icon.e;
+}
+
+// ═══════════════════════════════════════════════
+// CLICK
+// ═══════════════════════════════════════════════
+function doClick(e){
+  if(S.qa)return;
+  clearTimeout(S._ct);
+  S.combo=Math.min(S.combo+1,30);
+  if(S.combo>S.mc)S.mc=S.combo;
+  S.cm=1+S.combo*.1;
+  S._ct=setTimeout(()=>{S.combo=0;S.cm=1;renderCombo();},1800);
+
+  // Click value: base + fraction of pps
+  const base=Math.max(1,pps*.1+1);
+  const val=base*S.cm*S.rm;
+  S.pts+=val;S.te+=val;
+  S.tc++;S.csq++;S.lootProg++;
+
+  spawnFloat(e.clientX,e.clientY,val);
+  popRing();renderCombo();renderStats();renderUpgs();
+  checkQuiz();checkLoot();checkAchs();scheduleSave();
+}
+
+function popRing(){const r=document.getElementById('ring');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
+
+function spawnFloat(x,y,v){
+  const el=document.createElement('div');el.className='fl';
+  el.style.cssText=`left:${x-14}px;top:${y-14}px;color:${S.combo>8?'var(--amber4)':S.combo>4?'var(--rose4)':'var(--lav4)'}`;
+  el.textContent=`+${fmt(v)}${S.combo>4?' ×'+S.combo:''}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1000);
+}
+
+// ═══════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════
+function checkQuiz(){
+  const pct=S.csq/S.qth;
+  document.getElementById('qtf').style.width=Math.min(pct*100,100)+'%';
+  const rem=Math.max(0,S.qth-S.csq);
+  document.getElementById('qtl').textContent=rem>0?`quiz in ${rem} blooms`:'quiz ready!';
+  if(S.csq>=S.qth&&!S.qa&&S.sets.length>0&&S.sets[S.activeSet]?.qs.length>0){
+    S.csq=0;setTimeout(openQuiz,300);
+  }
+}
+function openQuiz(){
+  const set=S.sets[S.activeSet];
+  if(!set||!set.qs.length)return;
+  if(!set.queue.length)set.queue=shuffle([...set.qs]);
+  currentQ=set.wq.length>0&&Math.random()<.35?
+    set.wq.splice(Math.floor(Math.random()*set.wq.length),1)[0]:
+    set.queue.pop();
+  S.qa=true;
+  document.getElementById('q-set-tag').textContent=set.name;
+  document.getElementById('q-text').textContent=currentQ.q;
+  document.getElementById('q-inp').value='';
+  document.getElementById('q-ans').textContent=currentQ.a;
+  document.getElementById('q-ans').classList.remove('show');
+  document.getElementById('q-btns').classList.add('hid');
+  document.getElementById('q-skip').style.display='flex';
+  const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
+  document.getElementById('q-mult').innerHTML=`Correct earns <b>+${fmt(bonus*3)} petals</b>`;
+  document.getElementById('qov').classList.add('show');
+  setTimeout(()=>document.getElementById('q-inp').focus(),300);
+}
+function revealAns(){
+  document.getElementById('q-ans').classList.add('show');
+  document.getElementById('q-btns').classList.remove('hid');
+  document.getElementById('q-skip').style.display='none';
+}
+function grade(g){
+  const set=S.sets[S.activeSet];
+  S.qt++;
+  const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
+  if(g===2){
+    S.qc++;
+    const earned=bonus*3;
+    S.pts+=earned;S.te+=earned;
+    // Correct answer = big loot progress boost (worth 10 clicks)
+    S.lootProg+=10;
+    activateQuizBonus();
+    showToast('✓ Correct! +'+fmt(earned)+' petals 🎉');
+  } else if(g===1){
+    const earned=bonus;
+    S.pts+=earned;S.te+=earned;
+    // Almost = small loot boost (worth 3 clicks)
+    S.lootProg+=3;
+    if(set)set.wq.push(currentQ);
+    showToast('~ Almost! +'+fmt(earned)+' petals');
+  } else if(g===0){
+    if(set)set.wq.push(currentQ);
+    showToast('✗ Added to retry queue');
+  }
+  document.getElementById('qov').classList.remove('show');
+  S.qa=false;S.csq=0;S.qth=40+Math.floor(Math.random()*35);
+  document.getElementById('qtf').style.width='0%';
+  renderStats();checkAchs();
+  // Check loot AFTER quiz closes (short delay so quiz overlay fully hides first)
+  setTimeout(()=>{checkLootFromQuiz();},350);
+  scheduleSave();
+}
+
+function activateQuizBonus(){
+  clearTimeout(quizBonusTimer);
+  document.getElementById('d-quizbonus').style.display='inline-flex';
+  quizBonusTimer=setTimeout(()=>{
+    document.getElementById('d-quizbonus').style.display='none';
+  },30000);
+}
+
+// ═══════════════════════════════════════════════
+// LOOT BOX
+// ═══════════════════════════════════════════════
+// Called every click — updates bar, fires if threshold hit
+function checkLoot(){
+  const thresh=getLootThresh();
+  const pct=Math.min(S.lootProg/thresh,1);
+  document.getElementById('ltf').style.width=(pct*100)+'%';
+  const rem=Math.max(0,thresh-S.lootProg);
+  document.getElementById('ltl').textContent=rem>0?`🌰 loot box in ${rem} actions`:'🌰 loot box ready!';
+  if(S.lootProg>=thresh&&!S.lootPending){
+    S.lootProg=0;
+    S.lootPending=true;
+    setTimeout(triggerLootBox,400);
+  }
+}
+// Called after quiz closes — same logic but with a delay already applied
+function checkLootFromQuiz(){
+  const thresh=getLootThresh();
+  document.getElementById('ltf').style.width=Math.min(S.lootProg/thresh,1)*100+'%';
+  const rem=Math.max(0,thresh-S.lootProg);
+  document.getElementById('ltl').textContent=rem>0?`🌰 loot box in ${rem} actions`:'🌰 loot box ready!';
+  if(S.lootProg>=thresh&&!S.lootPending){
+    S.lootProg=0;
+    S.lootPending=true;
+    setTimeout(triggerLootBox,200);
+  }
+}
+function getLootThresh(){
+  // Starts at 75, gets 10% cheaper per season, minimum 30
+  return Math.max(30,Math.floor(75*(1-Math.min(S.rb*.1,.5))));
+}
+
+function triggerLootBox(){
+  const pool=buildLootPool();
+  if(!pool.length){
+    // All cosmetics owned — give petal bonus instead
+    const bonus=Math.floor(S.te*.05+1000);
+    S.pts+=bonus;S.te+=bonus;
+    S.lootOpened++;
+    S.lootPending=false;
+    showToast('🌰 Loot box! All cosmetics owned — bonus +'+fmt(bonus)+' petals!');
+    renderStats();scheduleSave();return;
+  }
+  // Weighted random pick
+  const total=pool.reduce((a,b)=>a+b.weight,0);
+  let r=Math.random()*total,chosen=pool[pool.length-1];
+  for(const item of pool){r-=item.weight;if(r<=0){chosen=item;break;}}
+  pendingLoot=chosen;
+
+  // Reset + show overlay
+  const iconEl=document.getElementById('lbox-icon');
+  iconEl.textContent='🌰';
+  iconEl.className='loot-box-icon';
+  document.getElementById('ltitle').textContent='A loot box bloomed!';
+  document.getElementById('lsub').textContent='Something is waiting inside…';
+  document.getElementById('reward-reveal').classList.remove('show');
+  document.getElementById('lopen-btn').style.display='block';
+  document.getElementById('lclose-btn').style.display='none';
+  document.getElementById('lov').classList.add('show');
+}
+
+function buildLootPool(){
+  const allItems=[
+    ...SKINS.map(s=>({type:'skin',ref:s.id,name:s.n,icon:s.e,rarity:s.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[s.rarity]||30})),
+    ...THEMES.map(t=>({type:'theme',ref:t.id,name:t.n,icon:t.e,rarity:t.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[t.rarity]||30})),
+    ...ICONS.map(i=>({type:'icon',ref:i.id,name:i.n,icon:i.e,rarity:i.rarity,weight:{common:60,rare:35,epic:12,legendary:3}[i.rarity]||30})),
+  ];
+  return allItems.filter(it=>!S.ownedCosmetics.includes(it.ref));
+}
+
+function openLootBox(){
+  if(!pendingLoot)return;
+  const iconEl=document.getElementById('lbox-icon');
+  iconEl.className='loot-box-icon opening';
+  setTimeout(()=>{
+    const item=pendingLoot;
+    if(!S.ownedCosmetics.includes(item.ref))S.ownedCosmetics.push(item.ref);
+    S.lootOpened++;
+    if(item.rarity==='legendary')S.legendaryFound++;
+
+    document.getElementById('reward-icon').textContent=item.icon;
+    document.getElementById('reward-name').textContent=item.name;
+    document.getElementById('reward-type').innerHTML=
+      `<span class="rarity-${item.rarity}">${item.rarity.toUpperCase()}</span> · ${{skin:'Orb Skin',theme:'Background Theme',icon:'Orb Icon'}[item.type]||item.type}`;
+    document.getElementById('reward-reveal').classList.add('show');
+    document.getElementById('ltitle').textContent='You found…';
+    document.getElementById('lsub').textContent='Equip it from your Collection ✨';
+    document.getElementById('lopen-btn').style.display='none';
+    document.getElementById('lclose-btn').style.display='inline-block';
+    pendingLoot=null;
+    checkAchs();renderAchs();scheduleSave();
+  },650);
+}
+function closeLoot(){
+  document.getElementById('lov').classList.remove('show');
+  S.lootPending=false;
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function renderAll(){renderUpgs();renderAchs();renderStats();updateRbPill();updateActiveSetPill();applyCosmetics();}
+
+function renderCombo(){
+  document.getElementById('cbar').style.width=(S.combo/30*100)+'%';
+  const lbl=document.getElementById('clabel');
+  if(S.combo>1){lbl.textContent=`${S.combo}× combo! (${S.cm.toFixed(1)}×)`;lbl.classList.add('on');}
+  else{lbl.textContent='click to bloom';lbl.classList.remove('on');}
+}
+
+function renderStats(){
+  document.getElementById('d-pts').textContent=fmt(S.pts);
+  document.getElementById('d-pps').textContent=pps>=1?fmt(pps):pps.toFixed(2);
+  document.getElementById('stat-list').innerHTML=
+    [['Total petals',fmt(S.te)],['Per second',pps>=1?fmt(pps):pps.toFixed(2)],
+     ['Blooms',S.tc],['Quiz',S.qc+'/'+S.qt],
+     ['Best combo',S.mc+'×'],['Season',S.rb+1],
+     ['Loot opened',S.lootOpened],['Questions',S.sets.reduce((a,st)=>a+st.qs.length,0)]]
+    .map(([k,v])=>`<div class="srow"><span>${k}</span><b>${v}</b></div>`).join('');
+}
+
+function renderUpgs(){
+  const season=S.rb;
+  const list=document.getElementById('upg-list');
+  let html='';
+  const tiers=[[1,'🌱 Sprouts'],[2,'🌸 Bloomers'],[3,'🌳 Trees'],[4,'🦋 Creatures'],[5,'🌈 Phenomena'],[6,'🌌 Cosmic']];
+  tiers.forEach(([tier,label])=>{
+    const items=UPGRADES.filter(u=>u.tier===tier&&(!u.minSeason||season>=u.minSeason-1));
+    if(!items.length)return;
+    html+=`<div class="upg-sec-label">${label}</div>`;
+    items.forEach(u=>{
+      const n=S.own[u.id]||0,c=cost(u),lk=S.pts<c;
+      html+=`<div class="ui${lk?' ul':''}${n>0?' uo':''}" data-id="${u.id}">
+        <div class="ue">${u.e}</div>
+        <div class="ut"><div class="un">${u.n}</div><div class="ud">${u.d}</div></div>
+        <div class="ur"><div class="uc">${fmt(c)}</div>${n>0?`<div class="uk">${n}×</div>`:''}</div>
+      </div>`;
+    });
+  });
+  list.innerHTML=html;
+  list.querySelectorAll('.ui:not(.ul)').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const u=UPGRADES.find(x=>x.id===el.dataset.id),c=cost(u);
+      if(S.pts>=c){
+        S.pts-=c;S.own[u.id]=(S.own[u.id]||0)+1;
+        calcPps();renderUpgs();renderStats();checkAchs();
+        showMilestone(u.e+' '+u.n,'Added to your garden!');scheduleSave();
+      }
+    });
+  });
+}
+
+function renderAchs(){
+  document.getElementById('ach-list').innerHTML=ACHS.map(a=>`
+    <div class="ai${S.ul.has(a.id)?' done':''}">
+      <div class="aico">${a.e}</div>
+      <div class="at"><b>${a.n}</b><span>${a.d}</span></div>
+    </div>`).join('');
+}
+
+function updateRbPill(){
+  const p=document.getElementById('d-rbpill');
+  const seasonEl=document.getElementById('d-rbnum');
+  const multEl=document.getElementById('d-rbmult');
+  if(S.rb>0){
+    p.style.display='inline-flex';
+    if(seasonEl)seasonEl.textContent=S.rb+1;
+    if(multEl)multEl.textContent=S.rm.toFixed(2);
+  } else p.style.display='none';
+  document.getElementById('rb-cur-season').textContent=S.rb+1;
+}
+
+function updateActiveSetPill(){
+  const set=S.sets[S.activeSet];
+  document.getElementById('active-set-name').textContent=set?set.name:'No questions';
+}
+
+function checkAchs(){
+  let changed=false;
+  ACHS.forEach(a=>{if(!S.ul.has(a.id)&&a.f(S)){S.ul.add(a.id);changed=true;showMilestone(a.e+' '+a.n,a.d);}});
+  if(changed)renderAchs();
+}
+
+// ═══════════════════════════════════════════════
+// QUESTION EDITOR
+// ═══════════════════════════════════════════════
+function openMod(id){
+  if(id==='mod-editor'){
+    const set=S.sets[S.activeSet];
+    const qs=set?set.qs:[];
+    const list=document.getElementById('ed-list');
+    list.innerHTML=(qs.length===0?`<p style="font-size:12px;color:var(--ink3);margin-bottom:8px">No questions in this set.</p>`:
+      qs.map((q,i)=>`<div class="erow" id="er${i}">
+        <div class="efields">
+          <input class="ei" id="eq${i}" value="${esc(q.q)}" placeholder="Question…">
+          <input class="ei" id="ea${i}" value="${esc(q.a)}" placeholder="Answer…">
+        </div>
+        <button class="edel" onclick="this.closest('.erow').remove()">×</button>
+      </div>`).join(''))+
+      `<button class="eadd" onclick="addEdRow()">+ Add question</button>`;
+  }
+  if(id==='mod-sets') renderSetsModal();
+  if(id==='mod-coll') renderCollModal();
+  document.getElementById(id).classList.add('show');
+}
+function closeMod(id){document.getElementById(id).classList.remove('show');}
+
+function addEdRow(){
+  const i=Date.now();
+  const add=document.querySelector('.eadd');
+  const row=document.createElement('div');row.className='erow';
+  row.innerHTML=`<div class="efields"><input class="ei" id="eq${i}" placeholder="Question…"><input class="ei" id="ea${i}" placeholder="Answer…"></div><button class="edel" onclick="this.closest('.erow').remove()">×</button>`;
+  add.parentNode.insertBefore(row,add);
+}
+
+function saveEditor(){
+  const rows=document.querySelectorAll('#ed-list .erow');
+  const qs=[];
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('.ei');
+    const q=inputs[0]?.value.trim(),a=inputs[1]?.value.trim();
+    if(q&&a)qs.push({q,a});
+  });
+  if(!qs.length){showToast('Add at least one question!');return;}
+  const set=S.sets[S.activeSet];
+  if(set){set.qs=qs;set.queue=shuffle([...qs]);set.wq=[];}
+  else{S.sets.push({name:'Edited Set',qs,queue:shuffle([...qs]),wq:[]});S.activeSet=0;}
+  closeMod('mod-editor');renderStats();updateActiveSetPill();scheduleSave();
+  showToast(`${qs.length} questions saved ✿`);
+}
+
+// ═══════════════════════════════════════════════
+// SETS MODAL
+// ═══════════════════════════════════════════════
+function renderSetsModal(){
+  const el=document.getElementById('sets-list');
+  el.innerHTML=S.sets.length===0?
+    '<p style="font-size:12px;color:var(--ink3)">No question sets loaded.</p>':
+    S.sets.map((st,i)=>`<div class="set-entry${i===S.activeSet?' active':''}" onclick="switchSet(${i})">
+      <span style="font-size:18px">${['📚','📖','📝','📄','📃'][i%5]}</span>
+      <div class="set-entry-name">${st.name}</div>
+      <div class="set-entry-cnt">${st.qs.length}q</div>
+      <button class="set-entry-del" onclick="event.stopPropagation();deleteSet(${i})">×</button>
+    </div>`).join('');
+}
+function switchSet(i){
+  S.activeSet=i;updateActiveSetPill();renderSetsModal();
+  showToast('Switched to "'+S.sets[i].name+'"');scheduleSave();
+}
+function deleteSet(i){
+  if(S.sets.length<=1){showToast("Can't delete the last set!");return;}
+  S.sets.splice(i,1);
+  if(S.activeSet>=S.sets.length)S.activeSet=S.sets.length-1;
+  renderSetsModal();updateActiveSetPill();scheduleSave();
+}
+function handleJsonMid(input){
+  handleJsonUpload(input);
+  setTimeout(()=>renderSetsModal(),300);
+}
+
+// ═══════════════════════════════════════════════
+// REBIRTH / SEASON
+// ═══════════════════════════════════════════════
+function openRebirth(){
+  const rb=S.rb;
+  const nm=parseFloat((1+(rb+1)*.25).toFixed(2));
+  const next=SEASONS[(rb+1)%SEASONS.length];
+  document.getElementById('rb-info').innerHTML=`
+    <div class="rstat"><span>Current Season</span><b>${SEASONS[rb%SEASONS.length].n} ${SEASONS[rb%SEASONS.length].e}</b></div>
+    <div class="rstat"><span>Next Season</span><b>${next.n} ${next.e}</b></div>
+    <div class="rstat"><span>Current multiplier</span><b>${S.rm.toFixed(2)}×</b></div>
+    <div class="rstat"><span>After Season change</span><b>${nm}× (+25%)</b></div>
+    <div class="rstat"><span>Petals lost</span><b>${fmt(S.pts)}</b></div>
+    <div class="rstat"><span>Garden items lost</span><b>${Object.values(S.own).reduce((a,b)=>a+b,0)}</b></div>`;
+  const need=10000*Math.pow(10,rb);
+  const btn=document.getElementById('rb-btn');
+  btn.disabled=S.te<need;
+  btn.textContent=btn.disabled?`Need ${fmt(need)} total petals`:'🌸 Begin new Season';
+  openMod('mod-rebirth');
+}
+
+function doRebirth(){
+  S.rb++;
+  S.rm=parseFloat((1+S.rb*.25).toFixed(2));
+  S.pts=0;S.own={};S.combo=0;S.cm=1;
+  calcPps();
+  // Apply season theme
+  const season=SEASONS[S.rb%SEASONS.length];
+  document.documentElement.style.setProperty('--theme-bg',season.bg);
+  document.documentElement.style.setProperty('--theme-panel',season.panel);
+  document.getElementById('orb').textContent=season.orb;
+  closeMod('mod-rebirth');
+  updateRbPill();renderAll();checkAchs();scheduleSave();
+  showMilestone(`${season.e} Season ${S.rb+1}: ${season.n}!`,`${S.rm}× permanent multiplier`);
+}
+
+// ═══════════════════════════════════════════════
+// COLLECTION MODAL
+// ═══════════════════════════════════════════════
+function renderCollModal(){
+  const mkGrid=(items,type)=>items.map(item=>{
+    const owned=S.ownedCosmetics.includes(item.id);
+    const equipped=type==='skin'?S.equippedSkin===item.id:type==='theme'?S.equippedTheme===item.id:S.equippedIcon===item.id;
+    return`<div class="coll-item${owned?' owned':''}${equipped?' equipped':''}" onclick="${owned?`equipItem('${type}','${item.id}')`:''}" style="${!owned?'cursor:default':'cursor:pointer'}">
+      <span class="coll-ico">${item.e}</span>
+      <div class="coll-name">${item.n}</div>
+      ${!owned?`<div style="font-size:9px;color:var(--ink3);margin-top:2px" class="rarity-${item.rarity}">${item.rarity}</div>`:''}
+      ${equipped?'<div style="font-size:9px;color:var(--amber4);font-weight:500;margin-top:2px">equipped</div>':''}
+    </div>`;
+  }).join('');
+  document.getElementById('coll-skins').innerHTML=mkGrid(SKINS,'skin');
+  document.getElementById('coll-themes').innerHTML=mkGrid(THEMES,'theme');
+  document.getElementById('coll-icons').innerHTML=mkGrid(ICONS,'icon');
+}
+function equipItem(type,id){
+  if(type==='skin')S.equippedSkin=id;
+  else if(type==='theme')S.equippedTheme=id;
+  else S.equippedIcon=id;
+  applyCosmetics();renderCollModal();scheduleSave();
+  showToast('Equipped!');
+}
+
+// ═══════════════════════════════════════════════
+// SAVE MODAL
+// ═══════════════════════════════════════════════
+function openSave(){
+  document.getElementById('save-status').innerHTML=
+    [['Petals earned',fmt(S.te)],['Season',S.rb+1],['Cosmetics owned',S.ownedCosmetics.length],
+     ['Loot boxes opened',S.lootOpened],['Question sets',S.sets.length],
+     ['Total questions',S.sets.reduce((a,st)=>a+st.qs.length,0)],
+     ['Save method','Auto · every 4 seconds']]
+    .map(([k,v])=>`<div style="display:flex;justify-content:space-between"><span>${k}</span><b style="color:var(--ink)">${v}</b></div>`).join('');
+  openMod('mod-save');
+}
+function exportSave(){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([serial()],{type:'application/json'}));a.download='bloom-garden-save.json';a.click();showToast('Save exported!');
+}
+function importSave(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{if(deserial(e.target.result)){closeMod('mod-save');launchGame();showToast('Save imported ✿');}else showToast('Invalid save file');};
+  r.readAsText(f);input.value='';
+}
+
+// ═══════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════
+function doReset(){
+  localStorage.removeItem(SAVE_KEY);S=freshState();pps=0;
+  closeMod('mod-reset');
+  document.getElementById('scr-game').classList.add('hidden');
+  document.getElementById('scr-import').classList.remove('hidden');
+  document.getElementById('save-badge').style.display='none';
+  document.getElementById('cont-wrap').style.display='none';
+  showToast('Garden reset. Fresh start!');
+}
+
+// ═══════════════════════════════════════════════
+// MILESTONE / TOAST
+// ═══════════════════════════════════════════════
+function showMilestone(t,s){const el=document.createElement('div');el.className='mpop';el.innerHTML=`<div class="mpt">${t}</div><div class="mps">${s}</div>`;document.body.appendChild(el);setTimeout(()=>el.remove(),2900);}
+let tT;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ═══════════════════════════════════════════════
+// GAME LOOP — THE CRITICAL BIT
+// pps is petals per second. Each frame we add pps * (dt / 1000).
+// ═══════════════════════════════════════════════
+let lastTs=0;
+function gameLoop(ts){
+  const dt=Math.min(ts-lastTs,100); // cap at 100ms to avoid huge jumps
+  lastTs=ts;
+
+  // PASSIVE INCOME — this is what was broken before
+  if(pps>0){
+    const earned=pps*(dt/1000);
+    S.pts+=earned;
+    S.te+=earned;
+  }
+
+  tickAcc+=dt;
+  if(tickAcc>250){
+    tickAcc=0;
+    renderStats();
+    renderUpgs(); // re-check which upgrades are affordable
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bloom Extractor ✿</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rose:#fce4ec;--rose2:#f8bbd0;--rose3:#f48fb1;--rose4:#e91e63;
+  --sky:#e3f2fd;--sky2:#bbdefb;--sky3:#90caf9;--sky4:#1e88e5;
+  --mint:#e8f5e9;--mint2:#c8e6c9;--mint3:#a5d6a7;--mint4:#43a047;
+  --peach:#fff3e0;--peach2:#ffe0b2;--peach4:#fb8c00;
+  --lav:#ede7f6;--lav2:#d1c4e9;--lav3:#b39ddb;--lav4:#7e57c2;
+  --amber:#fff8e1;--amber2:#ffecb3;--amber4:#f9a825;
+  --cream:#fdfaf6;--warm:#f5efe8;--soft:#ede4d8;--ink:#3d2c2c;--ink2:#7a6060;--ink3:#b09898;
+  --card:#fff;--sh:0 2px 20px rgba(61,44,44,.07);--sh2:0 8px 40px rgba(61,44,44,.12);
+}
+html{min-height:100%;background:var(--cream)}
+body{min-height:100vh;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif}
+canvas#bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:36px 20px 80px}
+.header{text-align:center;margin-bottom:28px}
+.wm{font-family:'Fraunces',serif;font-size:38px;font-weight:300;letter-spacing:-1.5px;color:var(--ink)}
+.wm em{color:var(--rose4);font-style:italic}
+.wsub{font-size:13px;color:var(--ink3);margin-top:3px}
+.blink{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--ink3);text-decoration:none;background:#fff;border:1px solid var(--soft);border-radius:99px;padding:5px 13px;transition:all .2s}
+.blink:hover{border-color:var(--rose3);color:var(--rose4)}
+.card{background:var(--card);border-radius:18px;padding:18px 22px;box-shadow:var(--sh);margin-bottom:18px;border:1px solid var(--soft)}
+.slabel{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}
+
+/* FREE BADGE */
+.free-badge{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--mint),var(--sky));border:1px solid var(--mint2);border-radius:16px;padding:14px 18px;margin-bottom:18px}
+.free-ico{font-size:26px;flex-shrink:0}
+.free-text b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px}
+.free-text span{font-size:12px;color:var(--ink2);line-height:1.5}
+
+/* METHODS TABS */
+.mtabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.mtab{flex:1;min-width:120px;padding:10px 8px;border-radius:12px;border:1.5px solid var(--soft);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);cursor:pointer;text-align:center;transition:all .2s;line-height:1.5}
+.mtab.on{background:var(--rose);border-color:var(--rose3);color:var(--ink);font-weight:500}
+.mtab span{display:block;font-size:18px;margin-bottom:3px}
+.meth-section{display:none}.meth-section.on{display:block}
+
+/* TEXT PASTE */
+textarea.bi{width:100%;height:200px;border:1.5px solid var(--soft);border-radius:13px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--warm);resize:vertical;outline:none;line-height:1.7;transition:border .2s}
+textarea.bi:focus{border-color:var(--rose3);background:#fff}
+.hint{font-size:11px;color:var(--ink3);margin-top:6px;line-height:1.5}
+
+/* DROP ZONE */
+.drop{border:2px dashed var(--rose3);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .25s;background:#fff;position:relative}
+.drop.over{background:var(--rose);border-color:var(--rose4);transform:scale(1.01)}
+.drop.has{border-style:solid;border-color:var(--mint3);background:var(--mint)}
+.drop-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-ico{font-size:32px;margin-bottom:7px;display:block}
+.drop-title{font-family:'Fraunces',serif;font-size:16px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.ftypes{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:9px}
+.ft{font-size:10px;padding:2px 8px;border-radius:99px;background:#fff;border:1px solid var(--soft);color:var(--ink2)}
+
+/* FILE QUEUE */
+.qi{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--soft);border-radius:11px;padding:9px 12px;margin-bottom:6px;transition:all .3s}
+.qi.done{border-color:var(--mint3);background:var(--mint)}
+.qi.error{border-color:var(--rose3);background:var(--rose)}
+.qi-ico{font-size:19px;flex-shrink:0}
+.qi-info{flex:1;min-width:0}
+.qi-name{font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qi-status{font-size:11px;color:var(--ink3);margin-top:1px}
+.qi-rm{width:24px;height:24px;border-radius:6px;border:none;background:var(--soft);color:var(--ink3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.qi-rm:hover{background:var(--rose2);color:var(--rose4)}
+
+/* SETTINGS */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.sgrid{grid-template-columns:1fr}}
+.si label{font-size:11px;color:var(--ink3);display:block;margin-bottom:4px}
+.si select{width:100%;padding:8px 10px;border:1.5px solid var(--soft);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none;cursor:pointer;transition:border .2s}
+.si select:focus{border-color:var(--lav3);background:#fff}
+.srow{display:flex;align-items:center;gap:7px}
+.srow input[type=range]{flex:1;accent-color:var(--rose4)}
+
+/* EXTRACT BTN */
+.xbtn{width:100%;padding:16px;border-radius:15px;border:none;background:linear-gradient(135deg,var(--rose3),var(--lav3));color:#fff;font-family:'Fraunces',serif;font-size:19px;font-weight:500;cursor:pointer;transition:all .25s;letter-spacing:.3px;position:relative;overflow:hidden;margin-bottom:14px}
+.xbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 26px rgba(244,143,177,.4)}
+.xbtn:disabled{opacity:.42;cursor:not-allowed;transform:none}
+.shimmer{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%);transform:translateX(-100%);display:none}
+.xbtn.running .shimmer{display:block;animation:shim 1.4s infinite}
+@keyframes shim{to{transform:translateX(100%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+
+/* LOG */
+.xlog{background:var(--warm);border-radius:12px;padding:12px 14px;font-size:11px;font-family:monospace;color:var(--ink2);line-height:1.9;max-height:120px;overflow-y:auto;margin-bottom:14px;border:1px solid var(--soft);display:none}
+.xlog.on{display:block}
+.xlog::-webkit-scrollbar{width:3px}.xlog::-webkit-scrollbar-thumb{background:var(--soft)}
+.ll{display:block}.ll.ok{color:var(--mint4)}.ll.err{color:var(--rose4)}.ll.info{color:var(--sky4)}.ll.warn{color:var(--peach4)}
+
+/* RESULTS */
+.rcard{background:var(--card);border-radius:18px;padding:22px;box-shadow:var(--sh);border:1px solid var(--soft)}
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:6px}
+.rtitle{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink)}
+.rcnt{font-size:12px;color:var(--ink3);background:var(--warm);padding:3px 11px;border-radius:99px}
+.rtabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.rtab{padding:6px 13px;border-radius:9px;border:1.5px solid var(--soft);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink2);cursor:pointer;transition:all .2s}
+.rtab.on{background:var(--lav);border-color:var(--lav3);color:var(--lav4);font-weight:500}
+.qa-preview{max-height:340px;overflow-y:auto;padding-right:2px}
+.qa-preview::-webkit-scrollbar{width:3px}.qa-preview::-webkit-scrollbar-thumb{background:var(--soft);border-radius:99px}
+.qacard{background:var(--warm);border-radius:11px;padding:10px 12px;margin-bottom:6px;border:1px solid var(--soft);position:relative}
+.qtext{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.4}
+.atext{font-size:12px;color:var(--ink2);line-height:1.5}
+.dq{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:5px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;opacity:0;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.qacard:hover .dq{opacity:1}
+.dq:hover{background:var(--rose2);color:var(--rose4)}
+.outta{width:100%;height:250px;border:1.5px solid var(--soft);border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);resize:vertical;outline:none;line-height:1.7}
+.outta:focus{border-color:var(--lav3);background:#fff}
+.outta.mono{font-family:monospace;font-size:11px;color:var(--ink2);background:#fafafa}
+.arow{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.abtn{flex:1;min-width:110px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--soft);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .2s;text-align:center}
+.abtn:hover{background:var(--warm)}
+.abtn.bloom{background:linear-gradient(135deg,var(--rose2),var(--lav2));border-color:var(--rose3)}
+.abtn.bloom:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(244,143,177,.3)}
+.abtn.grn{background:var(--mint);border-color:var(--mint3);color:var(--mint4)}
+.abtn.grn:hover{background:var(--mint2)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(38px);background:var(--ink);color:#fff;border-radius:12px;padding:10px 18px;font-size:13px;z-index:999;opacity:0;transition:all .3s;pointer-events:none;max-width:88vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* PATTERN GUIDE */
+.pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+@media(max-width:480px){.pattern-grid{grid-template-columns:1fr}}
+.pat-card{background:var(--warm);border-radius:10px;padding:10px 12px;border:1px solid var(--soft)}
+.pat-label{font-size:11px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.pat-ex{font-size:10px;color:var(--ink3);font-family:monospace;line-height:1.5}
+.pat-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:99px;background:var(--mint);color:var(--mint4);margin-bottom:3px}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="page">
+
+  <div class="header">
+    <div class="wm">bloom <em>✿</em> extractor</div>
+    <div class="wsub">Convert your notes into quiz questions — no account needed</div>
+    <a href="bloom-revision-clicker.html" class="blink">← Open Bloom game</a>
+  </div>
+
+  <div class="free-badge">
+    <div class="free-ico">🆓</div>
+    <div class="free-text">
+      <b>Completely free — runs entirely in your browser</b>
+      <span>No API key, no account, no internet required. Smart pattern matching extracts Q&A from your notes, or you can upload DOCX, XLSX, PPTX, and more.</span>
+    </div>
+  </div>
+
+  <!-- METHOD TABS -->
+  <div class="card">
+    <div class="slabel">How would you like to add content?</div>
+    <div class="mtabs">
+      <button class="mtab on" onclick="swMeth('paste',0)"><span>📋</span>Paste text</button>
+      <button class="mtab" onclick="swMeth('file',1)"><span>📁</span>Upload files</button>
+      <button class="mtab" onclick="swMeth('manual',2)"><span>✍️</span>Manual Q&A</button>
+    </div>
+
+    <!-- PASTE TEXT -->
+    <div class="meth-section on" id="ms-paste">
+      <textarea class="bi" id="t-paste" placeholder="Paste your revision notes here…
+
+Works best with:
+• Term — Definition format (e.g. "Osmosis — movement of water across a membrane")
+• Numbered lists (1. Paris is the capital of France)
+• Paragraph text (sentences are converted to fill-in-the-blank and fact questions)
+• Any structured notes from Word, Google Docs, Notion, etc."></textarea>
+      <div class="hint">Paste from any source — Word, Google Docs, Notion, PDFs (copy-paste the text). The smarter your formatting, the better the questions.</div>
+      <div class="pattern-grid">
+        <div class="pat-card">
+          <div class="pat-badge">BEST</div>
+          <div class="pat-label">Term — Definition</div>
+          <div class="pat-ex">Mitosis — cell division producing two identical daughter cells</div>
+        </div>
+        <div class="pat-card">
+          <div class="pat-label">Colon definitions</div>
+          <div class="pat-ex">Newton's 2nd Law: F = ma</div>
+        </div>
+        <div class="pat-card">
+          <div class="pat-label">Numbered facts</div>
+          <div class="pat-ex">1. The heart has four chambers<br>2. Blood pressure is measured in mmHg</div>
+        </div>
+        <div class="pat-card">
+          <div class="pat-label">Paragraph sentences</div>
+          <div class="pat-ex">The mitochondria produces ATP through oxidative phosphorylation.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILE UPLOAD -->
+    <div class="meth-section" id="ms-file">
+      <div class="drop" id="drop" onclick="triggerInput()">
+        <input type="file" class="drop-input" id="finput" multiple
+          accept=".txt,.md,.csv,.docx,.pptx,.xlsx,.rtf"
+          onchange="handleFiles(this.files)" onclick="event.stopPropagation()">
+        <span class="drop-ico">✿</span>
+        <div class="drop-title">Drop files or click to browse</div>
+        <div style="font-size:12px;color:var(--ink3)">Text is extracted locally — nothing is uploaded anywhere</div>
+        <div class="ftypes">
+          <span class="ft">DOCX</span><span class="ft">PPTX</span><span class="ft">XLSX</span>
+          <span class="ft">TXT / MD</span><span class="ft">CSV</span><span class="ft">RTF</span>
+        </div>
+      </div>
+      <div id="fqueue" style="margin-top:10px"></div>
+      <div class="hint">PDF not supported here (copy-paste the text instead). Images aren't processed since there's no AI — use the paste tab after OCR or copy-paste.</div>
+    </div>
+
+    <!-- MANUAL Q&A -->
+    <div class="meth-section" id="ms-manual">
+      <div id="manual-list">
+        <div class="qa-row" style="display:flex;gap:5px;margin-bottom:6px">
+          <input placeholder="Question…" class="mi-q" style="flex:1;padding:8px 10px;border:1.5px solid var(--soft);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none;min-width:0">
+          <input placeholder="Answer…" class="mi-a" style="flex:1;padding:8px 10px;border:1.5px solid var(--soft);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none;min-width:0">
+          <button onclick="this.closest('.qa-row').remove()" style="width:26px;height:26px;border-radius:6px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center">×</button>
+        </div>
+      </div>
+      <button onclick="addManualRow()" style="padding:8px;border-radius:10px;border:1.5px dashed var(--sky3);background:var(--sky);color:var(--sky4);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;width:100%;margin-top:4px">+ Add question</button>
+      <div class="hint">Type your own Q&A pairs directly. These are added to the extracted set.</div>
+    </div>
+  </div>
+
+  <!-- SET NAME + SETTINGS -->
+  <div class="card">
+    <div class="slabel">Output Settings</div>
+    <div class="sgrid">
+      <div class="si">
+        <label>Set name (shown in Bloom)</label>
+        <input id="set-name" value="My Notes" style="width:100%;padding:8px 10px;border:1.5px solid var(--soft);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none" placeholder="e.g. Physics Chapter 3">
+      </div>
+      <div class="si">
+        <label>Question depth</label>
+        <select id="depth">
+          <option value="standard">Standard — definitions + fill-in</option>
+          <option value="deep">Deep — adds application + conceptual Qs</option>
+          <option value="minimal">Minimal — definitions only</option>
+        </select>
+      </div>
+      <div class="si">
+        <label>Max questions: <span id="maxqv">40</span></label>
+        <div class="srow"><input type="range" id="maxq" min="10" max="100" value="40" oninput="document.getElementById('maxqv').textContent=this.value"></div>
+      </div>
+      <div class="si">
+        <label>Duplicate handling</label>
+        <select id="dedup">
+          <option value="yes">Remove duplicate questions</option>
+          <option value="no">Keep all questions</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="xbtn" id="xbtn" onclick="runExtract()">
+    <div class="shimmer"></div>Extract Questions ✿
+  </button>
+
+  <div class="xlog" id="xlog"></div>
+  <div id="results"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ── PARTICLES ──
+const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+let W,H;const PC=['#fce4ec','#e3f2fd','#ede7f6','#e8f5e9','#fff3e0'];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=Array.from({length:45},()=>({x:Math.random()*2000,y:Math.random()*1000,r:Math.random()*3+1.5,vx:(Math.random()-.5)*.25,vy:-(Math.random()*.35+.1),a:Math.random()*.5+.15,c:PC[Math.floor(Math.random()*5)],w:Math.random()*Math.PI*2,ws:Math.random()*.015}));
+(function loop(){cx.clearRect(0,0,W,H);pts.forEach(p=>{p.y+=p.vy;p.x+=p.vx+Math.sin(p.w)*.25;p.w+=p.ws;if(p.y<-20){p.x=Math.random()*W;p.y=H+20;}cx.save();cx.globalAlpha=p.a;cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();});requestAnimationFrame(loop);})();
+
+// ── STATE ──
+let fqueue=[],allQA=[],idN=0,activeRTab='qa';
+
+// ── METHOD TABS ──
+function swMeth(id,i){
+  document.querySelectorAll('.mtab').forEach((b,j)=>b.classList.toggle('on',j===i));
+  ['paste','file','manual'].forEach(m=>document.getElementById('ms-'+m).classList.toggle('on',m===id));
+}
+
+// ── FILE HANDLING ──
+const dz=document.getElementById('drop');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');handleFiles(e.dataTransfer.files);});
+function triggerInput(){document.getElementById('finput').click();}
+function ficon(n){const e=n.split('.').pop().toLowerCase();return{docx:'📘',doc:'📘',pptx:'📙',ppt:'📙',xlsx:'📗',xls:'📗',txt:'📝',md:'📝',csv:'📊',rtf:'📄'}[e]||'📎';}
+function fsz(b){return b<1024?b+'B':b<1048576?(b/1024).toFixed(0)+'KB':(b/1048576).toFixed(1)+'MB';}
+function handleFiles(list){
+  for(const f of list){if(fqueue.find(q=>q.f.name===f.name&&q.f.size===f.size))continue;fqueue.push({f,id:'f'+(++idN),st:'queued',err:null,text:null});}
+  if(fqueue.length)dz.classList.add('has');
+  renderQ();
+}
+function removeF(id){fqueue=fqueue.filter(f=>f.id!==id);if(!fqueue.length)dz.classList.remove('has');renderQ();}
+function renderQ(){
+  document.getElementById('fqueue').innerHTML=fqueue.map(f=>`
+    <div class="qi ${f.st}" id="qi${f.id}">
+      <div class="qi-ico">${ficon(f.f.name)}</div>
+      <div class="qi-info">
+        <div class="qi-name">${f.f.name}</div>
+        <div class="qi-status">${{queued:'Ready to process',done:'Processed ✓',error:'Error: '+f.err}[f.st]} · ${fsz(f.f.size)}</div>
+      </div>
+      <button class="qi-rm" onclick="removeF('${f.id}')">×</button>
+    </div>`).join('');
+}
+
+// ── LOCAL TEXT EXTRACTION ──
+async function extractText(fobj){
+  const ext=fobj.f.name.split('.').pop().toLowerCase();
+  try{
+    if(['txt','md','rtf','csv'].includes(ext))return await fobj.f.text();
+    if(['docx','doc'].includes(ext)){const ab=await fobj.f.arrayBuffer();const r=await mammoth.extractRawText({arrayBuffer:ab});return r.value;}
+    if(['xlsx','xls'].includes(ext)){const ab=await fobj.f.arrayBuffer();const wb=XLSX.read(ab,{type:'array'});return wb.SheetNames.map(s=>`== ${s} ==\n`+XLSX.utils.sheet_to_csv(wb.Sheets[s])).join('\n\n');}
+    if(['pptx','ppt'].includes(ext)){
+      // Try XLSX parser for PPTX text extraction
+      const ab=await fobj.f.arrayBuffer();const wb=XLSX.read(ab,{type:'array'});
+      const out=wb.SheetNames.map(s=>XLSX.utils.sheet_to_csv(wb.Sheets[s])).join('\n');
+      if(out.trim().length>20)return out;
+    }
+  }catch(e){throw new Error('Could not read file: '+e.message);}
+  throw new Error('Unsupported file type');
+}
+
+// ── LOG ──
+function log(m,t='info'){const el=document.getElementById('xlog');el.classList.add('on');const s=document.createElement('span');s.className='ll '+t;s.textContent='› '+m;el.appendChild(s);el.scrollTop=el.scrollHeight;}
+function clearLog(){const el=document.getElementById('xlog');el.innerHTML='';el.classList.remove('on');}
+function addManualRow(){
+  const list=document.getElementById('manual-list');
+  const row=document.createElement('div');row.className='qa-row';
+  row.style.cssText='display:flex;gap:5px;margin-bottom:6px';
+  row.innerHTML=`<input placeholder="Question…" class="mi-q" style="flex:1;padding:8px 10px;border:1.5px solid var(--soft);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none;min-width:0"><input placeholder="Answer…" class="mi-a" style="flex:1;padding:8px 10px;border:1.5px solid var(--soft);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--warm);outline:none;min-width:0"><button onclick="this.closest('.qa-row').remove()" style="width:26px;height:26px;border-radius:6px;border:none;background:var(--rose);color:var(--rose4);cursor:pointer;font-size:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center">×</button>`;
+  list.appendChild(row);
+}
+
+// ═══════════════════════════════════════════════════
+// SMART EXTRACTION ENGINE — no AI, all client-side
+// ═══════════════════════════════════════════════════
+function extractQA(text,depth){
+  const qs=[];
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
+
+  // Pattern 1: Term — Definition (em dash, en dash, regular dash)
+  lines.forEach(l=>{
+    const m=l.match(/^(.{2,60}?)\s*[—–-]{1,2}\s*(.{5,})$/);
+    if(m){
+      const term=m[1].trim().replace(/^\d+[\.\)]\s*/,'');
+      const def=m[2].trim();
+      if(term.length>1&&def.length>3){
+        qs.push({q:`What is ${term}?`,a:def});
+        if(depth!=='minimal')qs.push({q:`Define: "${term}"`,a:def});
+      }
+    }
+  });
+
+  // Pattern 2: Term: Definition (colon)
+  lines.forEach(l=>{
+    if(l.match(/^[A-Z]/)){// must start with capital
+      const m=l.match(/^(.{2,55}?):\s+(.{5,})$/);
+      if(m&&!m[1].match(/https?|www/)){
+        const term=m[1].trim().replace(/^\d+[\.\)]\s*/,'');
+        const def=m[2].trim();
+        if(term.split(' ').length<=6&&def.length>5){
+          qs.push({q:`What is ${term}?`,a:def});
+        }
+      }
+    }
+  });
+
+  // Pattern 3: Numbered / bulleted facts
+  lines.forEach(l=>{
+    const m=l.match(/^[\d]+[\.\)]\s+(.{10,})$/) || l.match(/^[•·\-\*]\s+(.{10,})$/);
+    if(m){
+      const fact=m[1].trim();
+      if(depth==='deep'||depth==='standard'){
+        // Convert fact to Q by blanking the key noun
+        const words=fact.split(' ');
+        if(words.length>=4){
+          const ki=Math.min(3,Math.floor(words.length*.4));
+          const key=words[ki].replace(/[,;:.'"]/g,'');
+          if(key.length>2&&!['the','a','an','is','are','was','were','of','in','on','at','to','for','and','or','but'].includes(key.toLowerCase())){
+            qs.push({q:`Complete: "${words.slice(0,ki).join(' ')} ___ ${words.slice(ki+1).join(' ')}"`,a:key});
+          }
+        }
+        // Also add as straight fact question
+        qs.push({q:`True or false: "${fact.slice(0,60)}${fact.length>60?'…':''}"`,a:'True — '+fact});
+      }
+    }
+  });
+
+  // Pattern 4: Equation / formula lines (contain = or →)
+  lines.forEach(l=>{
+    if(l.includes('=')&&l.length<120){
+      const parts=l.split(/[=→⟶]/);
+      if(parts.length>=2){
+        const lhs=parts[0].trim().replace(/^\d+[\.\)]\s*/,'');
+        const rhs=parts.slice(1).join('=').trim();
+        if(lhs.length>1&&rhs.length>1&&lhs.length<50){
+          qs.push({q:`What is the formula/equation for: ${lhs}?`,a:`${lhs} = ${rhs}`});
+        }
+      }
+    }
+  });
+
+  // Pattern 5: Headings + first sentence pairs (paragraph detection)
+  if(depth==='deep'||depth==='standard'){
+    const sects=text.split(/\n{2,}/);
+    sects.forEach(block=>{
+      const blines=block.split('\n').map(l=>l.trim()).filter(Boolean);
+      if(blines.length>=2){
+        const heading=blines[0];
+        const body=blines.slice(1).join(' ');
+        if(heading.length<60&&heading.length>3&&body.length>20&&!heading.includes('=')){
+          qs.push({q:`What is ${heading}?`,a:body.slice(0,200)+(body.length>200?'…':'')});
+        }
+      }
+    });
+  }
+
+  // Pattern 6: Sentences → fill-in-the-blank
+  if(depth==='deep'){
+    const sents=text.match(/[A-Z][^.!?]{20,150}[.!?]/g)||[];
+    sents.forEach(s=>{
+      const words=s.trim().split(' ');
+      if(words.length<6)return;
+      // Pick a content word (noun-ish: longer words, not common function words)
+      const STOP=new Set(['the','a','an','is','are','was','were','of','in','on','at','to','for','and','or','but','not','that','this','which','with','from','by','as','it','its','can','will','would','could','should','have','has','had','been','being','be','do','does','did']);
+      const candidates=words.map((w,i)=>({w:w.replace(/[,;:.'"]/g,''),i})).filter(c=>c.w.length>4&&!STOP.has(c.w.toLowerCase())&&c.i>1&&c.i<words.length-1);
+      if(!candidates.length)return;
+      const pick=candidates[Math.floor(candidates.length*.4)];// pick ~40% through
+      if(pick&&pick.w.length>3){
+        const blanked=words.map((w,i)=>i===pick.i?'___':w).join(' ');
+        qs.push({q:`Complete: "${blanked}"`,a:pick.w.replace(/[.!?]/g,'')});
+      }
+    });
+  }
+
+  return qs;
+}
+
+function deduplicateQA(qs){
+  const seen=new Set();
+  return qs.filter(q=>{
+    const key=q.q.toLowerCase().slice(0,50);
+    if(seen.has(key))return false;
+    seen.add(key);return true;
+  });
+}
+
+// ── MAIN EXTRACT ──
+async function runExtract(){
+  clearLog();allQA=[];
+  document.getElementById('results').innerHTML='';
+  const btn=document.getElementById('xbtn');
+  btn.classList.add('running');btn.innerHTML='<div class="shimmer"></div><span class="spinner"></span>Extracting…';
+
+  const depth=document.getElementById('depth').value;
+  const maxq=parseInt(document.getElementById('maxq').value);
+  const doDedup=document.getElementById('dedup').value==='yes';
+  const setName=document.getElementById('set-name').value.trim()||'My Notes';
+
+  let combinedText='';
+
+  // 1. Paste text
+  const pasted=document.getElementById('t-paste').value.trim();
+  if(pasted){log('Processing pasted text…','info');combinedText+=pasted+'\n\n';}
+
+  // 2. Files
+  for(const fobj of fqueue){
+    log('Reading: '+fobj.f.name,'info');
+    try{
+      const txt=await extractText(fobj);
+      combinedText+=txt+'\n\n';
+      fobj.st='done';
+      log(`${fobj.f.name} → text extracted ✓`,'ok');
+    }catch(err){
+      fobj.st='error';fobj.err=err.message;
+      log('Error: '+fobj.f.name+' — '+err.message,'err');
+    }
+    renderQ();
+  }
+
+  // 3. Manual Q&A
+  document.querySelectorAll('.qa-row').forEach(row=>{
+    const q=row.querySelector('.mi-q')?.value.trim();
+    const a=row.querySelector('.mi-a')?.value.trim();
+    if(q&&a)allQA.push({q,a});
+  });
+
+  if(!combinedText.trim()&&!allQA.length){
+    btn.classList.remove('running');btn.innerHTML='Extract Questions ✿';
+    showToast('Add some content first!');return;
+  }
+
+  if(combinedText.trim()){
+    log('Analysing text with pattern matching…','info');
+    let extracted=extractQA(combinedText,depth);
+    log(`Found ${extracted.length} raw questions`,'info');
+    if(doDedup){extracted=deduplicateQA(extracted);log(`After dedup: ${extracted.length}`,'info');}
+    // Shuffle and trim
+    for(let i=extracted.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[extracted[i],extracted[j]]=[extracted[j],extracted[i]];}
+    allQA.push(...extracted.slice(0,maxq-allQA.length));
+  }
+
+  btn.classList.remove('running');btn.innerHTML='Extract Questions ✿';
+
+  if(allQA.length){
+    log(`Done! ${allQA.length} questions ready ✿`,'ok');
+    renderResults(setName);
+  } else {
+    log('No questions extracted — try using "Term — Definition" format in your notes.','warn');
+    showToast('No patterns found — try "Term — Definition" format');
+  }
+}
+
+// ── RESULTS ──
+let activeTab='qa';
+function renderResults(setName){
+  const area=document.getElementById('results');
+  const tabs=[{id:'qa',label:`Q&A (${allQA.length})`},{id:'json',label:'JSON'}];
+  if(!tabs.find(t=>t.id===activeTab))activeTab='qa';
+  area.innerHTML=`<div class="rcard">
+    <div class="rhead">
+      <div class="rtitle">Extracted Questions ✿</div>
+      <div class="rcnt">${allQA.length} questions · "${setName}"</div>
+    </div>
+    <div class="rtabs">${tabs.map(t=>`<button class="rtab${t.id===activeTab?' on':''}" onclick="swRTab('${t.id}','${esc(setName)}')">${t.label}</button>`).join('')}</div>
+    <div id="rtbody"></div>
+    <div class="arow">
+      <button class="abtn bloom" onclick="cpJSON()">✿ Copy JSON for Bloom</button>
+      <button class="abtn grn" onclick="dlJSON('${esc(setName)}')">⬇ Download .json</button>
+      <button class="abtn" onclick="clearAll()">✕ Clear</button>
+    </div>
+  </div>`;
+  renderRTab(setName);
+}
+function swRTab(id,name){activeTab=id;renderResults(name||'My Notes');}
+function renderRTab(name){
+  const el=document.getElementById('rtbody');if(!el)return;
+  if(activeTab==='qa'){
+    if(!allQA.length){el.innerHTML='<p style="font-size:13px;color:var(--ink3);padding:10px 0">No Q&A yet.</p>';return;}
+    el.innerHTML=`<div class="qa-preview">${allQA.map((it,i)=>`<div class="qacard"><button class="dq" onclick="delQ(${i},'${esc(name||'')}')">×</button><div class="qtext">${esc(it.q)}</div><div class="atext">${esc(it.a)}</div></div>`).join('')}</div>`;
+  }else{
+    el.innerHTML=`<textarea class="outta mono" readonly>${esc(JSON.stringify(allQA,null,2))}</textarea>`;
+  }
+}
+function delQ(i,name){allQA.splice(i,1);renderResults(name);}
+function clearAll(){allQA=[];document.getElementById('results').innerHTML='';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+async function cpJSON(){
+  const name=document.getElementById('set-name').value.trim()||'My Notes';
+  // Wrap as Bloom-compatible JSON with metadata
+  const out=JSON.stringify(allQA,null,2);
+  await navigator.clipboard.writeText(out).catch(()=>{});
+  showToast(`JSON copied! Paste into Bloom → JSON Sets tab ✿`);
+}
+function dlJSON(name){
+  const a=document.createElement('a');
+  const filename=(name||'bloom-questions').replace(/[^a-z0-9]/gi,'_')+'.json';
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(allQA,null,2)],{type:'application/json'}));
+  a.download=filename;a.click();
+  showToast('Downloaded '+filename);
+}
+let tT;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>
