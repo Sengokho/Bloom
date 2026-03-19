@@ -344,6 +344,24 @@ textarea.ni:focus{border-color:var(--rose3);background:#fff;box-shadow:0 0 0 3px
 .set-entry-cnt{font-size:11px;color:var(--ink3)}
 .set-entry-del{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:12px;transition:all .2s}
 .set-entry-del:hover{background:var(--rose2);color:var(--rose4)}
+.set-weight{width:48px;padding:4px 6px;border:1.5px solid var(--bg3);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:#fff;outline:none;text-align:center;transition:border .2s}
+.set-weight:focus{border-color:var(--lav3)}
+.mode-card{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--bg3);margin-bottom:8px;cursor:pointer;transition:all .2s}
+.mode-card.active{background:var(--rose);border-color:var(--rose3)}
+.mode-card:hover:not(.active){background:var(--lav);border-color:var(--lav3)}
+.mode-card-ico{font-size:22px;flex-shrink:0}
+.mode-card-text{flex:1}
+.mode-card-title{font-size:13px;font-weight:500;color:var(--ink)}
+.mode-card-desc{font-size:11px;color:var(--ink3);margin-top:1px;line-height:1.4}
+.hist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:5px}
+.hist-item .hi-q{flex:1;font-size:12px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-item .hi-stats{display:flex;gap:6px;flex-shrink:0;font-size:11px}
+.hi-c{color:var(--mint4);font-weight:500}
+.hi-w{color:var(--rose4);font-weight:500}
+.hi-badge{font-size:10px;padding:2px 6px;border-radius:99px;font-weight:500}
+.hi-badge.c{background:var(--mint);color:var(--mint4)}
+.hi-badge.w{background:var(--rose);color:var(--rose4)}
+.hi-badge.u{background:var(--bg3);color:var(--ink3)}
 
 .fl{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-size:15px;font-weight:500;z-index:50;animation:fa 1s ease-out forwards}
 @keyframes fa{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
@@ -608,10 +626,45 @@ Newton's 2nd Law — F = ma, force equals mass times acceleration"></textarea>
   </div>
 </div>
 <div class="mbk" id="mod-sets">
-  <div class="md">
-    <div class="mh"><div class="mt">📚 Question Sets</div><button class="mx" onclick="closeMod('mod-sets')">×</button></div>
-    <div class="mb" id="sets-list"></div>
-    <div class="mf">
+  <div class="md" style="max-width:560px">
+    <div class="mh"><div class="mt">📚 Questions &amp; Settings</div><button class="mx" onclick="closeMod('mod-sets')">×</button></div>
+    <div style="display:flex;gap:5px;margin-bottom:14px;flex-shrink:0">
+      <button class="tb on" id="qs-tab-0" onclick="swQsTab(0)" style="font-size:11px">📋 Sets</button>
+      <button class="tb" id="qs-tab-1" onclick="swQsTab(1)" style="font-size:11px">⚙️ Mode</button>
+      <button class="tb" id="qs-tab-2" onclick="swQsTab(2)" style="font-size:11px">📊 History</button>
+    </div>
+
+    <!-- SETS TAB -->
+    <div class="mb" id="qs-panel-0">
+      <div id="sets-list"></div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:4px;line-height:1.6">Set weight 0 = disabled, 1 = normal, 2 = double frequency</div>
+    </div>
+
+    <!-- MODE TAB -->
+    <div class="mb" id="qs-panel-1" style="display:none">
+      <div class="plabel">Quiz Mode</div>
+      <div id="mode-options"></div>
+      <div class="plabel" style="margin-top:16px">Wrong Answer Boost</div>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:10px">How much more often wrong answers appear (applies in Weighted &amp; Wrong-First modes)</p>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="range" id="wrong-boost-slider" min="1" max="5" step="0.5" style="flex:1;accent-color:var(--rose4)" oninput="updateWrongBoost(this.value)">
+        <span id="wrong-boost-val" style="font-size:13px;font-weight:500;color:var(--ink);min-width:28px">2×</span>
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="mb" id="qs-panel-2" style="display:none">
+      <div class="plabel">Question Performance</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="tb on" id="hist-tab-all" onclick="swHistTab('all')" style="font-size:11px;flex:none;padding:6px 12px">All</button>
+        <button class="tb" id="hist-tab-wrong" onclick="swHistTab('wrong')" style="font-size:11px;flex:none;padding:6px 12px">❌ Wrong</button>
+        <button class="tb" id="hist-tab-correct" onclick="swHistTab('correct')" style="font-size:11px;flex:none;padding:6px 12px">✓ Correct</button>
+        <button class="tb" id="hist-tab-unseen" onclick="swHistTab('unseen')" style="font-size:11px;flex:none;padding:6px 12px">👁 Unseen</button>
+      </div>
+      <div id="hist-list" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+
+    <div class="mf" style="flex-shrink:0">
       <button class="mbtn" onclick="document.getElementById('json-mid-input').click()">⬆ Upload JSON</button>
       <input type="file" id="json-mid-input" accept=".json" multiple style="display:none" onchange="handleJsonMid(this)">
       <button class="mbtn" onclick="closeMod('mod-sets')">Close</button>
@@ -851,6 +904,12 @@ function freshState(){
     ownedCosmetics:['s0','t0','i0','bg0'],
     equippedSkin:'s0',equippedTheme:'t0',equippedIcon:'i0',equippedBg:'bg0',
     lastPps:0,quizStreak:0,crateHistory:[],
+    quizSettings:{
+      mode:'weighted',   // 'weighted' | 'random' | 'order' | 'wrong-first'
+      setWeights:{},     // setIndex -> weight multiplier (1=normal, 2=double, 0=skip)
+      wrongBoost:2,      // how much more often wrong answers appear
+    },
+    qStats:{},           // questionKey -> {correct:n, wrong:n, last:'c'|'w'}
   };
 }
 let S=freshState();
@@ -873,7 +932,7 @@ function deserial(raw){
     ['pts','te','tc','qc','qt','own','mc','csq','qth','rb','rm',
      'lootProg','cratesOwned','cratesOpened','legendaryFound',
      'ownedCosmetics','equippedSkin','equippedTheme','equippedIcon','equippedBg',
-     'lastPps','quizStreak','crateHistory'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+     'lastPps','quizStreak','crateHistory','quizSettings','qStats'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
     S.ul=new Set(d.ul||[]);
     S.lootPending=false;
     if(!S.cratesOwned)S.cratesOwned={common:0,rare:0,legendary:0};
@@ -1050,12 +1109,63 @@ function checkQuiz(){
   document.getElementById('qtl').textContent=rem>0?`quiz in ${rem} blooms`:'quiz ready!';
   if(S.csq>=S.qth&&!S.qa&&S.sets.length>0&&S.sets[S.activeSet]?.qs.length>0){S.csq=0;setTimeout(openQuiz,300);}
 }
+function qKey(q){return(q.q||'').slice(0,40);}
+
+function pickNextQuestion(){
+  const qs=S.quizSettings;
+  // Build weighted pool across all enabled sets
+  const pool=[];
+  S.sets.forEach((set,si)=>{
+    const w=qs.setWeights[si]??1;
+    if(w===0)return; // set disabled
+    set.qs.forEach(q=>{
+      const stat=S.qStats[qKey(q)]||{correct:0,wrong:0,last:null};
+      let weight=w;
+      if(qs.mode==='wrong-first'){
+        // heavily boost questions answered wrong recently
+        weight*=(stat.last==='w'?qs.wrongBoost*3:1);
+        weight*=(1+stat.wrong*0.5);
+      } else if(qs.mode==='weighted'){
+        // boost questions answered wrong, slightly boost unseen
+        if(stat.last==='w')weight*=qs.wrongBoost;
+        if(stat.correct===0&&stat.wrong===0)weight*=1.3;
+      }
+      pool.push({q,si,weight});
+    });
+  });
+  if(!pool.length)return null;
+
+  if(qs.mode==='order'){
+    // Work through the active set in sequence
+    const set=S.sets[S.activeSet];
+    if(!set)return null;
+    if(!set.orderIdx)set.orderIdx=0;
+    const q=set.qs[set.orderIdx%set.qs.length];
+    set.orderIdx++;
+    return q;
+  }
+
+  if(qs.mode==='random'){
+    return pool[Math.floor(Math.random()*pool.length)].q;
+  }
+
+  // weighted / wrong-first: weighted random sample
+  const total=pool.reduce((s,p)=>s+p.weight,0);
+  let r=Math.random()*total;
+  for(const p of pool){r-=p.weight;if(r<=0)return p.q;}
+  return pool[pool.length-1].q;
+}
+
 function openQuiz(){
-  const set=S.sets[S.activeSet];if(!set||!set.qs.length)return;
-  if(!set.queue.length)set.queue=shuffle([...set.qs]);
-  currentQ=set.wq.length>0&&Math.random()<.35?set.wq.splice(Math.floor(Math.random()*set.wq.length),1)[0]:set.queue.pop();
+  if(S.sets.length===0)return;
+  const q=pickNextQuestion();
+  if(!q)return;
+  currentQ=q;
   S.qa=true;
-  document.getElementById('q-set-tag').textContent=set.name;
+  // Find which set this question belongs to
+  const setIdx=S.sets.findIndex(st=>st.qs.some(sq=>sq.q===q.q));
+  const setName=S.sets[setIdx]?.name||'';
+  document.getElementById('q-set-tag').textContent=setName;
   document.getElementById('q-text').textContent=currentQ.q;
   document.getElementById('q-inp').value='';
   document.getElementById('q-ans').textContent=currentQ.a;
@@ -1064,8 +1174,7 @@ function openQuiz(){
   document.getElementById('q-skip').style.display='flex';
   const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
   document.getElementById('q-mult').innerHTML=`Correct earns <b>+${fmt(bonus*3)} petals</b>`;
-  // Show what crate they'll earn
-  const streakCrate=S.quizStreak>=4?'legendary':S.quizStreak>=1?'rare':'rare';
+  const streakCrate=S.quizStreak>=4?'legendary':'rare';
   const crIcon=streakCrate==='legendary'?'⚜️':'💎';
   document.getElementById('q-cr-ico').textContent=crIcon;
   document.getElementById('q-cr-type').textContent=streakCrate==='legendary'?'Legendary':'Rare';
@@ -1081,20 +1190,26 @@ function revealAns(){
 function grade(g){
   const set=S.sets[S.activeSet];S.qt++;
   const bonus=Math.floor(Math.max(1,pps*.8+20)*S.cm*S.rm);
+  const key=qKey(currentQ);
+  if(!S.qStats[key])S.qStats[key]={correct:0,wrong:0,last:null};
   if(g===2){
     S.qc++;const earned=bonus*3;S.pts+=earned;S.te+=earned;
     S.quizStreak++;
-    // Award crate based on streak
+    S.qStats[key].correct++;S.qStats[key].last='c';
     if(S.quizStreak>=5){S.cratesOwned.legendary++;showToast('✓ Correct! ⚜️ Legendary crate earned!');}
     else if(S.quizStreak>=2){S.cratesOwned.rare++;showToast('✓ Correct! 💎 Rare crate earned!');}
-    else{S.cratesOwned.rare++;showToast('✓ Correct! 💎 Rare crate earned! +'+fmt(earned)+' petals');}
+    else{S.cratesOwned.rare++;showToast('✓ Correct! 💎 Rare crate +'+fmt(earned)+' petals');}
     S.lootProg+=10;activateQuizBonus();
   } else if(g===1){
     const earned=bonus;S.pts+=earned;S.te+=earned;
-    S.quizStreak=0;if(set)set.wq.push(currentQ);
+    S.quizStreak=0;
+    S.qStats[key].wrong++;S.qStats[key].last='w';
+    if(set)set.wq.push(currentQ);
     S.lootProg+=3;showToast('~ Almost! +'+fmt(earned)+' petals');
   } else if(g===0){
-    S.quizStreak=0;if(set)set.wq.push(currentQ);showToast('✗ Added to retry queue');
+    S.quizStreak=0;
+    S.qStats[key].wrong++;S.qStats[key].last='w';
+    if(set)set.wq.push(currentQ);showToast('✗ Added to retry queue');
   } else {S.quizStreak=0;}
   document.getElementById('qov').classList.remove('show');document.getElementById('q-crate-reward').classList.remove('show');
   S.qa=false;S.csq=0;S.qth=40+Math.floor(Math.random()*35);
@@ -1160,23 +1275,24 @@ function covReveal(){
   document.getElementById('cov-q-initial-btns').style.display='none';
 }
 function covGrade(correct){
-  // Always open crate regardless — but correct gives bonus
-  if(correct){
-    S.qc++;S.quizStreak++;
-    const bonus=Math.floor(Math.max(1,pps*.5+10)*S.rm);
-    S.pts+=bonus;S.te+=bonus;
-    checkAchs();
-  } else {
+  if(!correct){
+    // Wrong answer — close overlay, return crate, no reward
+    document.getElementById('cov').classList.remove('show');
+    document.getElementById('cov-question').classList.remove('show');
     S.quizStreak=0;
+    showToast('✗ Wrong — crate returned, try again!');
+    scheduleSave();
+    return;
   }
-  // Consume crate (common is infinite)
+  // Correct — consume crate and open it
+  S.qc++;S.quizStreak++;
+  const bonus=Math.floor(Math.max(1,pps*.5+10)*S.rm);
+  S.pts+=bonus;S.te+=bonus;
   if(activeCrateType!=='common')S.cratesOwned[activeCrateType]=Math.max(0,(S.cratesOwned[activeCrateType]||0)-1);
-  // Pick reward
   activeCrateResult=pickCrateReward(activeCrateType);
   document.getElementById('cov-question').classList.remove('show');
-  // Run the reel animation
   runReel(activeCrateResult);
-  scheduleSave();
+  checkAchs();scheduleSave();
 }
 function pickCrateReward(type){
   const odds=CRATE_ODDS[type];
@@ -1375,7 +1491,7 @@ function openMod(id){
       qs.map((q,i)=>`<div class="erow" id="er${i}"><div class="efields"><input class="ei" id="eq${i}" value="${esc(q.q)}" placeholder="Question…"><input class="ei" id="ea${i}" value="${esc(q.a)}" placeholder="Answer…"></div><button class="edel" onclick="this.closest('.erow').remove()">×</button></div>`).join(''))+
       `<button class="eadd" onclick="addEdRow()">+ Add question</button>`;
   }
-  if(id==='mod-sets')renderSetsModal();
+  if(id==='mod-sets'){renderSetsModal();swQsTab(0);}
   document.getElementById(id).classList.add('show');
 }
 function closeMod(id){document.getElementById(id).classList.remove('show');}
@@ -1398,15 +1514,120 @@ function saveEditor(){
   else{S.sets.push({name:'Edited',qs,queue:shuffle([...qs]),wq:[]});S.activeSet=0;}
   closeMod('mod-editor');renderStats();updateActiveSetPill();scheduleSave();showToast(`${qs.length} questions saved ✿`);
 }
+const QUIZ_MODES=[
+  {id:'weighted',   ico:'⚖️', title:'Weighted (default)', desc:'Wrong answers appear more often. Unseen questions get a small boost.'},
+  {id:'wrong-first',ico:'❌', title:'Wrong-First',        desc:'Heavily prioritises questions you got wrong. Great for targeted revision.'},
+  {id:'random',     ico:'🎲', title:'Pure Random',        desc:'Every question has an equal chance regardless of history.'},
+  {id:'order',      ico:'📋', title:'In Order',           desc:'Goes through the active set from top to bottom, then loops.'},
+];
+
+function swQsTab(i){
+  [0,1,2].forEach(j=>{
+    document.getElementById('qs-tab-'+j).classList.toggle('on',j===i);
+    document.getElementById('qs-panel-'+j).style.display=j===i?'block':'none';
+  });
+  if(i===1)renderModePanel();
+  if(i===2)renderHistPanel('all');
+}
+
 function renderSetsModal(){
   document.getElementById('sets-list').innerHTML=S.sets.length===0?
     '<p style="font-size:12px;color:var(--ink3)">No question sets loaded.</p>':
-    S.sets.map((st,i)=>`<div class="set-entry${i===S.activeSet?' active':''}" onclick="switchSet(${i})">
-      <span style="font-size:18px">${['📚','📖','📝','📄','📃'][i%5]}</span>
-      <div class="set-entry-name">${st.name}</div>
-      <div class="set-entry-cnt">${st.qs.length}q</div>
-      <button class="set-entry-del" onclick="event.stopPropagation();deleteSet(${i})">×</button>
-    </div>`).join('');
+    S.sets.map((st,i)=>{
+      const w=S.quizSettings.setWeights[i]??1;
+      const icons=['📚','📖','📝','📄','📃'];
+      return`<div class="set-entry${i===S.activeSet?' active':''}" onclick="switchSet(${i})">
+        <span style="font-size:18px">${icons[i%5]}</span>
+        <div class="set-entry-name">${esc(st.name)}</div>
+        <div class="set-entry-cnt">${st.qs.length}q</div>
+        <input class="set-weight" type="number" min="0" max="5" step="0.5" value="${w}"
+          onclick="event.stopPropagation()"
+          onchange="setSetWeight(${i},this.value)"
+          title="Weight (0=skip, 1=normal, 2=double)">
+        <button class="set-entry-del" onclick="event.stopPropagation();deleteSet(${i})">×</button>
+      </div>`;
+    }).join('');
+}
+
+function setSetWeight(i,val){
+  const w=Math.max(0,Math.min(5,parseFloat(val)||0));
+  S.quizSettings.setWeights[i]=w;
+  scheduleSave();
+}
+
+function renderModePanel(){
+  const cur=S.quizSettings.mode;
+  document.getElementById('mode-options').innerHTML=QUIZ_MODES.map(m=>
+    `<div class="mode-card${m.id===cur?' active':''}" onclick="setMode('${m.id}')">
+      <div class="mode-card-ico">${m.ico}</div>
+      <div class="mode-card-text">
+        <div class="mode-card-title">${m.title}</div>
+        <div class="mode-card-desc">${m.desc}</div>
+      </div>
+    </div>`
+  ).join('');
+  const slider=document.getElementById('wrong-boost-slider');
+  if(slider){slider.value=S.quizSettings.wrongBoost;document.getElementById('wrong-boost-val').textContent=S.quizSettings.wrongBoost+'×';}
+}
+
+function setMode(id){
+  S.quizSettings.mode=id;
+  renderModePanel();scheduleSave();
+}
+
+function updateWrongBoost(v){
+  S.quizSettings.wrongBoost=parseFloat(v);
+  document.getElementById('wrong-boost-val').textContent=parseFloat(v).toFixed(1)+'×';
+  scheduleSave();
+}
+
+let histFilter='all';
+function swHistTab(filter){
+  histFilter=filter;
+  ['all','wrong','correct','unseen'].forEach(f=>{
+    const el=document.getElementById('hist-tab-'+f);
+    if(el)el.classList.toggle('on',f===filter);
+  });
+  renderHistPanel(filter);
+}
+
+function renderHistPanel(filter){
+  histFilter=filter;
+  // Collect all questions across all sets with stats
+  const allQs=[];
+  S.sets.forEach((st,si)=>{
+    st.qs.forEach(q=>{
+      const key=qKey(q);
+      const stat=S.qStats[key]||{correct:0,wrong:0,last:null};
+      allQs.push({q:q.q,a:q.a,set:st.name,stat,key});
+    });
+  });
+  // Filter
+  let shown=allQs;
+  if(filter==='wrong')shown=allQs.filter(x=>x.stat.wrong>0||x.stat.last==='w');
+  else if(filter==='correct')shown=allQs.filter(x=>x.stat.correct>0&&x.stat.last==='c');
+  else if(filter==='unseen')shown=allQs.filter(x=>x.stat.correct===0&&x.stat.wrong===0);
+  // Sort: wrong-heavy first
+  shown.sort((a,b)=>b.stat.wrong-a.stat.wrong);
+  const el=document.getElementById('hist-list');
+  if(!el)return;
+  if(!shown.length){el.innerHTML='<p style="font-size:12px;color:var(--ink3);padding:8px 0">No questions match this filter.</p>';return;}
+  el.innerHTML=shown.slice(0,60).map(x=>{
+    const badge=x.stat.correct===0&&x.stat.wrong===0?'<span class="hi-badge u">unseen</span>':
+                x.stat.last==='c'?'<span class="hi-badge c">last ✓</span>':
+                '<span class="hi-badge w">last ✗</span>';
+    return`<div class="hist-item">
+      <div style="flex:1;min-width:0">
+        <div class="hi-q" title="${esc(x.q)}">${esc(x.q)}</div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:1px">${esc(x.set)}</div>
+      </div>
+      <div class="hi-stats">
+        <span class="hi-c">✓${x.stat.correct}</span>
+        <span class="hi-w">✗${x.stat.wrong}</span>
+        ${badge}
+      </div>
+    </div>`;
+  }).join('');
 }
 function switchSet(i){S.activeSet=i;updateActiveSetPill();renderSetsModal();showToast('Switched to "'+S.sets[i].name+'"');scheduleSave();}
 function deleteSet(i){if(S.sets.length<=1){showToast("Can't delete last set!");return;}S.sets.splice(i,1);if(S.activeSet>=S.sets.length)S.activeSet=S.sets.length-1;renderSetsModal();updateActiveSetPill();scheduleSave();}
